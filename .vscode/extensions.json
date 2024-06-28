@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    "arcanis.vscode-zipfs",
+    "christian-kohler.npm-intellisense",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "github.copilot",
+    "github.vscode-github-actions",
+    "graphql.vscode-graphql",
+    "graphql.vscode-graphql-syntax",
+    "idered.npm",
+    "jasonnutter.search-node-modules",
+    "mikestead.dotenv",
+    "streetsidesoftware.code-spell-checker",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "visualstudioexptteam.vscodeintellicode",
+    "vitest.explorer",
+    "vscode-icons-team.vscode-icons",
+    "zixuanchen.vitest-explorer"
+  ]
+}

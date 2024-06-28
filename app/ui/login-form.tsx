@@ -1,6 +1,6 @@
 'use client';
 
-import { authenticate } from '@/app/lib/actions';
+import { authenticate } from '@/lib/actions';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
