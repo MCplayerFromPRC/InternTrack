@@ -1,3 +1,7 @@
+/*
+## quote:
+1. https://www.apollographql.com/docs/apollo-server/security/authentication/
+*/
 'use client';
 
 import { authenticate } from '@/lib/actions';

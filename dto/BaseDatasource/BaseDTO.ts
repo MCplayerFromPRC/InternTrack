@@ -42,7 +42,7 @@ export class BaseDatasource {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async executeQuery<T = any>(query: string): Promise<T[]> {
-    const cursor = await this.db.query<T>(aql`${query}`);
+    const cursor = await this.db.query<T>(query);
     const results = await cursor.all();
     return results;
   }

@@ -7,33 +7,18 @@
 import {IncomingMessage} from "http";
 import { WebSocket, WebSocketServer } from "ws";
 
-import "@/graphql";
-import { schema } from "@/lib/properties";
-import { useServer } from 'graphql-ws/lib/use/ws';
-
-import { pubsub } from "@/lib/properties";
-
-
 export function SOCKET(
     client: WebSocket,
     request: IncomingMessage,
     server: WebSocketServer,
 ) {
-    const serverCleanup = useServer({ 
-        schema,
-        context: async (ctx, msg, args) => {
-            return {ctx, msg, args, pubsub};
-        },
-    }, server);
-
-    console.log('A client connected!');
+    console.log(typeof client);
 
     client.on('message', message => {
-        client.send(message);
+        client.send("A client message!");
     });
 
     client.on('close', () => {
         console.log('A client disconnected!');
     });
 }
-

@@ -1,8 +1,8 @@
 import { GQLContext } from "@/lib/graphql.server";
-import { Checkpoint } from "@/models";
 import { builder } from "@/graphql/builder";
 import { publishCkptEvent } from "@/graphql/subscriptions/checkpoint/ckpt_events.subscription";
 import { NewCkptEvent } from "@/graphql/subscriptions/checkpoint/new_checkpoint.event";
+import { CheckpointType } from "./checkpoint.type";
 
 const CkptInput = builder.inputType("CkptInput", {
   fields: (t) => ({
@@ -17,12 +17,12 @@ const CkptInput = builder.inputType("CkptInput", {
 builder.mutationField("createCheckpoint", (t) => {
   return t.field({
     // We feed in the Post model, which pothos will map to the Post type we created in post.type.ts
-    type: Checkpoint,
+    type: CheckpointType,
     args: {
       input: t.arg({ type: CkptInput, required: true }),
     },
     nullable: false,
-    resolve: (root, args, context): Promise<Checkpoint> => {
+    resolve: (root, args, context) => {
       return createCkptMutation(args.input, context);
     },
   });
@@ -45,7 +45,7 @@ export async function createCkptMutation(
     saveTime: Date;
   },
   context: GQLContext,
-): Promise<Checkpoint> {
+) {
   const ckpt = await context.dataSources?.ckpts.createOne({
     md5,
     config,

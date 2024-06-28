@@ -7,15 +7,18 @@
 import { ApolloServer } from "@apollo/server";
 import { InMemoryLRUCache } from "@apollo/utils.keyvaluecache";
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import { registerDirectives } from "@/graphql/directives";
 import { NextRequest } from 'next/server';
 
 import "@/graphql";
-import { schema } from "@/lib/properties";
+import { builder } from "@/graphql/builder";
 import { db } from "@/lib/database";
 import { GQLContext } from "@/lib/graphql.server";
 import { pubsub } from "@/lib/properties";
 import * as dto from "@/dto";
 
+const builderSchema = builder.toSchema({});
+export const schema = registerDirectives(builderSchema);
 
 const cache = new InMemoryLRUCache({
     // ~256MiB
@@ -26,10 +29,10 @@ const cache = new InMemoryLRUCache({
 
 const apolloServer = new ApolloServer<GQLContext>({
     cache,
-    schema: schema,
+    schema
 });
 
-const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {context: async ( req ) => {
+const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {context: async ( req, res ) => {
     const { cache } = apolloServer;
     return {
         token: req.cookies.get('token'),

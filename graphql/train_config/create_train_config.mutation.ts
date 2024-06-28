@@ -1,6 +1,6 @@
 import { GQLContext } from "@/lib/graphql.server";
-import { TrainConfig } from "@/models";
 import { builder } from "@/graphql/builder";
+import { TrainConfigType } from "./train_config.type";
 
 // 还需补充创建时添加ResumeCkpt请求逻辑
 const TrainConfigInput = builder.inputType("TrainConfigInput", {
@@ -16,12 +16,12 @@ const TrainConfigInput = builder.inputType("TrainConfigInput", {
 builder.mutationField("createTrainConfig", (t) => {
   return t.field({
     // We feed in the Post model, which pothos will map to the Post type we created in post.type.ts
-    type: TrainConfig,
+    type: TrainConfigType,
     args: {
       input: t.arg({ type: TrainConfigInput, required: true }),
     },
     nullable: false,
-    resolve: (root, args, context): Promise<TrainConfig> => {
+    resolve: (root, args, context) => {
       return createTrainConfigMutation(args.input, context);
     },
   });
@@ -46,7 +46,7 @@ export async function createTrainConfigMutation(
     /* eslint-enable */
   },
   context: GQLContext,
-): Promise<TrainConfig> {
+) {
   const ckpt = await context.dataSources?.config.createOne({
     modelName,
     modelConfig,

@@ -1,7 +1,7 @@
 import { Duration } from "moment";
 import { GQLContext } from "@/lib/graphql.server";
-import { CkptStep } from "@/models";
 import { builder } from "@/graphql/builder";
+import { CkptStepType } from "./ckpt_step.type";
 
 const CkptStepInput = builder.inputType("CkptStepInput", {
   fields: (t) => ({
@@ -15,12 +15,12 @@ const CkptStepInput = builder.inputType("CkptStepInput", {
 builder.mutationField("createCkptStep", (t) => {
   return t.field({
     // We feed in the Post model, which pothos will map to the Post type we created in post.type.ts
-    type: CkptStep,
+    type: CkptStepType,
     args: {
       input: t.arg({ type: CkptStepInput, required: true }),
     },
     nullable: false,
-    resolve: (root, args, context): Promise<CkptStep> => {
+    resolve: (root, args, context) => {
       return createCkptStepMutation(args.input, context);
     },
   });
@@ -41,7 +41,7 @@ export async function createCkptStepMutation(
     duration: Duration;
   },
   context: GQLContext,
-): Promise<CkptStep> {
+) {
   const ckpt = await context.dataSources?.ckptStep.createOne({
     _from: from,
     _to: to,

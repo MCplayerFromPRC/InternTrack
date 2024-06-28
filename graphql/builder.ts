@@ -1,3 +1,7 @@
+/*
+## quote:
+1. https://docs.arangodb.com/3.11/aql/graphs/traversals/
+*/
 import SchemaBuilder, { ObjectFieldBuilder } from "@pothos/core";
 import DirectivePlugin from "@pothos/plugin-directives";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
