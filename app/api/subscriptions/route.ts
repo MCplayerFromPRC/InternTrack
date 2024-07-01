@@ -1,8 +1,7 @@
 
 /*
 ## quote:
-1. https://github.com/theogravity/graphql-pothos-server-example/tree/main
-2. https://www.apollographql.com/docs/apollo-server/migration/
+1. https://github.com/apteryxxyz/next-ws
 */
 import {IncomingMessage} from "http";
 import { WebSocket, WebSocketServer } from "ws";

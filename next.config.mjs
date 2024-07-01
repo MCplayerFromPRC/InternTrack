@@ -4,4 +4,6 @@ const nextConfig = {};
 export default nextConfig;
 
 // require('next-ws/server').verifyPatch();
-import('next-ws/server/index.js').verifyPatch;
+// import('next-ws/server/index.js').verifyPatch();
+import {verifyPatch} from 'next-ws/server/index.js';
+verifyPatch()
