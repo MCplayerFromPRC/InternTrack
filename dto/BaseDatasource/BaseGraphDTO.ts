@@ -14,7 +14,7 @@ export class BaseGraphDatasource<
 > extends BaseDatasource {
   graph: Graph;
 
-  constructor(db: Database, graph: Graph, fields: string[], options = {}) {
+  constructor(db: Database, graph: Graph, options = {}) {
     super(db, options);
     this.graph = graph;
   }

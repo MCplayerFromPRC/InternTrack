@@ -2,6 +2,7 @@
 /*
 ## quote:
 1. https://github.com/apteryxxyz/next-ws
+2. https://github.com/YeonV/meeting
 */
 import {IncomingMessage} from "http";
 import { WebSocket, WebSocketServer } from "ws";

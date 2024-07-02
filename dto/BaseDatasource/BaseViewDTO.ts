@@ -20,7 +20,7 @@ export class BaseViewDatasource<
   view: View;
   fields: string[] = [];
 
-  constructor(db: Database, view: View, fields: string[], options = {}) {
+  constructor(db: Database, view: View, options = {}) {
     super(db, options);
     this.view = view;
     this.getFields();
