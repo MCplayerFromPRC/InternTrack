@@ -31,3 +31,7 @@ import "./resume_ckpt/all_resume_ckpts.query";
 import "./resume_ckpt/create_resume_ckpt.mutation";
 import "./resume_ckpt/resume_ckpt.query";
 import "./resume_ckpt/resume_ckpt.type";
+
+import "./roadmap/create_roadmap.mutation";
+import "./roadmap/roadmap.query";
+import "./roadmap/roadmap.type";

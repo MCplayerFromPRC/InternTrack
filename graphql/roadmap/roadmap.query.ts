@@ -8,9 +8,6 @@ builder.queryField("roadmap", (t) => {
     description: "Saved Checkpoint",
     nullable: true,
     resolve: async (parent, args, context: GQLContext) => {
-      if (!args.id) {
-        return null;
-      }
       return postQuery(context);
     },
   });
