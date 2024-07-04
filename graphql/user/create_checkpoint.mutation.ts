@@ -1,4 +1,4 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { Checkpoint } from "@/models";
 import { builder } from "@/graphql/builder";
 import { publishCkptEvent } from "@/graphql/subscriptions/checkpoint/ckpt_events.subscription";

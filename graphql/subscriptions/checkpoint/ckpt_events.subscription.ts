@@ -1,6 +1,6 @@
 import { withFilter } from "graphql-subscriptions";
-import { GQLContext } from "@/lib/graphql.server";
-import { pubsub } from "@/lib/properties";
+import { GQLContext } from "@/lib/properties";
+import { container } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import {
   BaseCkptEvent,
@@ -36,8 +36,11 @@ builder.subscriptionField("postEvents", (t) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function generateCkptEventSubscriptionResolver({ ctx }: { ctx: GQLContext }) {
   return withFilter(
-    () => {
-      return pubsub.asyncIterator(CkptEventLabel);
+    () => { 
+      if (!ctx.pubsub) {
+        throw new Error("pubsub is not available in the context.");
+      }
+      return ctx.pubsub.asyncIterator(CkptEventLabel);
     },
     // eslint-disable-next-line no-empty-pattern, @typescript-eslint/no-unused-vars
     async (event: BaseCkptEvent, {}, ctx: GQLContext) => {

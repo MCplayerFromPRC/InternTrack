@@ -1,4 +1,4 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { Checkpoint } from "@/models";
 import { builder } from "@/graphql/builder";
 

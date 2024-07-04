@@ -2,7 +2,8 @@
 /* SPDX-License-Identifier: MIT */
 
 import { Container, Typography } from "@mui/joy";
-import SimpleGraph from "@/app/ui/ckpts/SimpleGraph";
+// import SimpleGraph from "@/app/ui/ckpts/SimpleGraph";
+import {Poll} from "./poll-cc";
 
 export default async function Page() {
 
@@ -11,7 +12,7 @@ export default async function Page() {
       <Typography level="h2" gutterBottom>
         Tasks
       </Typography>
-      <SimpleGraph />
+      <Poll />
     </Container>
   );
 };

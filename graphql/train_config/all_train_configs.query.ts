@@ -1,4 +1,4 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import { TrainConfigType } from "./train_config.type";
 

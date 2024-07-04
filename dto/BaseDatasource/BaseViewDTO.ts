@@ -9,11 +9,13 @@
 
 import { Database } from "arangojs";
 import { ArangoSearchViewProperties, View } from "arangojs/view";
+import { injectable } from "inversify";
 
 import { NodeDocument } from "@/models";
 import { BaseDatasource } from "./BaseDTO";
 
 // BaseViewDatasource<Checkpoint|TrainingConfig>
+@injectable()
 export class BaseViewDatasource<
   TData extends NodeDocument,
 > extends BaseDatasource {

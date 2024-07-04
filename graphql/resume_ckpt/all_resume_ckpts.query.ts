@@ -1,4 +1,4 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import { ResumeCkptType } from "./resume_ckpt.type";
 

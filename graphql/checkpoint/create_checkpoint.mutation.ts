@@ -1,10 +1,11 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import { publishCkptEvent } from "@/graphql/subscriptions/checkpoint/ckpt_events.subscription";
 import { NewCkptEvent } from "@/graphql/subscriptions/checkpoint/new_checkpoint.event";
+import { Checkpoint } from "@/models"
 import { CheckpointType } from "./checkpoint.type";
 
-const CkptInput = builder.inputType("CkptInput", {
+export const CkptInput = builder.inputType("CkptInput", {
   fields: (t) => ({
     md5: t.string({ required: true }),
     config: t.string({ required: true }),
@@ -31,28 +32,10 @@ builder.mutationField("createCheckpoint", (t) => {
 // We separate out the resolver function so we can write unit tests against it
 // without having to call GQL directly
 export async function createCkptMutation(
-  {
-    md5,
-    config,
-    step,
-    isDelivery,
-    saveTime,
-  }: {
-    md5: string;
-    config: string;
-    step: number;
-    isDelivery: boolean;
-    saveTime: Date;
-  },
+  ckptInput: Partial<Checkpoint>,
   context: GQLContext,
 ) {
-  const ckpt = await context.dataSources?.ckpts.createOne({
-    md5,
-    config,
-    step,
-    isDelivery,
-    saveTime,
-  });
+  const ckpt = await context.dataSources?.ckpts.createOne(ckptInput);
 
   await publishCkptEvent(
     new NewCkptEvent({

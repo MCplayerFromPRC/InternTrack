@@ -1,9 +1,10 @@
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
+import { TrainConfig } from "@/models";
 import { TrainConfigType } from "./train_config.type";
 
 // 还需补充创建时添加ResumeCkpt请求逻辑
-const TrainConfigInput = builder.inputType("TrainConfigInput", {
+export const TrainConfigInput = builder.inputType("TrainConfigInput", {
   fields: (t) => ({
     modelName: t.string({ required: true }),
     modelConfig: t.field({ type: "JSON", required: true }),
@@ -30,30 +31,10 @@ builder.mutationField("createTrainConfig", (t) => {
 // We separate out the resolver function so we can write unit tests against it
 // without having to call GQL directly
 export async function createTrainConfigMutation(
-  {
-    modelName,
-    modelConfig,
-    dataConfig,
-    optimizerConfig,
-    parallelConfig,
-  }: {
-    modelName: string;
-    /* eslint-disable */
-    modelConfig: Record<string, any>;
-    dataConfig: Record<string, any>;
-    optimizerConfig: Record<string, any>;
-    parallelConfig: Record<string, any>;
-    /* eslint-enable */
-  },
+  trainConfig: Partial<TrainConfig>,
   context: GQLContext,
 ) {
-  const ckpt = await context.dataSources?.config.createOne({
-    modelName,
-    modelConfig,
-    dataConfig,
-    optimizerConfig,
-    parallelConfig,
-  });
+  const ckpt = await context.dataSources?.config.createOne(trainConfig);
 
   return ckpt;
 }

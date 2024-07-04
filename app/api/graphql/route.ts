@@ -5,35 +5,36 @@
 2. https://www.apollographql.com/docs/apollo-server/migration/
 */
 import { ApolloServer } from "@apollo/server";
-import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { NextRequest } from 'next/server';
+import { GraphQLSchema } from "graphql/type";
+import { PubSub } from "graphql-subscriptions";
+import { InMemoryLRUCache } from "@apollo/utils.keyvaluecache";
+import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import 'reflect-metadata';
 
-import { 
-    cache, 
-    pubsub, 
-    schema, 
-    GQLContext,
-    ckpts,
-    ckptStep,
-    resumeCkpt,
-    config,
-} from "@/lib/properties";
+import { GQLContext, container, TYPES } from "@/lib/properties";
+import {
+    CheckpointDatasource,
+    CkptStepDatasource,
+    ResumeCkptDatasource,
+    TrainConfigDatasource,
+} from "@/dto";
 
 const apolloServer = new ApolloServer<GQLContext>({
-    cache,
-    schema
+    cache: container.get<InMemoryLRUCache>(TYPES.KeyValueCache),
+    schema: container.get<GraphQLSchema>(TYPES.GraphQLSchema),
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {context: async ( req, res ) => {
     return {
         token: req.cookies.get('token'),
         dataSources: {
-            ckpts,
-            ckptStep,
-            resumeCkpt,
-            config,
+            ckpts: container.get<CheckpointDatasource>(CheckpointDatasource),
+            ckptStep: container.get<CkptStepDatasource>(CkptStepDatasource),
+            resumeCkpt: container.get<ResumeCkptDatasource>(ResumeCkptDatasource),
+            config: container.get<TrainConfigDatasource>(TrainConfigDatasource),
         },
-        pubsub,
+        pubsub: container.get<PubSub>(TYPES.PubSub),
     };
 }});
 

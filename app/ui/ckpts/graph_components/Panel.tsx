@@ -22,13 +22,14 @@ const Panel: React.FC<
     right?: string;
     top?: string;
     bottom?: string;
-  }>
+  }> & { onSearchClick: CallableFunction }
 > = ({
   width = "400px",
   left = "10px",
   right = "",
   top = "10px",
   bottom = "10px",
+  onSearchClick
 }) => {
   const [closed, setClosed] = useState(false);
   const togglePanel = () => {
@@ -50,7 +51,7 @@ const Panel: React.FC<
       }}
     >
       <div className="my-footer">
-        <SearchBox className={searchBoxClasses}></SearchBox>
+        <SearchBox className={searchBoxClasses} onClick={onSearchClick} ></SearchBox>
         <IconButton className={iconClasses} onClick={togglePanel}>
           {closed ? <OpenInFullIcon /> : <CloseFullscreenIcon />}
         </IconButton>

@@ -13,7 +13,7 @@ import {
   PositiveIntResolver,
 } from "graphql-scalars";
 import { Duration } from "moment";
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { DirectiveNames } from "./directives";
 
 type DirectiveTypes = {

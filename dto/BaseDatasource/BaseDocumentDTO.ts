@@ -4,21 +4,24 @@
 */
 import {
   InMemoryLRUCache,
-  KeyValueCache,
   KeyValueCacheSetOptions,
 } from "@apollo/utils.keyvaluecache";
+import type {KeyValueCache} from "@apollo/utils.keyvaluecache";
 import { Database } from "arangojs";
-import { DocumentCollection } from "arangojs/collection";
+import type { DocumentCollection } from "arangojs/collection";
 import { GraphQLError } from "graphql/error";
+import { injectable } from "inversify";
 
 import { NodeDocument } from "@/models";
-import { BaseDatasource, DataSourceOptions, QueryObject } from "./BaseDTO";
+import { BaseDatasource, QueryObject } from "./BaseDTO";
+import type { DataSourceOptions } from "./BaseDTO";
 import { CachedMethods, createCachingMethods } from "./cache";
 
 const placeholderHandler = () => {
   throw new Error("DataSource not initialized");
 };
 
+@injectable()
 export class BaseCollectionDatasource<TData extends NodeDocument>
   extends BaseDatasource
   implements CachedMethods<TData>

@@ -10,18 +10,9 @@ const SearchBox: React.FC<
   PropsWithChildren<{
     children?: string;
     className?: string;
-  }>
-> = ({ children, className = "my-search-box" }) => {
+  }> & { onClick: CallableFunction }
+> = ({ children, className = "my-search-box", onClick }) => {
   const [keyword, setKeyword] = useState<string>(children || "");
-
-  const searchData = async (keyword: string) => {
-    try {
-      const response = await fetch(`https://api.example.com/data/${keyword}`);
-      return await response.json();
-    } catch (error) {
-      console.error("Error searching data: ", error);
-    }
-  };
 
   return (
     <Box className={`${className} flex flex-col gap-2`}>
@@ -39,7 +30,7 @@ const SearchBox: React.FC<
         endDecorator={
           <IconButton
             className="absolute right-0 inset-y-0 flex items-center pr-3"
-            onClick={() => searchData(keyword)}
+            onClick={() => onClick(keyword)}
           >
             <VisibilityRoundedIcon className="h-5 w-5 text-gray-500" />
           </IconButton>

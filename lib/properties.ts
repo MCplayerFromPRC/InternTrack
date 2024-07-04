@@ -1,21 +1,44 @@
+import pino from "pino";
+import { Database } from "arangojs";
+import { GraphQLSchema } from "graphql/type";
 import { PubSub } from "graphql-subscriptions";
 import { InMemoryLRUCache } from "@apollo/utils.keyvaluecache";
 import { BaseContext } from "@apollo/server";
+import { Container } from "inversify";
+
 import "@/graphql";
 import { builder } from "@/graphql/builder";
 import { registerDirectives } from "@/graphql/directives";
-import { db } from "@/lib/database";
+import { DataSourceOptions } from "@/dto/BaseDatasource/BaseDTO";
+import { config } from "@/lib/database";
 import * as dto from "@/dto";
 
-export const pubsub = new PubSub();
-export const cache = new InMemoryLRUCache({
-    // ~256MiB
-    maxSize: Math.pow(2, 28),
-    // 10 minutes (in seconds)
-    ttl: 300,
+export const TYPES = {
+  PubSub: Symbol.for("PubSub"),
+  Database: Symbol.for("Database"),
+  GraphQLSchema: Symbol.for("GraphQLSchema"),
+  KeyValueCache: Symbol.for("InMemoryLRUCache"),
+  DataSourceOptions: Symbol.for("DataSourceOptions")
+};
+
+const container = new Container({ 
+  defaultScope: "Singleton", 
+  autoBindInjectable: true 
 });
+
+container.bind<Database>(TYPES.Database).toConstantValue(new Database(config));
+container.bind<InMemoryLRUCache>(TYPES.KeyValueCache).toConstantValue(new InMemoryLRUCache({
+  // ~256MiB
+  maxSize: Math.pow(2, 28),
+  // 10 minutes (in seconds)
+  ttl: 600,
+}));
+container.bind<DataSourceOptions>(TYPES.DataSourceOptions).toConstantValue({logger: pino({})})
+container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub())
 const builderSchema = builder.toSchema({});
-export const schema = registerDirectives(builderSchema);
+container.bind<GraphQLSchema>(TYPES.GraphQLSchema).toConstantValue(registerDirectives(builderSchema))
+
+export { container };
 
 export interface GQLContext extends BaseContext {
   token?: string;
@@ -27,8 +50,3 @@ export interface GQLContext extends BaseContext {
   };
   pubsub?: PubSub;
 }
-
-export const ckpts = new dto.CheckpointDatasource(db, cache);
-export const ckptStep = new dto.CkptStepDatasource(db, cache);
-export const resumeCkpt = new dto.ResumeCkptDatasource(db, cache);
-export const config = new dto.TrainConfigDatasource(db, cache);

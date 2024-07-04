@@ -1,9 +1,9 @@
-import { Duration } from "moment";
-import { GQLContext } from "@/lib/graphql.server";
+import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
+import { CkptStep } from "@/models"
 import { CkptStepType } from "./ckpt_step.type";
 
-const CkptStepInput = builder.inputType("CkptStepInput", {
+export const CkptStepInput = builder.inputType("CkptStepInput", {
   fields: (t) => ({
     from: t.string({ required: true }),
     to: t.string({ required: true }),
@@ -21,7 +21,13 @@ builder.mutationField("createCkptStep", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      return createCkptStepMutation(args.input, context);
+      const {from, to, ...others} = args.input
+      const ckptStep = {
+        _from: from,
+        _to: to,
+        ...others
+      }
+      return createCkptStepMutation(ckptStep, context);
     },
   });
 });
@@ -29,25 +35,9 @@ builder.mutationField("createCkptStep", (t) => {
 // We separate out the resolver function so we can write unit tests against it
 // without having to call GQL directly
 export async function createCkptStepMutation(
-  {
-    from,
-    to,
-    tokens,
-    duration,
-  }: {
-    from: string;
-    to: string;
-    tokens: number;
-    duration: Duration;
-  },
+  ckptStepInput: Partial<CkptStep>,
   context: GQLContext,
 ) {
-  const ckpt = await context.dataSources?.ckptStep.createOne({
-    _from: from,
-    _to: to,
-    tokens,
-    duration,
-  });
-
+  const ckpt = await context.dataSources?.ckptStep.createOne(ckptStepInput);
   return ckpt;
 }

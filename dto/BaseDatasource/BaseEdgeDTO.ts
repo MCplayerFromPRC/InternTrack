@@ -1,10 +1,12 @@
-import { KeyValueCache } from "@apollo/utils.keyvaluecache/src";
+import type { KeyValueCache } from "@apollo/utils.keyvaluecache/src";
 import { Database, aql } from "arangojs";
-import { EdgeCollection } from "arangojs/collection";
+import type { EdgeCollection } from "arangojs/collection";
+import { injectable } from "inversify";
 
 import { EdgeDocument } from "@/models";
 import { BaseCollectionDatasource } from "./BaseDocumentDTO";
 
+@injectable()
 export class BaseEdgeCollectionDatasource<
   TData extends EdgeDocument,
 > extends BaseCollectionDatasource<TData> {

@@ -1,5 +1,6 @@
 import { Database, aql } from "arangojs";
 import { GraphQLError } from "graphql/error";
+import { injectable } from "inversify"; 
 
 export const isArangoDb = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,6 +15,8 @@ export type Logger = {
   info(message?: string): void;
   warn(message?: string): void;
   error(message?: string): void;
+  fatal(message?: string): void;
+  trace(message?: string): void;
 };
 
 export interface DataSourceOptions {
@@ -25,6 +28,7 @@ export type QueryObject = {
   [key: string]: any;
 };
 
+@injectable()
 export class BaseDatasource {
   db: Database;
   options: DataSourceOptions;
