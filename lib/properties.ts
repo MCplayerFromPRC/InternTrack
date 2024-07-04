@@ -36,7 +36,8 @@ container.bind<InMemoryLRUCache>(TYPES.KeyValueCache).toConstantValue(new InMemo
 container.bind<DataSourceOptions>(TYPES.DataSourceOptions).toConstantValue({logger: pino({})})
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub())
 const builderSchema = builder.toSchema({});
-container.bind<GraphQLSchema>(TYPES.GraphQLSchema).toConstantValue(registerDirectives(builderSchema))
+export const schema = registerDirectives(builderSchema)
+container.bind<GraphQLSchema>(TYPES.GraphQLSchema).toConstantValue(schema)
 
 export { container };
 
