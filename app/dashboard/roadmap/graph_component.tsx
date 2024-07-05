@@ -9,16 +9,17 @@ import { useQuery, useReadQuery, useBackgroundQuery, gql } from "@apollo/client"
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { RGJsonData, RelationGraphComponent } from "relation-graph-react";
 import { QueryRef } from "@apollo/client/react";
-import { SimpleGraph } from "@/app/ui/ckpts/SimpleGraph";
+import { SimpleGraph } from "@/app/ui/roadmap/SimpleGraph";
+import Loading from "@/app/dashboard/(overview)/loading"
 import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/fragments.generated"
-import {layout} from "./client_layout"
+import { layout } from "./client_layout"
 
 
 export const GraphWrapper = () => {
   const [queryRef] = useBackgroundQuery<RoadmapQuery>(RoadmapDocument);
 
   return (
-    <Suspense fallback={<>Loading...</>}>
+    <Suspense fallback={<Loading />}>
       <RoadmapGraph queryRef={queryRef} />
     </Suspense>
   );
