@@ -1,3 +1,8 @@
+/*
+## quote:
+1. https://github.com/theogravity/graphql-pothos-server-example/blob/main/src/gql/documents/fragments.ts
+*/
+
 import gql from 'graphql-tag';
 
 export const checkpoint = gql`
@@ -61,4 +66,14 @@ ${checkpoint}
 ${ckptStep}
 ${trainConfig}
 ${resumeCkpt}
+`;
+
+export const getRoadmap = gql`
+query Roadmap {
+  roadmap{
+    ...roadmap
+  }
+}
+
+${roadmap}
 `;

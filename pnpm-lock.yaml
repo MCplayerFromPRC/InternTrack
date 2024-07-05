@@ -35,6 +35,9 @@ importers:
       '@graphql-tools/utils':
         specifier: ^10.2.2
         version: 10.2.2(graphql@16.9.0)
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.9.0)
       '@heroicons/react':
         specifier: ^2.1.4
         version: 2.1.4(react@18.3.1)

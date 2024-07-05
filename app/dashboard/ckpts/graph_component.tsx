@@ -1,35 +1,32 @@
 "use client";
+/*
+## quote:
+1. https://github.com/apollographql/apollo-client-nextjs/blob/main/examples/polls-demo/app/cc/poll-cc.tsx
+*/
+
 import { Suspense } from "react";
 import { useQuery, useReadQuery, useBackgroundQuery, gql } from "@apollo/client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { RGJsonData, RelationGraphComponent } from "relation-graph-react";
 import { QueryRef } from "@apollo/client/react";
-import SimpleGraph from "@/app/ui/ckpts/SimpleGraph";
+import { SimpleGraph } from "@/app/ui/ckpts/SimpleGraph";
+import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/fragments.generated"
+import {layout} from "./client_layout"
 
-export const PollWrapper = () => {
-  const [queryRef] = useBackgroundQuery(GetPollDocument, {
-    variables: { id: "1", delay: 0 },
-  });
+
+export const GraphWrapper = () => {
+  const [queryRef] = useBackgroundQuery<RoadmapQuery>(RoadmapDocument);
 
   return (
     <Suspense fallback={<>Loading...</>}>
-      <Poll queryRef={queryRef} />
+      <RoadmapGraph queryRef={queryRef} />
     </Suspense>
   );
 };
 
-const GET_DATA = gql`
-  query GetData($key: String!) {
-    data(key: $key) {
-      id
-      value
-    }
-  }
-`;
-
-const Poll = ({ queryRef }: { queryRef: QueryRef<GetPollQuery> }) => {
+export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables> }) => {
   const { data } = useReadQuery(queryRef);
-  const [graphViewData, setGraphViewData] = useState(data);
+  const [graphViewData, setGraphViewData] = useState(layout(data));
 
   const handleClick = useCallback(
     async (searchKey: string) => {
@@ -38,7 +35,7 @@ const Poll = ({ queryRef }: { queryRef: QueryRef<GetPollQuery> }) => {
         skip: !searchKey,
       });
 
-      setGraphViewData(data);
+      setGraphViewData(layout(data));
     },
     []
   );
