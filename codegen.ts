@@ -1,3 +1,10 @@
+/*
+## quote:
+1. https://pothos-graphql.dev/docs/guide/generating-client-types
+2. https://the-guild.dev/graphql/codegen/plugins
+*/
+
+
 import { printSchema } from 'graphql/utilities';
 import type { CodegenConfig } from "@graphql-codegen/cli";
 

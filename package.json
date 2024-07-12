@@ -19,7 +19,6 @@
     "@graphql-tools/schema": "^10.0.4",
     "@graphql-tools/utils": "^10.2.2",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@heroicons/react": "^2.1.4",
     "@mui/base": "^5.0.0-beta.40",
     "@mui/icons-material": "^5.15.21",
     "@mui/joy": "^5.0.0-beta.36",
@@ -65,7 +64,9 @@
     "typescript": "^5.5.2",
     "use-debounce": "^10.0.1",
     "ws": "^8.17.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@uiw/react-codemirror": "^4.23.0",
+    "@floating-ui/react": "^0.26.19"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",

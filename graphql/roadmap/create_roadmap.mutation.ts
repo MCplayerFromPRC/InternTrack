@@ -6,7 +6,6 @@ import { CkptStepInput, createCkptStepMutation } from "../ckpt_step/create_ckpt_
 import { TrainConfigInput, createTrainConfigMutation } from "../train_config/create_train_config.mutation";
 import { ResumeCkptInput, createResumeCkptMutation } from "../resume_ckpt/create_resume_ckpt.mutation";
 import { Checkpoint, CkptStep, TrainConfig, ResumeCkpt } from "@/models";
-import { from } from "@apollo/client";
 
 
 builder.mutationField("createRoadmap", (t) => {

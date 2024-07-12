@@ -3,14 +3,15 @@
 
 import { Container, Typography } from "@mui/joy";
 import { GraphWrapper } from "./graph_component";
+import { lusitana } from '@/app/ui/fonts';
 
 export default async function Page() {
 
   return (
     <Container className="max-w-none py-8" maxWidth={false}>
-      <Typography level="h2" gutterBottom>
+      <h1 className={`${lusitana.className} mb-8 text-xl md:text-2xl`}>
         Tasks
-      </Typography>
+      </h1>
       <GraphWrapper />
     </Container>
   );

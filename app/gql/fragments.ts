@@ -1,6 +1,9 @@
 /*
 ## quote:
 1. https://github.com/theogravity/graphql-pothos-server-example/blob/main/src/gql/documents/fragments.ts
+2. https://www.apollographql.com/docs/react/data/fragments/
+3. https://graphql.org/learn/queries/#fragments
+4. https://github.com/dotansimha/graphql-code-generator-community/tree/main/packages/plugins/typescript
 */
 
 import gql from 'graphql-tag';
