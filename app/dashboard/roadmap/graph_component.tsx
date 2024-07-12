@@ -5,7 +5,7 @@
 */
 
 import { Suspense } from "react";
-import { useQuery, useReadQuery, useBackgroundQuery, gql } from "@apollo/client";
+import { useQuery, useReadQuery, useBackgroundQuery } from "@apollo/client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { RGJsonData, RelationGraphComponent } from "relation-graph-react";
 import { QueryRef } from "@apollo/client/react";
@@ -25,27 +25,39 @@ export const GraphWrapper = () => {
   );
 };
 
+function useSearchQuery(
+  queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables>, 
+  initialData: RGJsonData
+) {
+  const [graphViewData, setGraphViewData] = useState(initialData);
+
+  const handleSearch = useCallback((searchKey: string) => {
+    if (!searchKey) {
+      setGraphViewData(initialData);
+      return;
+    }
+
+    const { loading, error, data } = useQuery(RoadmapDocument, {
+      variables: { key: searchKey },
+    });
+
+    if (!loading && !error && data) {
+      setGraphViewData(layout(data));
+    }
+  }, [queryRef, initialData]);
+
+  return { graphViewData, handleSearch };
+}
+
 export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables> }) => {
   const { data } = useReadQuery(queryRef);
-  const [graphViewData, setGraphViewData] = useState(layout(data));
-
-  const handleClick = useCallback(
-    async (searchKey: string) => {
-      const { data } = useQuery(queryRef, {
-        variables: { key: searchKey },
-        skip: !searchKey,
-      });
-
-      setGraphViewData(layout(data));
-    },
-    []
-  );
+  const { graphViewData, handleSearch } = useSearchQuery(queryRef, layout(data));
 
   const graphRef = useRef<RelationGraphComponent>(null);
 
   useEffect(() => {
     showGraph(graphViewData);
-  }, [graphViewData]); // 使用 useCallback 处理的函数作为依赖
+  }, [graphViewData]);
 
   const showGraph = async (graphViewData: RGJsonData) => {
     const graphInstance = graphRef.current!.getInstance();
@@ -57,7 +69,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   return (
     <SimpleGraph 
       graphRef={graphRef}
-      onPanelClick={handleClick}
+      onPanelClick={handleSearch}
     />
   );
 };
