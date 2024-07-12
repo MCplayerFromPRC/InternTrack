@@ -1,5 +1,4 @@
-import CheckIcon from '@mui/icons-material/Check';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 import clsx from 'clsx';
 
@@ -17,7 +16,7 @@ export default function InvoiceStatus({ status }: { status: string }) {
       {status === 'pending' ? (
         <>
           Pending
-          <WatchLaterIcon className="ml-1 w-4 text-gray-500" />
+          <ClockIcon className="ml-1 w-4 text-gray-500" />
         </>
       ) : null}
       {status === 'paid' ? (

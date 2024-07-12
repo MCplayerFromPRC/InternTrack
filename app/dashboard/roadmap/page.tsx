@@ -1,18 +1,17 @@
 /* SPDX-FileCopyrightText: 2014-present Kriasoft */
 /* SPDX-License-Identifier: MIT */
 
-import { Container, Typography } from "@mui/joy";
 import { GraphWrapper } from "./graph_component";
 import { lusitana } from '@/app/ui/fonts';
 
 export default async function Page() {
 
   return (
-    <Container className="max-w-none py-8" maxWidth={false}>
+    <div className="max-w-none py-8" maxWidth={false}>
       <h1 className={`${lusitana.className} mb-8 text-xl md:text-2xl`}>
         Tasks
       </h1>
       <GraphWrapper />
-    </Container>
+    </div>
   );
 };
