@@ -1,6 +1,7 @@
-import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import IconButton from "@mui/joy/IconButton";
+import {
+  ChevronUpIcon, ChevronDownIcon
+} from '@heroicons/react/16/solid';
+import { Button } from '@headlessui/react'
 import * as React from "react";
 import { PropsWithChildren, useState } from "react";
 import AlertMessage from "./Alert";
@@ -52,9 +53,9 @@ const Panel: React.FC<
     >
       <div className="my-footer">
         <SearchBox className={searchBoxClasses} onClick={onSearchClick} ></SearchBox>
-        <IconButton className={iconClasses} onClick={togglePanel}>
-          {closed ? <OpenInFullIcon /> : <CloseFullscreenIcon />}
-        </IconButton>
+        <Button className={`${iconClasses}`} onClick={togglePanel}>
+          {closed ? <ChevronDownIcon /> : <ChevronUpIcon />}
+        </Button>
       </div>
       <div className="my-body" style={{ "--my-body-top": bottom }}>
         <AlertMessage></AlertMessage>
