@@ -1,3 +1,5 @@
+'use client'
+
 import {
   ChevronUpIcon, ChevronDownIcon
 } from '@heroicons/react/16/solid';

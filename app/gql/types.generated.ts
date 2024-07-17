@@ -37,7 +37,7 @@ export type Scalars = {
    */
   Duration: string;
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: Record;
+  JSON: Record<string, any>;
   /** Integers that will have a value of 0 or more. */
   NonNegativeInt: number;
   /** Integers that will have a value greater than 0. */
