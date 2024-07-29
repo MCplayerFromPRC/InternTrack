@@ -1,7 +1,10 @@
+'use client'
+
 import { useContext } from "react";
 import { RelationGraphStoreContext } from "relation-graph-react";
 
-const VipToolbarTooltipsMyToolbar = () => {
+
+const MyToolbar = () => {
   const graphInstance = useContext(RelationGraphStoreContext);
   const options = graphInstance.options;
 
@@ -69,29 +72,27 @@ const VipToolbarTooltipsMyToolbar = () => {
           <use href="#icon-suoxiao"></use>
         </svg>
       </div>
-      {options.isNeedShowAutoLayoutButton && (
-        <div
-          className={`c-mb-button ${options.autoLayouting ? "c-mb-button-on" : ""}`}
-          onClick={toggleAutoLayout}
-          data-tooltip-id="my-tooltip"
-          data-tooltip-content={
-            options.autoLayouting
-              ? "Click to Stop Auto Layout"
-              : "Click to Start Auto Layout"
-          }
-          data-tooltip-place="left"
-        >
-          {!options.autoLayouting ? (
-            <svg className="rg-icon" aria-hidden="true">
-              <use href="#icon-zidong"></use>
-            </svg>
-          ) : (
-            <svg className="c-loading-icon rg-icon" aria-hidden="true">
-              <use href="#icon-lianjiezhong"></use>
-            </svg>
-          )}
-        </div>
-      )}
+      <div
+        className={`c-mb-button ${options.autoLayouting ? "c-mb-button-on" : ""}`}
+        onClick={toggleAutoLayout}
+        data-tooltip-id="my-tooltip"
+        data-tooltip-content={
+          options.autoLayouting
+            ? "Click to Stop Auto Layout"
+            : "Click to Start Auto Layout"
+        }
+        data-tooltip-place="left"
+      >
+        {!options.autoLayouting ? (
+          <svg className="rg-icon" aria-hidden="true">
+            <use href="#icon-zidong"></use>
+          </svg>
+        ) : (
+          <svg className="c-loading-icon rg-icon" aria-hidden="true">
+            <use href="#icon-lianjiezhong"></use>
+          </svg>
+        )}
+      </div>
       <div
         className="c-mb-button"
         onClick={refresh}
@@ -119,4 +120,4 @@ const VipToolbarTooltipsMyToolbar = () => {
   );
 };
 
-export default VipToolbarTooltipsMyToolbar;
+export default MyToolbar;

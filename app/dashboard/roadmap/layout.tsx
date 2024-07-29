@@ -5,5 +5,9 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ApolloWrapper>{children}</ApolloWrapper>;
+  return (
+    <div>
+      <ApolloWrapper>{children}</ApolloWrapper>
+    </div>
+  );
 }

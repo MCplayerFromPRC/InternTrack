@@ -1,3 +1,5 @@
+'use client'
+
 import { WarningIcon } from "@/app/ui/svg-icon";
 import { Button } from '@headlessui/react'
 import { useEffect, useState } from "react";

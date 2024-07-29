@@ -7,11 +7,14 @@ import type {
   RGLink,
   RGNode,
   RGNodeSlotProps,
-  RGOptions,
+  RGOptionsFull,
   RelationGraphComponent,
 } from "relation-graph-react";
 import RelationGraph, { RGMiniView } from "relation-graph-react";
 import Panel from "./graph_components/Panel";
+import MyToolbar from "./graph_components/ToolBar";
+// import DetailCard from "../detail/Config"
+
 
 const getNodeStyle: React.CSSProperties = {
   zIndex: 555,
@@ -65,12 +68,8 @@ const onLineClick = (
   return true;
 };
 
-const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
-  console.log("onNodeClick:", node.text);
-  return true;
-};
 
-const options: RGOptions = {
+const options: Partial<RGOptionsFull> = {
   debug: true,
   defaultNodeBorderWidth: 0,
   defaultNodeColor: "rgba(238, 178, 94, 1)",
@@ -90,10 +89,18 @@ const options: RGOptions = {
 export const SimpleGraph = ({
   graphRef,
   onPanelClick,
+  onNodeClickFn,
 }: {
   graphRef: RefObject<RelationGraphComponent>,
   onPanelClick: CallableFunction,
+  onNodeClickFn: CallableFunction,
 }) => {
+
+  const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
+    console.log("onNodeClick:", node.text);
+    onNodeClickFn(node.text)
+    return true;
+  };
 
   return (
     <div>
@@ -106,6 +113,9 @@ export const SimpleGraph = ({
           nodeSlot={NodeSlot}
           onNodeClick={onNodeClick}
           onLineClick={onLineClick}
+          toolBarSlot={<MyToolbar></MyToolbar>}
+          // canvasPlugSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
+          // canvasPlugAboveSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           graphPlugSlot={
             <React.Fragment>
               <Panel onSearchClick={onPanelClick} ></Panel>
