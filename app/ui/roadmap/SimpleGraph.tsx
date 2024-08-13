@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from "react";
-import { RefObject } from "react";
+import { RefObject, PropsWithChildren } from "react";
 import type {
   RGLine,
   RGLink,
@@ -44,8 +44,7 @@ const defaultNodeStyle: React.CSSProperties = {
 
 const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   console.log("NodeSlot:");
-  if (!node.lot.parent) {
-    // if rootNode
+  if (node.data!.type === "config") {
     return (
       <div style={getNodeStyle}>
         <div style={getInnerDivStyle(node.data!.percent)}>{node.text}</div>
@@ -86,14 +85,15 @@ const options: Partial<RGOptionsFull> = {
   defaultExpandHolderPosition: "right",
 };
 
-export const SimpleGraph = ({
-  graphRef,
-  onPanelClick,
-  onNodeClickFn,
-}: {
+export const SimpleGraph: React.FC<PropsWithChildren<{
   graphRef: RefObject<RelationGraphComponent>,
   onPanelClick: CallableFunction,
   onNodeClickFn: CallableFunction,
+}>> = ({
+  children,
+  graphRef,
+  onPanelClick,
+  onNodeClickFn,
 }) => {
 
   const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
@@ -122,7 +122,9 @@ export const SimpleGraph = ({
               <RGMiniView width="18%" height="20%" position="tr" />
             </React.Fragment>
           }
-        ></RelationGraph>
+        >
+          {children}
+        </RelationGraph>
       </div>
     </div>
   );

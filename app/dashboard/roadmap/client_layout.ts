@@ -11,8 +11,10 @@ export function layout(params: RoadmapQuery): RGJsonData {
             nodes.push({
                 id,
                 text: config,
-                myicon: "el-icon-star-on",
-                data: { ...others }
+                data: {
+                    type: "ckpt",
+                    ...others 
+                }
             });
         });
         params.roadmap.trainConfigList.forEach(node => {
@@ -20,8 +22,12 @@ export function layout(params: RoadmapQuery): RGJsonData {
             nodes.push({
                 id,
                 text: modelName,
-                myicon: "el-icon-sunny",
-                data: { ...others }
+                height: 100,
+                width: 100,
+                data: { 
+                    type: "config",
+                    ...others 
+                }
             });
         });
         params.roadmap.ckptStepList.forEach(line => {
@@ -33,7 +39,7 @@ export function layout(params: RoadmapQuery): RGJsonData {
                 data: { ...others }
             });
         });
-        params.roadmap.ckptStepList.forEach(line => {
+        params.roadmap.resumeCkptList.forEach(line => {
             const {id, from, to, ...others } = line
             lines.push({
                 id, 
