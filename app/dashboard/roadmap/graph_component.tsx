@@ -39,16 +39,17 @@ export const GraphWrapper = () => {
 
 export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables> }) => {
   const { data } = useReadQuery(queryRef);
-  const [fetchData, {called, refetch}]  = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, {variables: {}});
+  const [fetchData, { called, refetch }] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
   const [graphViewData, setGraphViewData] = useState(layout(data));
-  const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>();
+  const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
 
   const handleClick = async (newSearchKey: string) => {
+    // 搜索框里search的点击
     let result;
     if (newSearchKey) {
       result = await fetchData();
     } else {
-      result  = await fetchData();
+      result = await fetchData();
     }
     setGraphViewData(layout(result.data as RoadmapQuery));
   };
@@ -60,6 +61,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   }, [graphViewData]);
 
   const showGraph = async (graphViewData: RGJsonData) => {
+    // 获取数据渲染画布
     const graphInstance = graphRef.current!.getInstance();
     await graphInstance.setJsonData(graphViewData);
     await graphInstance.toggleAutoLayout();
@@ -68,6 +70,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   };
 
   const toggleRndData = (data: string) => {
+    // 代码框渲染相关
     enqueue(data);
   };
 
@@ -76,7 +79,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
       {!isEmpty && (
         <DetailCard onclickFuncs={dequeue} children={queue}></DetailCard>
       )}
-      <SimpleGraph 
+      <SimpleGraph
         graphRef={graphRef}
         onPanelClick={handleClick}
         onNodeClickFn={toggleRndData}
