@@ -4,16 +4,15 @@
 2. https://the-guild.dev/graphql/codegen/plugins
 */
 
-
-import { printSchema } from 'graphql/utilities';
+import { printSchema } from "graphql/utilities";
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
-import { schema } from "@/lib/properties"
+import { schema } from "@/lib/properties";
 
 // pnpm codegen
 const config: CodegenConfig = {
   schema: printSchema(schema),
-  documents: ['app/gql/*.ts'],
+  documents: ["app/gql/*.ts"],
   generates: {
     "app/gql/types.generated.ts": { plugins: ["typescript"] },
     "app/gql/": {
@@ -27,11 +26,11 @@ const config: CodegenConfig = {
   },
   config: {
     scalars: {
-      Duration: 'string',
-      DateTime: 'Date',
-      JSON: 'Record',
-      NonNegativeInt: 'number',
-      PositiveInt: 'number',
+      Duration: "string",
+      DateTime: "Date",
+      JSON: "Record",
+      NonNegativeInt: "number",
+      PositiveInt: "number",
     },
   },
 };

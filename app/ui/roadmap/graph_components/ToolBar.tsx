@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import { RelationGraphStoreContext } from "relation-graph-react";
 
-
+// https://heroicons.com/
 const MyToolbar = () => {
   const graphInstance = useContext(RelationGraphStoreContext);
   const options = graphInstance.options;
@@ -43,8 +43,8 @@ const MyToolbar = () => {
         data-tooltip-content="Fullscreen/Exit Fullscreen!"
         data-tooltip-place="left"
       >
-        <svg className="rg-icon" aria-hidden="true">
-          <use href="#icon-resize-"></use>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
         </svg>
       </div>
       <div
@@ -54,9 +54,10 @@ const MyToolbar = () => {
         data-tooltip-content="Zoom In"
         data-tooltip-place="left"
       >
-        <svg className="rg-icon" aria-hidden="true">
-          <use href="#icon-fangda"></use>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
         </svg>
+
       </div>
       <div className="c-current-zoom" onDoubleClick={zoomToFit}>
         {options.canvasZoom}%
@@ -68,8 +69,8 @@ const MyToolbar = () => {
         data-tooltip-content="Zoom Out"
         data-tooltip-place="left"
       >
-        <svg className="rg-icon" aria-hidden="true">
-          <use href="#icon-suoxiao"></use>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6" />
         </svg>
       </div>
       <div
@@ -111,9 +112,13 @@ const MyToolbar = () => {
         data-tooltip-content="Download Image"
         data-tooltip-place="left"
       >
-        <svg className="rg-icon" aria-hidden="true">
+        {/* <svg className="rg-icon" aria-hidden="true">
           <use href="#icon-tupian"></use>
+        </svg> */}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
         </svg>
+
       </div>
       <div style={{ clear: "both" }}></div>
     </div>

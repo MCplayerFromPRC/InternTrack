@@ -33,7 +33,7 @@ builder.subscriptionField("postEvents", (t) => {
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function generateCkptEventSubscriptionResolver({ ctx }: { ctx: GQLContext }) {
   return withFilter(
     () => { 

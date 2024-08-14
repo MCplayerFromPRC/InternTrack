@@ -25,6 +25,7 @@ const Panel: React.FC<
     right?: string;
     top?: string;
     bottom?: string;
+    warningList?: [];
   }> & { onSearchClick: CallableFunction }
 > = ({
   width = "400px",
@@ -32,38 +33,41 @@ const Panel: React.FC<
   right = "",
   top = "10px",
   bottom = "10px",
-  onSearchClick
+  onSearchClick,
+  warningList = []
 }) => {
-  const [closed, setClosed] = useState(false);
-  const togglePanel = () => {
-    setClosed(!closed);
+    const [closed, setClosed] = useState(false);
+    const togglePanel = () => {
+      setClosed(!closed);
+    };
+
+    const panelClasses = `c-my-demo-panel ${closed ? "c-my-demo-panel-closed" : ""} ${right ? "c-my-demo-panel-r" : ""}`;
+    const iconClasses = `my-icon ${closed ? "my-icon-close" : "my-icon-open"}`;
+    const searchBoxClasses = `my-search-box ${closed ? "my-search-box-close" : "my-search-box-open"}`;
+
+    return (
+      <div
+        className={panelClasses}
+        style={{
+          "--my-panel-width": width,
+          "--my-panel-top": top,
+          left: right ? undefined : left,
+          right: right || undefined,
+        }}
+      >
+        <div className="my-footer">
+          <SearchBox className={searchBoxClasses} onClick={onSearchClick} ></SearchBox>
+          <Button className={`${iconClasses}`} onClick={togglePanel}>
+            {closed ? <ChevronDownIcon /> : <ChevronUpIcon />}
+          </Button>
+        </div>
+        {
+          warningList.length > 0 && <div className="my-body" style={{ "--my-body-top": bottom }}>
+            <AlertMessage></AlertMessage>
+          </div>
+        }
+      </div>
+    );
   };
-
-  const panelClasses = `c-my-demo-panel ${closed ? "c-my-demo-panel-closed" : ""} ${right ? "c-my-demo-panel-r" : ""}`;
-  const iconClasses = `my-icon ${closed ? "my-icon-close" : "my-icon-open"}`;
-  const searchBoxClasses = `my-search-box ${closed ? "my-search-box-close" : "my-search-box-open"}`;
-
-  return (
-    <div
-      className={panelClasses}
-      style={{
-        "--my-panel-width": width,
-        "--my-panel-top": top,
-        left: right ? undefined : left,
-        right: right || undefined,
-      }}
-    >
-      <div className="my-footer">
-        <SearchBox className={searchBoxClasses} onClick={onSearchClick} ></SearchBox>
-        <Button className={`${iconClasses}`} onClick={togglePanel}>
-          {closed ? <ChevronDownIcon /> : <ChevronUpIcon />}
-        </Button>
-      </div>
-      <div className="my-body" style={{ "--my-body-top": bottom }}>
-        <AlertMessage></AlertMessage>
-      </div>
-    </div>
-  );
-};
 
 export default Panel;

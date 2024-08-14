@@ -1,14 +1,15 @@
 'use client'
 
 import * as React from "react";
-import { RefObject } from "react";
-import type {
+import { RefObject, PropsWithChildren } from "react";
+import {
   RGLine,
   RGLink,
   RGNode,
   RGNodeSlotProps,
   RGOptionsFull,
   RelationGraphComponent,
+  GraphToolBar
 } from "relation-graph-react";
 import RelationGraph, { RGMiniView } from "relation-graph-react";
 import Panel from "./graph_components/Panel";
@@ -43,9 +44,8 @@ const defaultNodeStyle: React.CSSProperties = {
 };
 
 const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
-  console.log("NodeSlot:");
-  if (!node.lot.parent) {
-    // if rootNode
+  // console.log("NodeSlot:");
+  if (node.data!.type === "config") {
     return (
       <div style={getNodeStyle}>
         <div style={getInnerDivStyle(node.data!.percent)}>{node.text}</div>
@@ -65,9 +65,8 @@ const onLineClick = (
   _e: MouseEvent | TouchEvent,
 ) => {
   console.log("onLineClick:", line.text, line.from, line.to);
-  return true;
+  return;
 };
-
 
 const options: Partial<RGOptionsFull> = {
   debug: true,
@@ -86,24 +85,24 @@ const options: Partial<RGOptionsFull> = {
   defaultExpandHolderPosition: "right",
 };
 
-export const SimpleGraph = ({
-  graphRef,
-  onPanelClick,
-  onNodeClickFn,
-}: {
+export const SimpleGraph: React.FC<PropsWithChildren<{
   graphRef: RefObject<RelationGraphComponent>,
   onPanelClick: CallableFunction,
   onNodeClickFn: CallableFunction,
+}>> = ({
+  children,
+  graphRef,
+  onPanelClick,
+  onNodeClickFn,
 }) => {
 
-  const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
-    console.log("onNodeClick:", node.text);
-    onNodeClickFn(node.text)
-    return true;
-  };
-
-  return (
-    <div>
+    const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
+      console.log("onNodeClick:", node.text);
+      onNodeClickFn(node.text)
+      return true;
+    };
+    // https://www.relation-graph.com/#/demo/react?id=toolbar-buttons 自定义toolbar
+    return (
       <div
         style={{ height: "85dvh", width: "90%", border: "#efefef solid 1px" }}
       >
@@ -113,7 +112,7 @@ export const SimpleGraph = ({
           nodeSlot={NodeSlot}
           onNodeClick={onNodeClick}
           onLineClick={onLineClick}
-          toolBarSlot={<MyToolbar></MyToolbar>}
+          toolBarSlot={<MyToolbar />}
           // canvasPlugSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           // canvasPlugAboveSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           graphPlugSlot={
@@ -122,10 +121,11 @@ export const SimpleGraph = ({
               <RGMiniView width="18%" height="20%" position="tr" />
             </React.Fragment>
           }
-        ></RelationGraph>
+        >
+          {children}
+        </RelationGraph>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default SimpleGraph;

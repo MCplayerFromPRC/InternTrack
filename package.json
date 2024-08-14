@@ -4,9 +4,9 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "lint": "next lint",
     "schemagen": "graphql-codegen --require tsconfig-paths/register --config schemagen.ts",
-    "codegen": "graphql-codegen --require tsconfig-paths/register --config codegen.ts"
+    "codegen": "graphql-codegen --require tsconfig-paths/register --config codegen.ts",
+    "prepare": "husky init"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
@@ -26,8 +26,8 @@
     "@pothos/plugin-directives": "^3.10.2",
     "@pothos/plugin-simple-objects": "^3.7.0",
     "@tailwindcss/forms": "^0.5.7",
-    "@uiw/react-codemirror": "^4.23.0",
     "@uiw/codemirror-extensions-langs": "^4.23.0",
+    "@uiw/react-codemirror": "^4.23.0",
     "@vercel/postgres": "^0.8.0",
     "arangojs": "^8.8.1",
     "autoprefixer": "10.4.19",
@@ -36,14 +36,6 @@
     "clsx": "^2.1.1",
     "codemirror": "^6.0.1",
     "dataloader": "^2.2.2",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "^14.2.4",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.23.0",
     "graphql-subscriptions": "^2.0.0",
@@ -57,10 +49,10 @@
     "pino": "^9.2.0",
     "postcss": "8.4.38",
     "react": "^18.3.1",
+    "react-codemirror-merge": "^4.23.0",
     "react-dom": "^18.3.1",
     "react-rnd": "^10.4.11",
     "reflect-metadata": "^0.2.2",
-    "react-codemirror-merge": "^4.23.0",
     "relation-graph": "^2.2.2",
     "relation-graph-react": "^2.2.2",
     "tailwindcss": "^3.4.4",
@@ -70,22 +62,29 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/js": "^9.9.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.2",
-    "@graphql-codegen/schema-ast": "^4.1.0",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
+    "@graphql-codegen/schema-ast": "^4.1.0",
     "@graphql-codegen/typed-document-node": "^4.0.1",
     "@graphql-codegen/typescript": "^3.0.4",
     "@graphql-codegen/typescript-resolvers": "^3.2.1",
-    "@typescript-eslint/parser": "^7.16.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@types/arangodb": "^3.5.22",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/ws": "^8.5.10",
-    "tsconfig-paths": "^4.2.0"
+    "eslint": "^9.9.0",
+    "eslint-plugin-react": "^7.35.0",
+    "globals": "^15.9.0",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3",
+    "tsconfig-paths": "^4.2.0",
+    "typescript-eslint": "^8.1.0"
   },
   "prettier": {
     "printWidth": 80,
@@ -100,6 +99,20 @@
     "bracketSameLine": false,
     "arrowParens": "always",
     "endOfLine": "lf"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "pnpm prettier --write",
+      "pnpm eslint --fix"
+    ],
+    "*.{html,css,scss,ejs}": [
+      "pnpm prettier --write"
+    ]
   },
   "engines": {
     "node": ">=20.12.0"
