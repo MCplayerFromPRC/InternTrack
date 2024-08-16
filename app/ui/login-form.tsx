@@ -2,18 +2,18 @@
 ## quote:
 1. https://www.apollographql.com/docs/apollo-server/security/authentication/
 */
-'use client';
+"use client";
 
-import { authenticate } from '@/lib/actions';
-import { lusitana } from '@/app/ui/fonts';
+import { authenticate } from "@/lib/actions";
+import { lusitana } from "@/app/ui/fonts";
 import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
-import { useFormState, useFormStatus } from 'react-dom';
+} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { Button } from "./button";
+import { useFormState, useFormStatus } from "react-dom";
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);

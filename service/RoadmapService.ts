@@ -1,9 +1,9 @@
 import { injectable, inject } from "inversify";
-import { JsonNode, JsonLine } from "relation-graph-react"
+import { JsonNode, JsonLine } from "relation-graph-react";
 
 import { NodeDocument, EdgeDocument } from "@/models";
 
-import { 
+import {
   CheckpointDatasource,
   CkptStepDatasource,
   ResumeCkptDatasource,
@@ -34,30 +34,34 @@ export class RoadmapService {
     const ckpt_step_list = await this.ckptStepDTO.findAll();
     const train_config_list = await this.trainConfigDTO.findAll();
     const resume_ckpt_list = await this.resumeCkptDTO.findAll();
-    return [...ckpt_list, ...ckpt_step_list, ...train_config_list, ...resume_ckpt_list];
+    return [
+      ...ckpt_list,
+      ...ckpt_step_list,
+      ...train_config_list,
+      ...resume_ckpt_list,
+    ];
   }
 
-  async getGraphView(){
+  async getGraphView() {
     const nodeList = await this.fetchGraph();
-    return nodeList.map(elem => this.transformObject(elem));
+    return nodeList.map((elem) => this.transformObject(elem));
   }
 
-  transformObject(obj: NodeDocument): JsonNode|JsonLine {
-    if (obj instanceof EdgeDocument){
+  transformObject(obj: NodeDocument): JsonNode | JsonLine {
+    if (obj instanceof EdgeDocument) {
       const { _id, _from, _to, ...others } = obj;
       return {
-        id: _id,          // 直接使用id
-        from: _from,  // 直接使用attr_a
+        id: _id, // 直接使用id
+        from: _from, // 直接使用attr_a
         to: _to,
-        data: others
-      }
+        data: others,
+      };
     } else {
       const { _id, ...others } = obj;
       return {
         id: _id,
-        data: others
-      }  
+        data: others,
+      };
     }
   }
-  
 }

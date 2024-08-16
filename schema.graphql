@@ -4,7 +4,9 @@ schema {
   subscription: Subscription
 }
 
-"""Large Language Model Checkpoint"""
+"""
+Large Language Model Checkpoint
+"""
 type Checkpoint {
   config: String!
   id: String!
@@ -28,7 +30,9 @@ input CkptInput {
   step: Int!
 }
 
-"""The step between two saved checkpoints"""
+"""
+The step between two saved checkpoints
+"""
 type CkptStep {
   duration: Duration!
   from: String!
@@ -52,29 +56,29 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 """
+A string representing a duration conforming to the ISO8601 standard,
+such as: P1W1DT13H23M34S
+P is the duration designator (for period) placed at the start of the duration representation.
+Y is the year designator that follows the value for the number of years.
+M is the month designator that follows the value for the number of months.
+W is the week designator that follows the value for the number of weeks.
+D is the day designator that follows the value for the number of days.
+T is the time designator that precedes the time components of the representation.
+H is the hour designator that follows the value for the number of hours.
+M is the minute designator that follows the value for the number of minutes.
+S is the second designator that follows the value for the number of seconds.
 
-    A string representing a duration conforming to the ISO8601 standard,
-    such as: P1W1DT13H23M34S
-    P is the duration designator (for period) placed at the start of the duration representation.
-    Y is the year designator that follows the value for the number of years.
-    M is the month designator that follows the value for the number of months.
-    W is the week designator that follows the value for the number of weeks.
-    D is the day designator that follows the value for the number of days.
-    T is the time designator that precedes the time components of the representation.
-    H is the hour designator that follows the value for the number of hours.
-    M is the minute designator that follows the value for the number of minutes.
-    S is the second designator that follows the value for the number of seconds.
+Note the time designator, T, that precedes the time value.
 
-    Note the time designator, T, that precedes the time value.
-
-    Matches moment.js, Luxon and DateFns implementations
-    ,/. is valid for decimal places and +/- is a valid prefix
-  
+Matches moment.js, Luxon and DateFns implementations
+,/. is valid for decimal places and +/- is a valid prefix
 """
 scalar Duration
 
 interface IBaseCkptEvent {
-  """Event type"""
+  """
+  Event type
+  """
   eventType: CkptEventType!
 }
 
@@ -87,47 +91,78 @@ type Mutation {
   createCheckpoint(input: CkptInput!): Checkpoint!
   createCkptStep(input: CkptStepInput!): CkptStep!
   createResumeCkpt(input: ResumeCkptInput!): ResumeCkpt!
-  createRoadmap(ckptList: [CkptInput!]!, ckptStepList: [CkptStepInput!]!, resumeCkptList: [ResumeCkptInput!]!, trainConfigList: [TrainConfigInput!]!): Roadmap!
+  createRoadmap(
+    ckptList: [CkptInput!]!
+    ckptStepList: [CkptStepInput!]!
+    resumeCkptList: [ResumeCkptInput!]!
+    trainConfigList: [TrainConfigInput!]!
+  ): Roadmap!
   createTrainConfig(input: TrainConfigInput!): TrainConfig!
 }
 
-"""When a new post is created"""
+"""
+When a new post is created
+"""
 type NewPostEvent implements IBaseCkptEvent {
-  """Event type"""
+  """
+  Event type
+  """
   eventType: CkptEventType!
   result: Checkpoint!
 }
 
-"""Integers that will have a value of 0 or more."""
+"""
+Integers that will have a value of 0 or more.
+"""
 scalar NonNegativeInt
 
-"""Integers that will have a value greater than 0."""
+"""
+Integers that will have a value greater than 0.
+"""
 scalar PositiveInt
 
 type Query {
-  """All the Checkpoints"""
+  """
+  All the Checkpoints
+  """
   allCheckpoints: [Checkpoint!]
-  """Query the step by id"""
+  """
+  Query the step by id
+  """
   allCkptSteps: [CkptStep!]
   """
   Query the relationships all the configs and the checkpoints they resumed from
   """
   allResumeCkpts(id: String): [ResumeCkpt!]
-  """TrainConfig"""
+  """
+  TrainConfig
+  """
   allTrainConfigs: [TrainConfig!]
-  """Saved Checkpoint"""
+  """
+  Saved Checkpoint
+  """
   checkpoint(id: String): Checkpoint
-  """Query the step by id"""
+  """
+  Query the step by id
+  """
   ckptStep(id: String): CkptStep
-  """Query the step by id"""
+  """
+  Query the step by id
+  """
   resumeCkpt(id: String): ResumeCkpt
-  """Saved Checkpoint"""
+  """
+  Saved Checkpoint
+  """
   roadmap: Roadmap
-  """TrainConfig"""
+  """
+  TrainConfig
+  """
   trainConfig(id: String): TrainConfig
 }
 
-"""Continue training config from checkpoints"""
+"""
+Continue training config from checkpoints
+"""
 type ResumeCkpt {
   from: String!
   id: String!
@@ -143,7 +178,9 @@ input ResumeCkptInput {
   to: String!
 }
 
-"""InternLM Roadmap"""
+"""
+InternLM Roadmap
+"""
 type Roadmap {
   ckptList: [Checkpoint!]!
   ckptStepList: [CkptStep!]!
@@ -152,13 +189,19 @@ type Roadmap {
 }
 
 type Subscription {
-  """Events related to posts"""
+  """
+  Events related to posts
+  """
   postEvents: IBaseCkptEvent!
 }
 
-"""Training Config"""
+"""
+Training Config
+"""
 type TrainConfig {
-  """TrainConfig's Checkpoints"""
+  """
+  TrainConfig's Checkpoints
+  """
   ckpts: [Checkpoint!]!
   dataConfig: JSON!
   id: String!

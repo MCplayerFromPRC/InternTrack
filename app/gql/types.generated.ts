@@ -1,8 +1,14 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -46,46 +52,46 @@ export type Scalars = {
 
 /** Large Language Model Checkpoint */
 export type Checkpoint = {
-  __typename?: 'Checkpoint';
-  config: Scalars['String'];
-  id: Scalars['String'];
-  isDelivery: Scalars['Boolean'];
-  key: Scalars['String'];
-  md5: Scalars['String'];
-  revision: Scalars['String'];
-  saveTime: Scalars['DateTime'];
-  step: Scalars['Int'];
+  __typename?: "Checkpoint";
+  config: Scalars["String"];
+  id: Scalars["String"];
+  isDelivery: Scalars["Boolean"];
+  key: Scalars["String"];
+  md5: Scalars["String"];
+  revision: Scalars["String"];
+  saveTime: Scalars["DateTime"];
+  step: Scalars["Int"];
 };
 
 export enum CkptEventType {
-  NewCkpt = 'NewCkpt'
+  NewCkpt = "NewCkpt",
 }
 
 export type CkptInput = {
-  config: Scalars['String'];
-  isDelivery: Scalars['Boolean'];
-  md5: Scalars['String'];
-  saveTime: Scalars['DateTime'];
-  step: Scalars['Int'];
+  config: Scalars["String"];
+  isDelivery: Scalars["Boolean"];
+  md5: Scalars["String"];
+  saveTime: Scalars["DateTime"];
+  step: Scalars["Int"];
 };
 
 /** The step between two saved checkpoints */
 export type CkptStep = {
-  __typename?: 'CkptStep';
-  duration: Scalars['Duration'];
-  from: Scalars['String'];
-  id: Scalars['String'];
-  key: Scalars['String'];
-  revision: Scalars['String'];
-  to: Scalars['String'];
-  tokens: Scalars['PositiveInt'];
+  __typename?: "CkptStep";
+  duration: Scalars["Duration"];
+  from: Scalars["String"];
+  id: Scalars["String"];
+  key: Scalars["String"];
+  revision: Scalars["String"];
+  to: Scalars["String"];
+  tokens: Scalars["PositiveInt"];
 };
 
 export type CkptStepInput = {
-  duration: Scalars['Duration'];
-  from: Scalars['String'];
-  to: Scalars['String'];
-  tokens: Scalars['Int'];
+  duration: Scalars["Duration"];
+  from: Scalars["String"];
+  to: Scalars["String"];
+  tokens: Scalars["Int"];
 };
 
 export type IBaseCkptEvent = {
@@ -94,7 +100,7 @@ export type IBaseCkptEvent = {
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename?: "Mutation";
   createCheckpoint: Checkpoint;
   createCkptStep: CkptStep;
   createResumeCkpt: ResumeCkpt;
@@ -102,21 +108,17 @@ export type Mutation = {
   createTrainConfig: TrainConfig;
 };
 
-
 export type MutationCreateCheckpointArgs = {
   input: CkptInput;
 };
-
 
 export type MutationCreateCkptStepArgs = {
   input: CkptStepInput;
 };
 
-
 export type MutationCreateResumeCkptArgs = {
   input: ResumeCkptInput;
 };
-
 
 export type MutationCreateRoadmapArgs = {
   ckptList: Array<CkptInput>;
@@ -125,21 +127,20 @@ export type MutationCreateRoadmapArgs = {
   trainConfigList: Array<TrainConfigInput>;
 };
 
-
 export type MutationCreateTrainConfigArgs = {
   input: TrainConfigInput;
 };
 
 /** When a new post is created */
 export type NewPostEvent = IBaseCkptEvent & {
-  __typename?: 'NewPostEvent';
+  __typename?: "NewPostEvent";
   /** Event type */
   eventType: CkptEventType;
   result: Checkpoint;
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename?: "Query";
   /** All the Checkpoints */
   allCheckpoints?: Maybe<Array<Checkpoint>>;
   /** Query the step by id */
@@ -160,51 +161,46 @@ export type Query = {
   trainConfig?: Maybe<TrainConfig>;
 };
 
-
 export type QueryAllResumeCkptsArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type QueryCheckpointArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type QueryCkptStepArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type QueryResumeCkptArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars["String"]>;
 };
 
-
 export type QueryTrainConfigArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars["String"]>;
 };
 
 /** Continue training config from checkpoints */
 export type ResumeCkpt = {
-  __typename?: 'ResumeCkpt';
-  from: Scalars['String'];
-  id: Scalars['String'];
-  isSameTask: Scalars['Boolean'];
-  key: Scalars['String'];
-  revision: Scalars['String'];
-  to: Scalars['String'];
+  __typename?: "ResumeCkpt";
+  from: Scalars["String"];
+  id: Scalars["String"];
+  isSameTask: Scalars["Boolean"];
+  key: Scalars["String"];
+  revision: Scalars["String"];
+  to: Scalars["String"];
 };
 
 export type ResumeCkptInput = {
-  from: Scalars['String'];
-  isSameTask: Scalars['Boolean'];
-  to: Scalars['String'];
+  from: Scalars["String"];
+  isSameTask: Scalars["Boolean"];
+  to: Scalars["String"];
 };
 
 /** InternLM Roadmap */
 export type Roadmap = {
-  __typename?: 'Roadmap';
+  __typename?: "Roadmap";
   ckptList: Array<Checkpoint>;
   ckptStepList: Array<CkptStep>;
   resumeCkptList: Array<ResumeCkpt>;
@@ -212,30 +208,30 @@ export type Roadmap = {
 };
 
 export type Subscription = {
-  __typename?: 'Subscription';
+  __typename?: "Subscription";
   /** Events related to posts */
   postEvents: IBaseCkptEvent;
 };
 
 /** Training Config */
 export type TrainConfig = {
-  __typename?: 'TrainConfig';
+  __typename?: "TrainConfig";
   /** TrainConfig's Checkpoints */
   ckpts: Array<Checkpoint>;
-  dataConfig: Scalars['JSON'];
-  id: Scalars['String'];
-  key: Scalars['String'];
-  modelConfig: Scalars['JSON'];
-  modelName: Scalars['String'];
-  optimizerConfig: Scalars['JSON'];
-  parallelConfig: Scalars['JSON'];
-  revision: Scalars['String'];
+  dataConfig: Scalars["JSON"];
+  id: Scalars["String"];
+  key: Scalars["String"];
+  modelConfig: Scalars["JSON"];
+  modelName: Scalars["String"];
+  optimizerConfig: Scalars["JSON"];
+  parallelConfig: Scalars["JSON"];
+  revision: Scalars["String"];
 };
 
 export type TrainConfigInput = {
-  dataConfig: Scalars['JSON'];
-  modelConfig: Scalars['JSON'];
-  modelName: Scalars['String'];
-  optimizerConfig: Scalars['JSON'];
-  parallelConfig: Scalars['JSON'];
+  dataConfig: Scalars["JSON"];
+  modelConfig: Scalars["JSON"];
+  modelName: Scalars["String"];
+  optimizerConfig: Scalars["JSON"];
+  parallelConfig: Scalars["JSON"];
 };

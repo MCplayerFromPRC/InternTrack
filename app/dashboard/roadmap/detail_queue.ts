@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 type SpecialQueue<T> = {
   enqueue: (item: T) => void;
@@ -9,11 +9,11 @@ type SpecialQueue<T> = {
 
 function useSpecialQueue<T>(): SpecialQueue<T> {
   const [queue, setQueue] = useState<(T | null)[]>([null, null]);
-  
+
   const isEmpty = queue[0] === null && queue[1] === null;
 
   const enqueue = (item: T) => {
-    setQueue(prevQueue => {
+    setQueue((prevQueue) => {
       if (prevQueue[0] === null) {
         return [item, null];
       } else if (prevQueue[1] === null) {
@@ -26,7 +26,7 @@ function useSpecialQueue<T>(): SpecialQueue<T> {
 
   const dequeue0 = (): T | null => {
     let item: T | null = null;
-    setQueue(prevQueue => {
+    setQueue((prevQueue) => {
       item = prevQueue[0];
       if (prevQueue[1] !== null) {
         return [prevQueue[1], null];
@@ -39,18 +39,18 @@ function useSpecialQueue<T>(): SpecialQueue<T> {
 
   const dequeue1 = (): T | null => {
     let item: T | null = null;
-    setQueue(prevQueue => {
+    setQueue((prevQueue) => {
       item = prevQueue[1];
       return [prevQueue[0], null];
     });
     return item;
   };
 
-  return { 
-    enqueue, 
-    dequeue: [dequeue0, dequeue1], 
-    isEmpty, 
-    queue 
+  return {
+    enqueue,
+    dequeue: [dequeue0, dequeue1],
+    isEmpty,
+    queue,
   };
 }
 

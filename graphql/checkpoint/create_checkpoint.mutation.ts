@@ -2,7 +2,7 @@ import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import { publishCkptEvent } from "@/graphql/subscriptions/checkpoint/ckpt_events.subscription";
 import { NewCkptEvent } from "@/graphql/subscriptions/checkpoint/new_checkpoint.event";
-import { Checkpoint } from "@/models"
+import { Checkpoint } from "@/models";
 import { CheckpointType } from "./checkpoint.type";
 
 export const CkptInput = builder.inputType("CkptInput", {

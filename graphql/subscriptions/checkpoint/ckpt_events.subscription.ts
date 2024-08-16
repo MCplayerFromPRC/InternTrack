@@ -1,6 +1,5 @@
 import { withFilter } from "graphql-subscriptions";
 import { GQLContext } from "@/lib/properties";
-import { container } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
 import {
   BaseCkptEvent,
@@ -13,7 +12,7 @@ builder.subscriptionField("postEvents", (t) => {
     type: IBaseCkptEvent,
     description: "Events related to posts",
     args: {},
-    // eslint-disable-next-line no-empty-pattern, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line no-empty-pattern
     subscribe: (_, {}, ctx: GQLContext, _info: any) => {
       const subscriptionResolver = generateCkptEventSubscriptionResolver({
         ctx,
@@ -23,7 +22,6 @@ builder.subscriptionField("postEvents", (t) => {
         {},
         ctx,
         _info,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ) as any as AsyncIterable<unknown>;
     },
     // eslint-disable-next-line no-empty-pattern, @typescript-eslint/no-unused-vars
@@ -33,10 +31,9 @@ builder.subscriptionField("postEvents", (t) => {
   });
 });
 
-
 function generateCkptEventSubscriptionResolver({ ctx }: { ctx: GQLContext }) {
   return withFilter(
-    () => { 
+    () => {
       if (!ctx.pubsub) {
         throw new Error("pubsub is not available in the context.");
       }

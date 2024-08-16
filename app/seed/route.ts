@@ -1,8 +1,10 @@
 // import bcrypt from 'bcrypt';
 // import { db } from '@vercel/postgres';
 // import { invoices, customers, revenue, users } from '../lib/placeholder-data';
-import { seed } from "./CheckpointGraph"
-import { db } from "@/lib/database"
+import { seed as seedGraph } from "./CheckpointGraph";
+// import { seed as seedView } from "./RetrievalView";
+import { seed as seedCollection } from "./collections";
+import { db } from "@/lib/database";
 
 // const client = await db.connect();
 
@@ -118,8 +120,9 @@ export async function GET() {
   //   return Response.json({ error }, { status: 500 });
   // }
   try {
-    await seed(db);
-    return Response.json({ message: 'Database seeded successfully' });
+    await seedCollection(db);
+    await seedGraph(db);
+    return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }
