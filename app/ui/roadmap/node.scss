@@ -1,0 +1,27 @@
+.commonNode {
+  font-size: 18px;
+  color: #121314;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .bold {
+    font-weight: bold;
+  }
+}
+
+.configNode {
+  min-width: 100px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: rgb(244, 240, 250);
+}
+
+.weightNode {
+  min-width: 100px;
+  aspect-ratio: 1;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: rgb(254, 227, 224);
+}

@@ -2,58 +2,35 @@
 
 import * as React from "react";
 import { RefObject, PropsWithChildren } from "react";
-import {
+import RelationGraph, {
   RGLine,
   RGLink,
   RGNode,
   RGNodeSlotProps,
   RGOptionsFull,
   RelationGraphComponent,
-  GraphToolBar
+  GraphToolBar,
+  RGMiniView
 } from "relation-graph-react";
-import RelationGraph, { RGMiniView } from "relation-graph-react";
 import Panel from "./graph_components/Panel";
 import MyToolbar from "./graph_components/ToolBar";
+import './node.scss';
+// import './tree-distance.scss';
 // import DetailCard from "../detail/Config"
-
-
-const getNodeStyle: React.CSSProperties = {
-  zIndex: 555,
-  opacity: 0.5,
-  lineHeight: "100px",
-  width: "100px",
-  height: "100px",
-  color: "#000000",
-  borderRadius: "50%",
-  boxSizing: "border-box",
-  fontSize: "18px",
-  textAlign: "center",
-  overflow: "hidden",
-};
-
-const getInnerDivStyle = (percent: number): React.CSSProperties => ({
-  width: "100%",
-  height: `${percent * 100}%`,
-  marginTop: `${(1 - percent) * 100}%`,
-  background: "linear-gradient(to bottom, #00FFFF, #FF00FF)",
-});
-
-const defaultNodeStyle: React.CSSProperties = {
-  lineHeight: "80px",
-  textAlign: "center",
-};
 
 const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   // console.log("NodeSlot:");
-  if (node.data!.type === "config") {
+  if (node.type === "config") {
     return (
-      <div style={getNodeStyle}>
-        <div style={getInnerDivStyle(node.data!.percent)}>{node.text}</div>
+      <div className="commonNode configNode">
+        <p className="bold">config</p>
+        <span>{node.text}</span>
       </div>
     );
   }
   return (
-    <div style={defaultNodeStyle}>
+    <div className="commonNode weightNode">
+      <p className="bold">ckpt</p>
       <span>{node.text}</span>
     </div>
   );
@@ -65,24 +42,23 @@ const onLineClick = (
   _e: MouseEvent | TouchEvent,
 ) => {
   console.log("onLineClick:", line.text, line.from, line.to);
-  return;
 };
 
 const options: Partial<RGOptionsFull> = {
   debug: true,
+  disableDragNode: false,
+  layout: {
+    layoutName: 'tree',
+    from: 'left',
+    layoutClassName: 'seeks-layout-center',
+  },
+  allowSwitchJunctionPoint: false,
+  defaultNodeShape: 1,
   defaultNodeBorderWidth: 0,
-  defaultNodeColor: "rgba(238, 178, 94, 1)",
-  allowSwitchLineShape: true,
-  allowSwitchJunctionPoint: true,
-  defaultLineShape: 1,
-  layouts: [
-    {
-      layoutName: "center",
-      maxLayoutTimes: 3000,
-    },
-  ],
-  defaultJunctionPoint: "border",
-  defaultExpandHolderPosition: "right",
+  defaultPolyLineRadius: 15,
+  defaultLineShape: 4,
+  defaultLineColor: '#444',
+  defaultNodeColor: 'rgba(244, 240, 250, 0)'
 };
 
 export const SimpleGraph: React.FC<PropsWithChildren<{
@@ -90,12 +66,10 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
   onPanelClick: CallableFunction,
   onNodeClickFn: CallableFunction,
 }>> = ({
-  children,
   graphRef,
   onPanelClick,
   onNodeClickFn,
 }) => {
-
     const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
       console.log("onNodeClick:", node.text);
       onNodeClickFn(node.text)
@@ -112,7 +86,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           nodeSlot={NodeSlot}
           onNodeClick={onNodeClick}
           onLineClick={onLineClick}
-          toolBarSlot={<MyToolbar />}
+          toolBarSlot={<GraphToolBar />}
           // canvasPlugSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           // canvasPlugAboveSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           graphPlugSlot={
@@ -121,9 +95,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
               <RGMiniView width="18%" height="20%" position="tr" />
             </React.Fragment>
           }
-        >
-          {children}
-        </RelationGraph>
+        />
       </div>
     );
   };

@@ -4,7 +4,6 @@
 1. https://github.com/apollographql/apollo-client-nextjs/blob/main/examples/polls-demo/app/cc/poll-cc.tsx
 */
 
-
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useReadQuery, useBackgroundQuery, useLazyQuery } from "@apollo/client";
 import { RGJsonData, RelationGraphComponent } from "relation-graph-react";
@@ -15,15 +14,6 @@ import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/
 import { layout } from "./client_layout"
 import useSpecialQueue from "./detail_queue"
 import DetailCard from "@/app/ui/detail/Config";
-
-const style = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  border: "solid 1px #ddd",
-  background: "#f0f0f0",
-  zIndex: 1000
-};
 
 export const GraphWrapper = () => {
   const [queryRef] = useBackgroundQuery<RoadmapQuery>(RoadmapDocument);
@@ -43,27 +33,22 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   const [graphViewData, setGraphViewData] = useState<RGJsonData>({
     rootId: 'a',
     nodes: [
-      { id: 'a', text: 'node1', borderWidth: 1, nodeShape: 1, width: 300, height: 60 },
-      { id: 'a1', text: '3000', borderColor: 'yellow' },
-      { id: 'a2', text: 'node2', nodeShape: 1 },
-      { id: 'a3', text: '6000', borderColor: 'yellow' },
+      { id: 'a', text: 'node1', nodeShape: 1, type: 'config' },
+      { id: 'a1', text: 'step:3000', nodeShape: 0, type: 'ckpt' },
+      { id: 'a2', text: 'node2', nodeShape: 1, type: 'config' },
+      { id: 'a3', text: 'step:6000', type: 'ckpt', nodeShape: 0 },
 
-      { id: 'b', text: 'b node3', nodeShape: 1 },
-      { id: 'b1', text: '1000', borderColor: 'yellow' },
-      { id: 'b2', text: 'b node2', nodeShape: 1 },
-      { id: 'b3', text: '2000', borderColor: 'yellow' },
-      // { id: 'a1', text: 'No border', borderWidth: -1, color: '#ff8c00' },
-      // { id: 'a2', text: 'Plain', borderWidth: 3, color: 'transparent', borderColor: '#ff8c00', fontColor: '#ff8c00' },
-      // // Unless it is absolutely necessary, it is not recommended to use the html attribute, you can use the node slot to display the node in any form
+      { id: 'b', text: 'b-node3', nodeShape: 1, type: 'config' },
+      { id: 'b1', text: 'step:1000', type: 'ckpt', nodeShape: 0 },
+      { id: 'b2', text: 'b-node2', nodeShape: 1, type: 'config' },
+      { id: 'b3', text: 'step:2000', type: 'ckpt', nodeShape: 0 },
 
-      // { id: 'a1-1', html: '<span style="color:#ff8c00">Text Node</span>' },
-      // { id: 'a1-4', html: '<div style="border:#ff8c00 solid 2px;height:80px;width:80px;border-radius: 40px;background-image: url(/images/rg-logo.png);background-position: center center;" />', nodeShape: 0 },
-      // { id: 'b', text: 'Font color', color: '#43a2f1', fontColor: '#ffd700' },
-      // { id: 'd', text: 'Node Size', width: 150, height: 150, color: '#ff8c00', borderWidth: 5, borderColor: '#ffd700', fontColor: '#ffffff' },
-      // { id: 'e', text: 'Rectangular node', nodeShape: 1 },
-      // { id: 'f', text: 'Rectangular', borderWidth: 1, nodeShape: 1, width: 300, height: 60 },
-      // { id: 'f1', text: 'Fixed', fixed: true, x: 60, y: 60 },
-      // { id: 'g', text: 'Css Flash', styleClass: 'my-node-flash-style' }
+      { id: 'c', text: 'c-node3', nodeShape: 1, type: 'config' },
+      { id: 'c1', text: 'step:1000', type: 'ckpt', nodeShape: 0 },
+      { id: 'd', text: 'd-node2', nodeShape: 1, type: 'config' },
+      { id: 'd1', text: 'step:2000', type: 'ckpt', nodeShape: 0 },
+      { id: 'e', text: 'e-node1', nodeShape: 1, type: 'config' },
+      { id: 'e1', text: 'step:4000', type: 'ckpt', nodeShape: 0 },
     ],
     lines: [
       { from: 'a', to: 'a1' },
@@ -72,7 +57,13 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
       { from: 'a1', to: 'b' },
       { from: 'b', to: 'b1' },
       { from: 'b1', to: 'b2' },
-      { from: 'b2', to: 'b3' }
+      { from: 'b2', to: 'b3' },
+      { from: 'a3', to: 'c' },
+      { from: 'c', to: 'c1' },
+      { from: 'a3', to: 'd' },
+      { from: 'd', to: 'd1' },
+      { from: 'a3', to: 'e' },
+      { from: 'e', to: 'e1' }
     ]
   });
   const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
@@ -97,10 +88,20 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   }, [graphViewData]);
 
   const showGraph = async (graphViewData: RGJsonData) => {
-    // const rootX = 0;
-    // const rootY = 0;
+    // let rootX = 0;
+    // let rootY = 0;
+    // const nodeTempInfo: any = {};
     // const tempNodesData = graphViewData.nodes.map((item: any, idx: number) => {
-    //   return {...item, x: rootX, y: rootY}
+    //   rootX = rootX + 300;
+    //   if (item.from) {
+    //     rootX = nodeTempInfo[item.from].x;
+    //     rootY = nodeTempInfo[item.from].y + 200;
+    //   }
+    //   nodeTempInfo[item.id] = {
+    //     x: rootX,
+    //     y: rootY
+    //   }
+    //   return { ...item, x: rootX, y: rootY };
     // });
     // 获取数据渲染画布
     const graphInstance = graphRef.current!.getInstance();

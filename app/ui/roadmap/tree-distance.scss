@@ -1,0 +1,44 @@
+.relation-graph {
+  .c-node-text {
+    padding: 0px;
+    place-items: center;
+    justify-content: center;
+  }
+}
+
+.c-my-panel {
+  width: 600px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  border-radius: 10px;
+  z-index: 800;
+  background-color: #efefef;
+  border: #eeeeee solid 1px;
+  padding: 10px;
+
+  .c-option-name {
+    color: #666666;
+    font-size: 14px;
+    line-height: 30px;
+  }
+
+  .c-simple-configs {
+    padding-left: 70px;
+    padding-right: 70px;
+
+    &>div {
+      line-height: 30px;
+      color: #5b05f1;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 5px;
+      text-align: center;
+
+      &:hover {
+        background-color: #5b05f1;
+        color: #ffffff;
+      }
+    }
+  }
+}
