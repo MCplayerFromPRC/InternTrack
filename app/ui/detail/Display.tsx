@@ -2,12 +2,22 @@
 
 import CodeMirror from '@uiw/react-codemirror';
 import { langs } from '@uiw/codemirror-extensions-langs';
+export interface INodeInfo {
+  name: string;
+  config: string;
+}
+interface IProps {
+  width: string;
+  height: string;
+  nodeInfo: INodeInfo;
+}
 
-
-export const Display = ({doc, width, height}: {doc: string, width: number | string, height: number | string}) => {
+export const Display = (props: IProps) => {
+  const { nodeInfo, width, height } = props;
   return (
     <div style={{ width: width, height: height }}>
-      <CodeMirror value={doc} extensions={[langs.python()]} />
+      {/* <div>{nodeInfo.name}</div> */}
+      <CodeMirror value={nodeInfo.config} extensions={[langs.python()]} />
     </div>
   )
 }

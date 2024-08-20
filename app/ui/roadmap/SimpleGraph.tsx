@@ -20,18 +20,18 @@ import './node.scss';
 
 const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   // console.log("NodeSlot:");
-  if (node.type === "config") {
+  if (node.type === "task") {
     return (
-      <div className="commonNode configNode">
-        <p className="bold">config</p>
-        <span>{node.text}</span>
+      <div className={node.borderColor === "#f90" ? "commonNode taskNode isDelivery" : "commonNode taskNode"}>
+        <p className="bold">task</p>
+        <span className="text">{node.text}</span>
       </div>
     );
   }
   return (
-    <div className="commonNode weightNode">
-      <p className="bold">ckpt</p>
-      <span>{node.text}</span>
+    <div className={node.borderColor === "#f90" ? "commonNode weightNode isDelivery" : "commonNode weightNode"}>
+      <p className="bold">{node.type === "ckpt" ? 'ckpt' : 'config'}</p>
+      <span className="text">{node.text}</span>
     </div>
   );
 };
@@ -45,12 +45,15 @@ const onLineClick = (
 };
 
 const options: Partial<RGOptionsFull> = {
-  debug: true,
+  debug: false,
   disableDragNode: false,
   layout: {
     layoutName: 'tree',
     from: 'left',
-    layoutClassName: 'seeks-layout-center',
+    min_per_width: 500,
+    max_per_width: 800,
+    min_per_height: 100,
+    max_per_height: undefined,
   },
   allowSwitchJunctionPoint: false,
   defaultNodeShape: 1,
@@ -72,8 +75,8 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
 }) => {
     const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
       console.log("onNodeClick:", node.text);
-      onNodeClickFn(node.text)
-      return true;
+      if (node.type === 'task') return;
+      onNodeClickFn(String(node.id))
     };
     // https://www.relation-graph.com/#/demo/react?id=toolbar-buttons 自定义toolbar
     return (

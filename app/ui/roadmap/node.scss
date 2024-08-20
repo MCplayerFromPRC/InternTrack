@@ -11,11 +11,23 @@
   }
 }
 
-.configNode {
-  min-width: 100px;
+.isDelivery {
+  border: 5px solid rgb(249, 100, 7);
+}
+
+.taskNode {
+  width: 300px;
+  // max-width: 300px;
+  overflow: hidden;
+  white-space: wrap;
+  word-break: break-all;
   padding: 10px;
   border-radius: 6px;
   background-color: rgb(244, 240, 250);
+
+  span.text {
+    text-align: left;
+  }
 }
 
 .weightNode {

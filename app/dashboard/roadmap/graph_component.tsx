@@ -14,6 +14,7 @@ import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/
 import { layout } from "./client_layout"
 import useSpecialQueue from "./detail_queue"
 import DetailCard from "@/app/ui/detail/Config";
+import { mockData } from './mock';
 
 export const GraphWrapper = () => {
   const [queryRef] = useBackgroundQuery<RoadmapQuery>(RoadmapDocument);
@@ -30,42 +31,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   const [fetchData, { called, refetch }] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
   // const [graphViewData, setGraphViewData] = useState(layout(data));
   // TODO: mock
-  const [graphViewData, setGraphViewData] = useState<RGJsonData>({
-    rootId: 'a',
-    nodes: [
-      { id: 'a', text: 'node1', nodeShape: 1, type: 'config' },
-      { id: 'a1', text: 'step:3000', nodeShape: 0, type: 'ckpt' },
-      { id: 'a2', text: 'node2', nodeShape: 1, type: 'config' },
-      { id: 'a3', text: 'step:6000', type: 'ckpt', nodeShape: 0 },
-
-      { id: 'b', text: 'b-node3', nodeShape: 1, type: 'config' },
-      { id: 'b1', text: 'step:1000', type: 'ckpt', nodeShape: 0 },
-      { id: 'b2', text: 'b-node2', nodeShape: 1, type: 'config' },
-      { id: 'b3', text: 'step:2000', type: 'ckpt', nodeShape: 0 },
-
-      { id: 'c', text: 'c-node3', nodeShape: 1, type: 'config' },
-      { id: 'c1', text: 'step:1000', type: 'ckpt', nodeShape: 0 },
-      { id: 'd', text: 'd-node2', nodeShape: 1, type: 'config' },
-      { id: 'd1', text: 'step:2000', type: 'ckpt', nodeShape: 0 },
-      { id: 'e', text: 'e-node1', nodeShape: 1, type: 'config' },
-      { id: 'e1', text: 'step:4000', type: 'ckpt', nodeShape: 0 },
-    ],
-    lines: [
-      { from: 'a', to: 'a1' },
-      { from: 'a1', to: 'a2' },
-      { from: 'a2', to: 'a3' },
-      { from: 'a1', to: 'b' },
-      { from: 'b', to: 'b1' },
-      { from: 'b1', to: 'b2' },
-      { from: 'b2', to: 'b3' },
-      { from: 'a3', to: 'c' },
-      { from: 'c', to: 'c1' },
-      { from: 'a3', to: 'd' },
-      { from: 'd', to: 'd1' },
-      { from: 'a3', to: 'e' },
-      { from: 'e', to: 'e1' }
-    ]
-  });
+  const [graphViewData, setGraphViewData] = useState<RGJsonData | null>(null);
   const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
 
   const handleClick = async (newSearchKey: string) => {
@@ -79,30 +45,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
     // setGraphViewData(layout(result.data as RoadmapQuery));
   };
 
-  const graphRef = useRef<RelationGraphComponent>(null);
-
-  useEffect(() => {
-    // 没有lines和nodes就不展示图
-    if (!graphViewData.nodes.length || !graphViewData.lines.length) return;
-    showGraph(graphViewData);
-  }, [graphViewData]);
-
   const showGraph = async (graphViewData: RGJsonData) => {
-    // let rootX = 0;
-    // let rootY = 0;
-    // const nodeTempInfo: any = {};
-    // const tempNodesData = graphViewData.nodes.map((item: any, idx: number) => {
-    //   rootX = rootX + 300;
-    //   if (item.from) {
-    //     rootX = nodeTempInfo[item.from].x;
-    //     rootY = nodeTempInfo[item.from].y + 200;
-    //   }
-    //   nodeTempInfo[item.id] = {
-    //     x: rootX,
-    //     y: rootY
-    //   }
-    //   return { ...item, x: rootX, y: rootY };
-    // });
     // 获取数据渲染画布
     const graphInstance = graphRef.current!.getInstance();
     await graphInstance.setJsonData(graphViewData);
@@ -111,10 +54,68 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
     await graphInstance.zoomToFit();
   };
 
-  const toggleRndData = (data: string) => {
+  const handleInfoBar = (nodeId: string) => {
     // 代码框渲染相关
-    enqueue(data);
+    // TODO: 根据id请求config信息
+    const config = `parallel = dict(
+      zero1=dict(size=-1),
+      tensor=dict(size=16, mode="fsp"),
+      pipeline=dict(size=1, interleaved_overlap=True),
+      weight=dict(size=1, overlap=True, memory_pool=True)
+    )
+    DATASET_WEIGHTS = {
+      "github_go": 9.155192239672025e-05,
+      "github_javascript": 0.0003424044244706788,
+      "starcoder_cpp": 0.0003331215920434134,
+      "starcoder_python": 0.00041252998315727664,
+      "github_python": 0.00019326974814897545,
+    }
+    data = dict(
+      type=DATASET_TYPE,
+      tokenizer_wrapper=TOKENIZER_WRAPPER_TYPE,
+      train_folder=TRAIN_FOLDER,
+      valid_folder=VALID_FOLDER,
+      num_worker=4,
+      gradient_accumulation=GRADIENT_ACCUMULATION,
+      text_field="content",
+      drop_last=True,
+      tokenizer_chunk_num=512,
+    )`
+    enqueue('nodeName111', config);
   };
+
+  const graphRef = useRef<RelationGraphComponent>(null);
+
+  useEffect(() => {
+    // 没有lines和nodes就不展示图
+    if (!graphViewData?.nodes?.length || !graphViewData?.lines?.length) return;
+    showGraph(graphViewData);
+  }, [graphViewData]);
+
+  useEffect(() => {
+    if (!mockData) return;
+    console.log('mock data is-----', mockData);
+    const { nodes, lines } = mockData;
+    const temp: any = { rootId: mockData.rootId };
+    temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step }) => {
+      return {
+        id,
+        type,
+        nodeShape: type === 'task' ? 1 : 0,
+        text: type === 'task' ? taskName : step,
+        borderWidth: 0,
+        borderColor: isDeliveryBranch ? '#f90' : '',
+      }
+    });
+    temp.lines = lines.map(({ from, to }) => {
+      return {
+        from,
+        to
+      }
+    });
+    // console.log('generate temp------', temp);
+    setGraphViewData(temp);
+  }, [mockData]);
 
   return (
     <div>
@@ -124,7 +125,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
       <SimpleGraph
         graphRef={graphRef}
         onPanelClick={handleClick}
-        onNodeClickFn={toggleRndData}
+        onNodeClickFn={handleInfoBar}
       />
     </div>
   );
