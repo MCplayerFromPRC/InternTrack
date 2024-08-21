@@ -31,8 +31,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "lib/placeholder-data.ts",
-    "scripts/seed.js", 
-    "schemagen.ts"  
+    "scripts/seed.js",
+    "schemagen.ts"
   ],
   "exclude": ["node_modules"]
 }

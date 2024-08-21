@@ -5,6 +5,8 @@ import { EdgeDocument, NodeDocument } from "./Document";
 
 export class TrainConfig extends NodeDocument {
   modelName: string;
+  configContent: string;
+  startStep: number;
   modelConfig: Record<string, any>;
   dataConfig: Record<string, any>;
   optimizerConfig: Record<string, any>;
@@ -15,15 +17,18 @@ export class TrainConfig extends NodeDocument {
     _id: string,
     _rev: string,
     modelName: string,
-    /* eslint-disable */
-    modelConfig: Record<string, any>,
-    dataConfig: Record<string, any>,
-    optimizerConfig: Record<string, any>,
-    parallelConfig: Record<string, any>,
-    /* eslint-enable */
+    configContent: string,
+    startStep: number = 0,
+
+    modelConfig: Record<string, any> = {},
+    dataConfig: Record<string, any> = {},
+    optimizerConfig: Record<string, any> = {},
+    parallelConfig: Record<string, any> = {},
   ) {
     super(_key, _id, _rev);
     this.modelName = modelName;
+    this.configContent = configContent;
+    this.startStep = startStep;
     this.modelConfig = modelConfig;
     this.dataConfig = dataConfig;
     this.optimizerConfig = optimizerConfig;

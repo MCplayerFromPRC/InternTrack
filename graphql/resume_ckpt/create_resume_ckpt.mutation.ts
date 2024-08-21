@@ -1,6 +1,6 @@
 import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
-import { ResumeCkpt } from "@/models"
+import { ResumeCkpt } from "@/models";
 import { ResumeCkptType } from "./resume_ckpt.type";
 
 export const ResumeCkptInput = builder.inputType("ResumeCkptInput", {
@@ -20,12 +20,12 @@ builder.mutationField("createResumeCkpt", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      const {from, to, ...others} = args.input
+      const { from, to, ...others } = args.input;
       const resumeCkpt = {
         _from: from,
         _to: to,
-        ...others
-      }
+        ...others,
+      };
       return createResumeCkptMutation(resumeCkpt, context);
     },
   });

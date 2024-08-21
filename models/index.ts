@@ -6,22 +6,22 @@ import { CkptStep } from "./CkptStep";
 import { TrainConfig, ResumeCkpt } from "./TrainConfig";
 
 export class Roadmap {
-    ckptList: Checkpoint[];
-    ckptStepList: CkptStep[];
-    trainConfigList: TrainConfig[];
-    resumeCkptList: ResumeCkpt[];
+  ckptList: Checkpoint[];
+  ckptStepList: CkptStep[];
+  trainConfigList: TrainConfig[];
+  resumeCkptList: ResumeCkpt[];
 
-    constructor(
-        ckptList: Checkpoint[],
-        ckptStepList: CkptStep[],
-        trainConfigList: TrainConfig[],
-        resumeCkptList: ResumeCkpt[],
-    ){
-        this.ckptList = ckptList;
-        this.ckptStepList = ckptStepList;
-        this.trainConfigList = trainConfigList;
-        this.resumeCkptList = resumeCkptList;
-    }
+  constructor(
+    ckptList: Checkpoint[],
+    ckptStepList: CkptStep[],
+    trainConfigList: TrainConfig[],
+    resumeCkptList: ResumeCkpt[],
+  ) {
+    this.ckptList = ckptList;
+    this.ckptStepList = ckptStepList;
+    this.trainConfigList = trainConfigList;
+    this.resumeCkptList = resumeCkptList;
+  }
 }
 
 export { Checkpoint, CkptStep, TrainConfig, ResumeCkpt };

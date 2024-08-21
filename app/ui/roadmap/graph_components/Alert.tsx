@@ -9,7 +9,6 @@ const AlertMessage = ({ info, graphRef }: { info: IWarningInfo, graphRef: any })
     console.log('locate node -----', info.id);
     const graphInstance = graphRef.current!.getInstance();
     await graphInstance.focusNodeById(info.id);
-    // graphInstance.dataUpdated();
     await graphInstance.toggleAutoLayout();
     await graphInstance.moveToCenter();
     // await graphInstance.zoomToFit();
@@ -26,9 +25,9 @@ const AlertMessage = ({ info, graphRef }: { info: IWarningInfo, graphRef: any })
           <WarningIcon />
           <span className="flex">{info.message || "Loading..."}</span>
         </div>
-        <div className="flex">
+        <div className="flex shrink-0">
           <Button
-            className="rounded bg-transparent py-2 px-4 text-sm data-[hover]:bg-amber-300 data-[active]:bg-amber-500"
+            className="rounded bg-amber-100 py-2 px-4 text-sm data-[hover]:bg-amber-200 data-[active]:bg-amber-300"
             onClick={locateNode}
           >
             <span className="flex text-yellow-800 hover:text-white active:text-amber-500">定位</span>

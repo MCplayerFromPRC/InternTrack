@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import * as React from "react";
 import { RefObject, PropsWithChildren } from "react";
@@ -35,6 +35,7 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   );
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const onLineClick = (
   line: RGLine,
   // _link: RGLink,
@@ -42,7 +43,7 @@ const onLineClick = (
 ) => {
   console.log("onLineClick:", line.text, line.from, line.to);
 };
-
+/* eslint-enable @typescript-eslint/no-unused-vars */
 const options: Partial<RGOptionsFull> = {
   debug: false,
   disableDragNode: false,
@@ -96,10 +97,10 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
             <React.Fragment>
               <Panel onSearchClick={onPanelClick} warningList={warningList} graphRef={graphRef} ></Panel>
               <RGMiniView width="18%" height="20%" position="tr" />
-            </React.Fragment>
+            </React.Fragment >
           }
         />
-      </div>
+      </div >
     );
   };
 

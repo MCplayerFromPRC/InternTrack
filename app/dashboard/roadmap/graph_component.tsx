@@ -30,7 +30,11 @@ export const GraphWrapper = () => {
   );
 };
 
-export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables> }) => {
+export const RoadmapGraph = ({
+  queryRef,
+}: {
+  queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables>;
+}) => {
   const { data } = useReadQuery(queryRef);
   console.log('roadmap data-----', data);
   const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的

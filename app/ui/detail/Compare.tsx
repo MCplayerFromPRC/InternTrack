@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import CodeMirrorMerge from 'react-codemirror-merge';
 import { EditorView } from 'codemirror';

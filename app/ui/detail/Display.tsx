@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import CodeMirror from '@uiw/react-codemirror';
 import { langs } from '@uiw/codemirror-extensions-langs';
@@ -19,5 +19,5 @@ export const Display = (props: IProps) => {
       {/* <div>{nodeInfo.name}</div> */}
       <CodeMirror value={nodeInfo.config} extensions={[langs.python()]} />
     </div>
-  )
-}
+  );
+};

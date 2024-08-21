@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useContext } from "react";
 import { RelationGraphStoreContext } from "relation-graph-react";
@@ -12,7 +12,7 @@ const MyToolbar = () => {
     graphInstance.refresh();
   };
 
-  //eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  //eslint-disable-next-line @typescript-eslint/no-unused-vars
   const switchLayout = (layoutConfig: any) => {
     console.log("change layout:", layoutConfig);
     graphInstance.switchLayout(layoutConfig);

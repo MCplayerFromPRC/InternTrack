@@ -3,7 +3,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "start": "next start",
+    "start": "next start --keepAliveTimeout 30000",
     "schemagen": "graphql-codegen --require tsconfig-paths/register --config schemagen.ts",
     "codegen": "graphql-codegen --require tsconfig-paths/register --config codegen.ts",
     "prepare": "husky init"

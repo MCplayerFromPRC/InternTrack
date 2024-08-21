@@ -6,8 +6,8 @@ export const config: Config = {
   databaseName: process.env.ARANGODB_DATABASE,
   auth: {
     username: process.env.ARANGODB_USER as string,
-    password: process.env.ARANGODB_PASSWORD
-  }
+    password: process.env.ARANGODB_PASSWORD,
+  },
 };
 
 // 创建数据库连接

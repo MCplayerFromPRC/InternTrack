@@ -1,15 +1,15 @@
-import '@/app/ui/global.css';
-import { inter } from '@/app/ui/fonts';
-import { Metadata } from 'next';
-import WSComp from '@/app/dashboard/wscomponent';
+import "@/app/ui/global.css";
+import { inter } from "@/app/ui/fonts";
+import { Metadata } from "next";
+// import WSComp from "@/app/dashboard/wscomponent";
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Acme Dashboard',
     default: 'Intern Track',
   },
-  description: 'The official Next.js Learn Dashboard built with App Router.',
-  metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+  description: "The official Next.js Learn Dashboard built with App Router.",
+  metadataBase: new URL("https://next-learn-dashboard.vercel.sh"),
 };
 export default function RootLayout({
   children,

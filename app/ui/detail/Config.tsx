@@ -28,7 +28,7 @@ export default function DetailCard({ onclickFuncs, queue }: {
       onResize={(ref: any) => {
         setSize({
           width: ref.style.width,
-          height: ref.style.height
+          height: ref.style.height,
         });
       }}
     >
@@ -42,5 +42,5 @@ export default function DetailCard({ onclickFuncs, queue }: {
         )
       }
     </Rnd>
-  )
+  );
 }

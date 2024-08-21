@@ -36,9 +36,7 @@ type UserSchemaType = {
       Output: Duration;
     };
     JSON: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Input: Record<string, any>;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Output: Record<string, any>;
     };
     NonNegativeInt: {
