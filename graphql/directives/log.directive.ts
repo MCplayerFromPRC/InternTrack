@@ -1,6 +1,8 @@
 import { getDirective, MapperKind, mapSchema } from "@graphql-tools/utils";
 import { GraphQLSchema } from "graphql/type";
 import { DirectiveNames } from "./index";
+import { defaultFieldResolver } from "graphql/execution";
+import { GraphQLResolveInfo } from "graphql/type";
 
 /**
  * Prints out a log of the field name where the directive is applied
@@ -17,7 +19,7 @@ export function registerLogDirective(schema: GraphQLSchema) {
       )?.[0];
 
       if (logDirective) {
-        const { resolve } = fieldConfig;
+        const { resolve = defaultFieldResolver } = fieldConfig;
 
         if (!resolve) {
           return fieldConfig;
@@ -25,7 +27,12 @@ export function registerLogDirective(schema: GraphQLSchema) {
 
         // Replace the original resolver so we can put in our custom directive logic, then call
         // the original resolver
-        fieldConfig.resolve = async function (source, args, context, info) {
+        fieldConfig.resolve = async function (
+          source: any,
+          args: { [argName: string]: any },
+          context: any,
+          info: GraphQLResolveInfo,
+        ) {
           console.log(
             `Directive ${DirectiveNames.consoleLog} accessing ${info.parentType ?? "undefined"} type '${info.fieldName}' field`,
           );

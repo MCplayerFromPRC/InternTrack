@@ -6,77 +6,77 @@
 4. https://github.com/dotansimha/graphql-code-generator-community/tree/main/packages/plugins/typescript
 */
 
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const checkpoint = gql`
-fragment checkpoint on Checkpoint {
-  id
-  key
-  revision
-  md5
-  step
-  config
-  isDelivery
-}
-`
+  fragment checkpoint on Checkpoint {
+    id
+    key
+    revision
+    md5
+    step
+    config
+    isDelivery
+  }
+`;
 
 export const ckptStep = gql`
-fragment step on CkptStep {
-  id
-  key
-  from
-  to
-  tokens
-  duration
-}
-`
+  fragment step on CkptStep {
+    id
+    key
+    from
+    to
+    tokens
+    duration
+  }
+`;
 
 export const trainConfig = gql`
-fragment trainConfig on TrainConfig {
-  id
-  key
-  modelName
-}
-`
+  fragment trainConfig on TrainConfig {
+    id
+    key
+    modelName
+  }
+`;
 
 export const resumeCkpt = gql`
-fragment resumeCkpt on ResumeCkpt {
-  id
-  key
-  from
-  to
-  isSameTask
-}
-`
+  fragment resumeCkpt on ResumeCkpt {
+    id
+    key
+    from
+    to
+    isSameTask
+  }
+`;
 
 export const roadmap = gql`
-fragment roadmap on Roadmap {
-  ckptList {
+  fragment roadmap on Roadmap {
+    ckptList {
       ...checkpoint
-  }
-  ckptStepList {
+    }
+    ckptStepList {
       ...step
-  }
-  trainConfigList {
+    }
+    trainConfigList {
       ...trainConfig
-  }
-  resumeCkptList {
+    }
+    resumeCkptList {
       ...resumeCkpt
+    }
   }
-}
 
-${checkpoint}
-${ckptStep}
-${trainConfig}
-${resumeCkpt}
+  ${checkpoint}
+  ${ckptStep}
+  ${trainConfig}
+  ${resumeCkpt}
 `;
 
 export const getRoadmap = gql`
-query Roadmap {
-  roadmap{
-    ...roadmap
+  query Roadmap {
+    roadmap {
+      ...roadmap
+    }
   }
-}
 
-${roadmap}
+  ${roadmap}
 `;

@@ -20,15 +20,11 @@ const options: EdgeDefinitionOptions[] = [
 ];
 
 export async function seed(db: Database) {
-  try {
-    const graph = db.graph("InternLMRoadmap");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const graphInfo = await graph.create(options);
+  const graph = db.graph("InternLMRoadmap");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const graphInfo = await graph.create(options);
 
-    const vertex = await graph.listVertexCollections();
-    const edge = await graph.listEdgeCollections();
-    console.log(`graph vertex: ${vertex}, graph edge: ${edge}`);
-  } catch (err) {
-    console.error("Failed to create graph for full database search:", err);
-  }
+  const vertex = await graph.listVertexCollections();
+  const edge = await graph.listEdgeCollections();
+  console.log(`graph vertex: ${vertex}, graph edge: ${edge}`);
 }

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import * as React from "react";
 import { RefObject, PropsWithChildren } from "react";
@@ -14,7 +14,6 @@ import RelationGraph, { RGMiniView } from "relation-graph-react";
 import Panel from "./graph_components/Panel";
 import MyToolbar from "./graph_components/ToolBar";
 // import DetailCard from "../detail/Config"
-
 
 const getNodeStyle: React.CSSProperties = {
   zIndex: 555,
@@ -58,6 +57,7 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   );
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const onLineClick = (
   line: RGLine,
   _link: RGLink,
@@ -66,7 +66,7 @@ const onLineClick = (
   console.log("onLineClick:", line.text, line.from, line.to);
   return true;
 };
-
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const options: Partial<RGOptionsFull> = {
   debug: true,
@@ -85,20 +85,17 @@ const options: Partial<RGOptionsFull> = {
   defaultExpandHolderPosition: "right",
 };
 
-export const SimpleGraph: React.FC<PropsWithChildren<{
-  graphRef: RefObject<RelationGraphComponent>,
-  onPanelClick: CallableFunction,
-  onNodeClickFn: CallableFunction,
-}>> = ({
-  children,
-  graphRef,
-  onPanelClick,
-  onNodeClickFn,
-}) => {
-
+export const SimpleGraph: React.FC<
+  PropsWithChildren<{
+    graphRef: RefObject<RelationGraphComponent>;
+    onPanelClick: CallableFunction;
+    onNodeClickFn: CallableFunction;
+  }>
+> = ({ children, graphRef, onPanelClick, onNodeClickFn }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
     console.log("onNodeClick:", node.text);
-    onNodeClickFn(node.text)
+    onNodeClickFn(node.text);
     return true;
   };
 
@@ -118,7 +115,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           // canvasPlugAboveSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           graphPlugSlot={
             <React.Fragment>
-              <Panel onSearchClick={onPanelClick} ></Panel>
+              <Panel onSearchClick={onPanelClick}></Panel>
               <RGMiniView width="18%" height="20%" position="tr" />
             </React.Fragment>
           }

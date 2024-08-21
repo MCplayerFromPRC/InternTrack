@@ -15,9 +15,9 @@ builder.queryField("roadmap", (t) => {
 
 export async function postQuery(context: GQLContext) {
   return {
-    ckptList: await context.dataSources?.ckpts.findAll() ?? [],
-    ckptStepList: await context.dataSources?.ckptStep.findAll() ?? [],
-    trainConfigList: await context.dataSources?.config.findAll() ?? [],
-    resumeCkptList: await context.dataSources?.resumeCkpt.findAll() ?? [],
-  }
+    ckptList: (await context.dataSources?.ckpts.findAll()) ?? [],
+    ckptStepList: (await context.dataSources?.ckptStep.findAll()) ?? [],
+    trainConfigList: (await context.dataSources?.config.findAll()) ?? [],
+    resumeCkptList: (await context.dataSources?.resumeCkpt.findAll()) ?? [],
+  };
 }

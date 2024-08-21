@@ -1,6 +1,6 @@
 import { GQLContext } from "@/lib/properties";
 import { builder } from "@/graphql/builder";
-import { CkptStep } from "@/models"
+import { CkptStep } from "@/models";
 import { CkptStepType } from "./ckpt_step.type";
 
 export const CkptStepInput = builder.inputType("CkptStepInput", {
@@ -21,12 +21,12 @@ builder.mutationField("createCkptStep", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      const {from, to, ...others} = args.input
+      const { from, to, ...others } = args.input;
       const ckptStep = {
         _from: from,
         _to: to,
-        ...others
-      }
+        ...others,
+      };
       return createCkptStepMutation(ckptStep, context);
     },
   });

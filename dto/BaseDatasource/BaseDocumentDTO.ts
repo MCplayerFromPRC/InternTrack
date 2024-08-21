@@ -6,7 +6,7 @@ import {
   InMemoryLRUCache,
   KeyValueCacheSetOptions,
 } from "@apollo/utils.keyvaluecache";
-import type {KeyValueCache} from "@apollo/utils.keyvaluecache";
+import type { KeyValueCache } from "@apollo/utils.keyvaluecache";
 import { Database } from "arangojs";
 import type { DocumentCollection } from "arangojs/collection";
 import { GraphQLError } from "graphql/error";

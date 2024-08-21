@@ -1,11 +1,8 @@
-import { Database, aql } from "arangojs";
+import { Database } from "arangojs";
 import { GraphQLError } from "graphql/error";
-import { injectable } from "inversify"; 
+import { injectable } from "inversify";
 
-export const isArangoDb = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  maybeDatabase: any,
-): maybeDatabase is Database => {
+export const isArangoDb = (maybeDatabase: any): maybeDatabase is Database => {
   return maybeDatabase.isArangoDatabase && maybeDatabase.name;
 };
 
@@ -24,7 +21,6 @@ export interface DataSourceOptions {
 }
 
 export type QueryObject = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
 
@@ -44,7 +40,6 @@ export class BaseDatasource {
     this.options = options;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async executeQuery<T = any>(query: string): Promise<T[]> {
     const cursor = await this.db.query<T>(query);
     const results = await cursor.all();

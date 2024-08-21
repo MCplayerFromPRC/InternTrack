@@ -21,7 +21,7 @@ builder.objectType(NewCkptEvent, {
   name: "NewPostEvent",
   description: "When a new post is created",
   interfaces: [IBaseCkptEvent],
-  isTypeOf: (value) => {
+  isTypeOf: (value: any) => {
     // This is the recommended approach to type things in isTypeOf
     // https://github.com/hayes/pothos/issues/336
     return (value as NewCkptEvent).eventType === CkptEventType.NewCkpt;
