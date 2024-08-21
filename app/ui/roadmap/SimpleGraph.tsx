@@ -4,7 +4,6 @@ import * as React from "react";
 import { RefObject, PropsWithChildren } from "react";
 import RelationGraph, {
   RGLine,
-  RGLink,
   RGNode,
   RGNodeSlotProps,
   RGOptionsFull,
@@ -13,11 +12,11 @@ import RelationGraph, {
   RGMiniView
 } from "relation-graph-react";
 import Panel from "./graph_components/Panel";
-import MyToolbar from "./graph_components/ToolBar";
+// import MyToolbar from "./graph_components/ToolBar";
 import './node.scss';
 // import './tree-distance.scss';
 // import DetailCard from "../detail/Config"
-
+import { IWarningInfo } from '../../dashboard/roadmap/graph_component';
 const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
   // console.log("NodeSlot:");
   if (node.type === "task") {
@@ -38,8 +37,8 @@ const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
 
 const onLineClick = (
   line: RGLine,
-  _link: RGLink,
-  _e: MouseEvent | TouchEvent,
+  // _link: RGLink,
+  // _e: MouseEvent | TouchEvent,
 ) => {
   console.log("onLineClick:", line.text, line.from, line.to);
 };
@@ -65,19 +64,22 @@ const options: Partial<RGOptionsFull> = {
 };
 
 export const SimpleGraph: React.FC<PropsWithChildren<{
+  warningList: IWarningInfo[],
   graphRef: RefObject<RelationGraphComponent>,
   onPanelClick: CallableFunction,
   onNodeClickFn: CallableFunction,
 }>> = ({
+  warningList,
   graphRef,
   onPanelClick,
   onNodeClickFn,
 }) => {
-    const onNodeClick = (node: RGNode, _e: MouseEvent | TouchEvent) => {
+    const onNodeClick = (node: RGNode) => {
       console.log("onNodeClick:", node.text);
       if (node.type === 'task') return;
       onNodeClickFn(String(node.id))
     };
+
     // https://www.relation-graph.com/#/demo/react?id=toolbar-buttons 自定义toolbar
     return (
       <div
@@ -90,11 +92,9 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           onNodeClick={onNodeClick}
           onLineClick={onLineClick}
           toolBarSlot={<GraphToolBar />}
-          // canvasPlugSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
-          // canvasPlugAboveSlot={<DetailCard onclickFuncs={[()=>{}, ()=>{}]} children={["test1", "test2"]} />}
           graphPlugSlot={
             <React.Fragment>
-              <Panel onSearchClick={onPanelClick} ></Panel>
+              <Panel onSearchClick={onPanelClick} warningList={warningList} graphRef={graphRef} ></Panel>
               <RGMiniView width="18%" height="20%" position="tr" />
             </React.Fragment>
           }

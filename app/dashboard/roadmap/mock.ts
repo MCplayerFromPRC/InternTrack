@@ -584,7 +584,7 @@ data = dict(
   warnings: [
     {
       id: "Checkpoint/a3",
-      message: "mock警告信息1",
+      message: "mock警告信息1mock警告信息1mock警告信息1mock警告信息1mock警告信息1mock警告信息1",
     },
     {
       id: "Checkpoint/d2",

@@ -3,7 +3,12 @@
 ## quote:
 1. https://github.com/apollographql/apollo-client-nextjs/blob/main/examples/polls-demo/app/cc/poll-cc.tsx
 */
-
+export interface IWarningInfo {
+  id: string;
+  message: string;
+  taskId?: string;
+}
+import React from 'react';
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useReadQuery, useBackgroundQuery, useLazyQuery } from "@apollo/client";
 import { RGJsonData, RelationGraphComponent } from "relation-graph-react";
@@ -11,7 +16,7 @@ import { QueryRef } from "@apollo/client/react";
 import { SimpleGraph } from "@/app/ui/roadmap/SimpleGraph";
 import Loading from "@/app/dashboard/(overview)/loading"
 import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/fragments.generated"
-import { layout } from "./client_layout"
+// import { layout } from "./client_layout"
 import useSpecialQueue from "./detail_queue"
 import DetailCard from "@/app/ui/detail/Config";
 import { mockData } from './mock';
@@ -28,20 +33,22 @@ export const GraphWrapper = () => {
 export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables> }) => {
   const { data } = useReadQuery(queryRef);
   console.log('roadmap data-----', data);
-  const [fetchData, { called, refetch }] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
-  // const [graphViewData, setGraphViewData] = useState(layout(data));
-  // TODO: mock
+  const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
+  // TODO: 数据现在是mock的，要换成接口请求
   const [graphViewData, setGraphViewData] = useState<RGJsonData | null>(null);
   const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
+  const [warningList, setWarning] = useState<IWarningInfo[]>([]);
 
-  const handleClick = async (newSearchKey: string) => {
+  const handleSearch = async (newSearchKey: string) => {
+    console.log('keyword----', newSearchKey);
     // 搜索框里search的点击
-    let result;
-    if (newSearchKey) {
-      result = await fetchData();
-    } else {
-      result = await fetchData();
-    }
+    // let result;
+    // if (newSearchKey) {
+    //   result = await fetchData();
+    // } else {
+    //   result = await fetchData();
+    // }
+    // console.log(result);
     // setGraphViewData(layout(result.data as RoadmapQuery));
   };
 
@@ -55,6 +62,7 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   };
 
   const handleInfoBar = (nodeId: string) => {
+    console.log(nodeId);
     // 代码框渲染相关
     // TODO: 根据id请求config信息
     const config = `parallel = dict(
@@ -95,7 +103,11 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   useEffect(() => {
     if (!mockData) return;
     console.log('mock data is-----', mockData);
-    const { nodes, lines } = mockData;
+    const { nodes, lines, warnings } = mockData;
+    // 处理warning数据
+    if (warnings.length) {
+      setWarning(warnings);
+    }
     const temp: any = { rootId: mockData.rootId };
     temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step }) => {
       return {
@@ -120,11 +132,12 @@ export const RoadmapGraph = ({ queryRef }: { queryRef: QueryRef<RoadmapQuery, Ro
   return (
     <div>
       {!isEmpty && (
-        <DetailCard onclickFuncs={dequeue} children={queue}></DetailCard>
+        <DetailCard onclickFuncs={dequeue} queue={queue} />
       )}
       <SimpleGraph
+        warningList={warningList}
         graphRef={graphRef}
-        onPanelClick={handleClick}
+        onPanelClick={handleSearch}
         onNodeClickFn={handleInfoBar}
       />
     </div>
