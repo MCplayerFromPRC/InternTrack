@@ -35,9 +35,9 @@ export default function DetailCard({ onclickFuncs, queue }: {
       {
         queue[0] && (
           queue[1] ? (
-            <Compare nodeInfo1={queue[0]} nodeInfo2={queue[1]} width={size.width} height={size.height}></Compare>
+            <Compare nodeInfo1={queue[0]} nodeInfo2={queue[1]} width={size.width} height={size.height} />
           ) : (
-            <Display nodeInfo={queue[0]} width={size.width} height={size.height}></Display>
+            <Display nodeInfo={queue[0]} width={size.width} height={size.height} />
           )
         )
       }

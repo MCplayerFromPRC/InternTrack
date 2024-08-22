@@ -46,13 +46,13 @@ export const RoadmapGraph = ({
   const handleSearch = async (newSearchKey: string) => {
     console.log('keyword----', newSearchKey);
     // 搜索框里search的点击
-    // let result;
-    // if (newSearchKey) {
-    //   result = await fetchData();
-    // } else {
-    //   result = await fetchData();
-    // }
-    // console.log(result);
+    let result;
+    if (newSearchKey) {
+      result = await fetchData();
+    } else {
+      result = await fetchData();
+    }
+    console.log(result);
     // setGraphViewData(layout(result.data as RoadmapQuery));
   };
 
@@ -129,7 +129,6 @@ export const RoadmapGraph = ({
         to
       }
     });
-    // console.log('generate temp------', temp);
     setGraphViewData(temp);
   }, [mockData]);
 
