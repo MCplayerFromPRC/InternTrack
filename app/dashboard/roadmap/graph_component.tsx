@@ -35,24 +35,25 @@ export const RoadmapGraph = ({
 }: {
   queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables>;
 }) => {
-  const { data } = useReadQuery(queryRef);
-  console.log('roadmap data-----', data);
-  const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
+  // const { data } = useReadQuery(queryRef);
+  // console.log('roadmap data-----', data);
+  //const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
   // TODO: 数据现在是mock的，要换成接口请求
   const [graphViewData, setGraphViewData] = useState<RGJsonData | null>(null);
   const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
   const [warningList, setWarning] = useState<IWarningInfo[]>([]);
-
+  const [cardType, setCardType] = useState('');
+  const [tableRes, setTableRes] = useState<any[]>([]);
   const handleSearch = async (newSearchKey: string) => {
     console.log('keyword----', newSearchKey);
     // 搜索框里search的点击
-    let result;
-    if (newSearchKey) {
-      result = await fetchData();
-    } else {
-      result = await fetchData();
-    }
-    console.log(result);
+    // let result;
+    // if (newSearchKey) {
+    //   result = await fetchData();
+    // } else {
+    //   result = await fetchData();
+    // }
+    // console.log(result);
     // setGraphViewData(layout(result.data as RoadmapQuery));
   };
 
@@ -65,9 +66,7 @@ export const RoadmapGraph = ({
     await graphInstance.zoomToFit();
   };
 
-  const handleInfoBar = (nodeId: string) => {
-    console.log(nodeId);
-    // 代码框渲染相关
+  const queryConfig = (nodeId: string) => {
     // TODO: 根据id请求config信息
     const config = `parallel = dict(
       zero1=dict(size=-1),
@@ -92,8 +91,48 @@ export const RoadmapGraph = ({
       text_field="content",
       drop_last=True,
       tokenizer_chunk_num=512,
-    )`
-    enqueue('nodeName111', config);
+    )`;
+
+    enqueue(nodeId, config);
+  };
+
+  const queryTableRes = () => {
+    setTableRes([
+      {
+        id: '1',
+        key: '1',
+        dataset: '数据集1',
+        subDataset: '10 Downing Street',
+        rate: 54.5
+      },
+      {
+        id: '2',
+        key: '2',
+        dataset: '数据集22',
+        subDataset: '2323234 Downing Street',
+        rate: 90
+      },
+      {
+        id: '3',
+        key: '23',
+        dataset: '数据集333',
+        subDataset: '2333323234',
+        rate: 90
+      },
+    ]);
+  };
+
+  const handleInfoBar = (nodeId: string, type: string = 'config') => {
+    console.log(nodeId);
+    setCardType(type);
+    // 代码框渲染相关
+    if (type === 'config') {
+      queryConfig(nodeId);
+    }
+
+    if (type === 'result') {
+      queryTableRes();
+    }
   };
 
   const graphRef = useRef<RelationGraphComponent>(null);
@@ -135,7 +174,7 @@ export const RoadmapGraph = ({
   return (
     <div>
       {!isEmpty && (
-        <DetailCard onclickFuncs={dequeue} queue={queue} />
+        <DetailCard onclickFuncs={dequeue} queue={queue} tableRes={tableRes} cardType={cardType} />
       )}
       <SimpleGraph
         warningList={warningList}

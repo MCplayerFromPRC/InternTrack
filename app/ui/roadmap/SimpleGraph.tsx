@@ -8,15 +8,15 @@ import RelationGraph, {
   RGNodeSlotProps,
   RGOptionsFull,
   RelationGraphComponent,
-  GraphToolBar,
   RGMiniView
 } from "relation-graph-react";
+import { Tooltip } from "react-tooltip";
 import Panel from "./graph_components/Panel";
-// import MyToolbar from "./graph_components/ToolBar";
+import MyToolbar from "./graph_components/ToolBar";
 import './node.scss';
 import Upload from '../upload';
 import { IWarningInfo } from '../../dashboard/roadmap/graph_component';
-
+import { message } from 'antd';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const onLineClick = (
   line: RGLine,
@@ -65,13 +65,14 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     // 删除评测结果
     const delRes = (nodeId: string) => {
       console.log('del res----', nodeId);
+      message.success('删除成功');
     };
 
     const onNodeClick = (node: RGNode) => {
       console.log("onNodeClick:", node.text);
       // 点击task节点无反应
       if (node.type === 'task' || node.type === 'ckpt') return;
-      onNodeClickFn(String(node.id))
+      onNodeClickFn(String(node.id), 'config');
     };
 
     const nodeSlotOver = (nodeObject: RGNode) => {
@@ -96,10 +97,10 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     const doAction = (actionName: string) => {
       console.log('action name-----', actionName);
       if (actionName === 'config') {
-        onNodeClickFn(currentNode?.id);
+        onNodeClickFn(currentNode?.id, 'config');
       }
       if (actionName === 'result') {
-        onNodeClickFn(currentNode?.id);
+        onNodeClickFn(currentNode?.id, 'result');
       }
       if (actionName === 'upload') {
         console.log('show upload panel');
@@ -139,7 +140,9 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     return (
       <div
         ref={myPage}
-        onClick={() => setIsShowNodeMenuPanel(false)}
+        onClick={() => {
+          setIsShowNodeMenuPanel(false);
+        }}
         style={{ height: "85dvh", width: "100%", border: "#efefef solid 1px" }}
       >
         <RelationGraph
@@ -148,13 +151,14 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           nodeSlot={NodeSlot}
           onNodeClick={onNodeClick}
           onLineClick={onLineClick}
-          toolBarSlot={<GraphToolBar />}
+          toolBarSlot={<MyToolbar />}
           graphPlugSlot={
-            <React.Fragment>
+            <>
               <Panel onSearchClick={onPanelClick} warningList={warningList} graphRef={graphRef} />
               {/* <RGMiniView width="18%" height="20%" position="tr" /> */}
               <RGMiniView width="300px" height="150px" position="tr" />
-            </React.Fragment >
+              <Tooltip id="my-tooltip" />
+            </>
           }
         />
         {/* ckpt节点的点击菜单 */}
@@ -183,7 +187,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
         )}
         {/* 上传panel */}
         {
-          isShowUploadPanel && <Upload />
+          isShowUploadPanel && <Upload closePop={() => { setIsShowUploadPanel(false) }} />
         }
       </div >
     );

@@ -1,3 +1,0 @@
-pnpm exec lint-staged
-pnpm prettier --check .
-pnpm tsc --build

@@ -12,9 +12,9 @@ export const Compare = ({ nodeInfo1, nodeInfo2, width, height }: { nodeInfo1: IN
   return (
     <div style={{ width: width, height: height }}>
       <CodeMirrorMerge>
-        <Original value={nodeInfo1.config} />
+        <Original value={nodeInfo1?.config} />
         <Modified
-          value={nodeInfo2.config}
+          value={nodeInfo2?.config}
           extensions={[EditorView.editable.of(false), EditorState.readOnly.of(true)]}
         />
       </CodeMirrorMerge>

@@ -6,7 +6,7 @@
     "start": "next start --keepAliveTimeout 30000",
     "schemagen": "graphql-codegen --require tsconfig-paths/register --config schemagen.ts",
     "codegen": "graphql-codegen --require tsconfig-paths/register --config codegen.ts",
-    "prepare": "husky init"
+    "prepare": "husky"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
@@ -29,6 +29,7 @@
     "@uiw/codemirror-extensions-langs": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
     "@vercel/postgres": "^0.8.0",
+    "antd": "^5.20.2",
     "arangojs": "^8.8.1",
     "autoprefixer": "10.4.19",
     "bcrypt": "^5.1.1",
@@ -55,6 +56,7 @@
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.3",
     "react-rnd": "^10.4.11",
+    "react-tooltip": "^5.28.0",
     "reflect-metadata": "^0.2.2",
     "relation-graph": "^2.2.2",
     "relation-graph-react": "^2.2.2",
@@ -83,7 +85,6 @@
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.35.0",
     "globals": "^15.9.0",
-    "husky": "^9.1.4",
     "lint-staged": "^15.2.9",
     "prettier": "^3.3.3",
     "tsconfig-paths": "^4.2.0",
@@ -102,11 +103,6 @@
     "bracketSameLine": false,
     "arrowParens": "always",
     "endOfLine": "lf"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

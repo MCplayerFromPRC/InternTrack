@@ -1,58 +1,54 @@
-import { useState } from "react";
+import { INodeInfo } from "@/app/ui/detail/Display";
+import { useEffect, useState } from "react";
 
 type SpecialQueue<T> = {
-  enqueue: (nodeName: string, item: T) => void;
-  dequeue: [(index: 0) => T | null, (index: 1) => T | null];
+  enqueue: (nodeId: string, item: string) => void;
+  dequeue: (idx: number) => void;
   isEmpty: boolean;
-  queue: (T | null)[];
+  queue: (INodeInfo)[];
 };
 
 function useSpecialQueue<T>(): SpecialQueue<T> {
-  const [queue, setQueue] = useState<(T | null)[]>([null, null]);
+  const [queue, setQueue] = useState<(INodeInfo)[]>([]);
 
-  const isEmpty = queue[0] === null && queue[1] === null;
+  const [isEmpty, setIsEmpty] = useState(queue.length === 0);
 
-  const enqueue = (nodeName: string, item: T) => {
-    const nodeInfo = {
-      name: nodeName,
+  const enqueue = (nodeId: string, item: string) => {
+    const nodeInfo: INodeInfo = {
+      name: nodeId,
       config: item
     }
-    setQueue((prevQueue: any) => {
-      if (prevQueue[0] === null) {
-        return [nodeInfo, null];
-      } else if (prevQueue[1] === null) {
-        return [prevQueue[0], nodeInfo];
-      } else {
-        return [prevQueue[1], nodeInfo];
-      }
-    });
+    const tempArr = [...queue];
+    const len = tempArr.length;
+    // 处理queue
+    // 如果nodeId，type都和queue的最后一项相同，直接return
+    if (nodeId === queue?.[len - 1]?.name) {
+      return;
+    }
+    // queue为空，或者length<2且前面一项的type相同，直接push
+    if (!tempArr.length || (tempArr.length < 2)) {
+      tempArr.push(nodeInfo);
+      setQueue(tempArr);
+      return;
+    }
+    // 如果已有两项，替换后面那一项
+    // if (tempArr.length === 2) {
+
+    // }
   };
 
-  const dequeue0 = (): T | null => {
-    let item: T | null = null;
-    setQueue((prevQueue) => {
-      item = prevQueue[0];
-      if (prevQueue[1] !== null) {
-        return [prevQueue[1], null];
-      } else {
-        return [null, null];
-      }
-    });
-    return item;
+  const dequeue = (idx: number) => {
+    const tempArr = [...queue].slice(idx, 1);
+    setQueue(tempArr)
   };
 
-  const dequeue1 = (): T | null => {
-    let item: T | null = null;
-    setQueue((prevQueue) => {
-      item = prevQueue[1];
-      return [prevQueue[0], null];
-    });
-    return item;
-  };
+  useEffect(() => {
+    setIsEmpty(queue[0] === null && queue[1] === null);
+  }, [queue]);
 
   return {
     enqueue,
-    dequeue: [dequeue0, dequeue1],
+    dequeue,
     isEmpty,
     queue
   };
