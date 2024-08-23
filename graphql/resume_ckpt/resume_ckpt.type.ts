@@ -17,7 +17,6 @@ export const ResumeCkptType: ObjectRef<ResumeCkpt> = builder.objectType(
       revision: t.exposeString("_rev"),
       from: t.exposeString("_from"),
       to: t.exposeString("_to"),
-      isSameTask: t.exposeBoolean("isSameTask"),
     }),
   },
 );

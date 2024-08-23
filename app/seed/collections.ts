@@ -1,7 +1,7 @@
 import { Database } from "arangojs";
 import { CollectionType } from "arangojs/collection";
 
-const collections: string[] = ["TrainingLog", "TrainingTask"];
+const collections: string[] = ["TrainLog", "TrainProc"];
 
 const option = { type: CollectionType.DOCUMENT_COLLECTION };
 

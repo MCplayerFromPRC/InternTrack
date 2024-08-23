@@ -11,14 +11,15 @@ export const CheckpointType: ObjectRef<Checkpoint> = builder.objectType(
     description: "Large Language Model Checkpoint",
     fields: (t) => ({
       id: t.exposeString("_id", {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         directives: [useLogDirective({ type: type_name })],
       }),
       key: t.exposeString("_key"),
       revision: t.exposeString("_rev"),
       md5: t.exposeString("md5"),
       step: t.exposeInt("step"),
+      isSnapshot: t.exposeBoolean("isSnapshot"),
       isDelivery: t.exposeBoolean("isDelivery"),
+      isRewardModel: t.exposeBoolean("isRewardModel"),
       saveTime: t.expose("saveTime", {
         type: "DateTime",
       }),

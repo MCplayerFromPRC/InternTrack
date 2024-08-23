@@ -9,8 +9,8 @@ const options: EdgeDefinitionOptions[] = [
   },
   {
     collection: "ResumeCkpt",
-    from: ["Checkpoint"],
-    to: ["TrainConfig"],
+    from: ["Checkpoint", "Checkpoint", "TrainTask"],
+    to: ["TrainConfig", "TrainTask", "TrainConfig"],
   },
   {
     collection: "CkptEval",

@@ -5,14 +5,34 @@ import { injectable, inject } from "inversify";
 import { TrainTask } from "@/models";
 import { BaseCollectionDatasource } from "./BaseDatasource/BaseDocumentDTO";
 import type { DataSourceOptions } from "./BaseDatasource/BaseDTO";
+import { TYPES } from "@/lib/properties";
 
 @injectable()
 export class TrainTaskDatasource extends BaseCollectionDatasource<TrainTask> {
   constructor(
-    @inject("db") db: Database,
-    @inject("cache") cache: KeyValueCache,
-    @inject("dataSourceOption") options: DataSourceOptions = {},
+    @inject(TYPES.Database) db: Database,
+    @inject(TYPES.KeyValueCache) cache: KeyValueCache,
+    @inject(TYPES.DataSourceOptions) options: DataSourceOptions = {},
   ) {
     super(db, db.collection("TrainTask"), cache, options);
+  }
+
+  async findOneByName(name: string): Promise<TrainTask> {
+    const query = `FOR doc IN ${this.collection} FILTER doc.name == ${name} RETURN doc`;
+    const cursor = await this.db.query<TrainTask>(query);
+    const count = cursor.count;
+    if (count == 1) {
+      const result = await cursor.next();
+      if (result !== undefined) {
+        return result;
+      }
+    } else if (count == 0) {
+      throw new Error(`Task name ${name} not found`);
+    } else {
+      throw new Error(
+        `${cursor.all().then((items) => items.map((item) => item._id))} has same task name ${name}`,
+      );
+    }
+    return {} as TrainTask;
   }
 }

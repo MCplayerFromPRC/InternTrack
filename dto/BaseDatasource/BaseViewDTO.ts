@@ -17,7 +17,7 @@ import { BaseDatasource } from "./BaseDTO";
 // BaseViewDatasource<Checkpoint|TrainingConfig>
 @injectable()
 export class BaseViewDatasource<
-  TData extends NodeDocument,
+  TData extends Partial<NodeDocument>,
 > extends BaseDatasource {
   view: View;
   fields: string[] = [];

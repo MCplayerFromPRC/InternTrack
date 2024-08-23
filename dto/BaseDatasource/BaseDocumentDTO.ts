@@ -68,12 +68,12 @@ export class BaseCollectionDatasource<TData extends NodeDocument>
 
   async findManyByKeys(
     userObject: QueryObject,
-    sortKey: string,
-    limit: number,
+    sortKey?: string,
+    limit?: number,
   ) {
     const condition = this.buildAQLCondition(userObject);
     const sort_expression = sortKey ? `SORT doc.${sortKey}\n  ` : "";
-    const limit_expression = limit > 0 ? `LIMIT ${limit}\n  ` : "";
+    const limit_expression = limit! > 0 ? `LIMIT ${limit}\n  ` : "";
     return this.executeQuery<TData>(
       `FOR doc IN ${this.collection.name}\n  FILTER ${condition}\n  ${sort_expression}${limit_expression}RETURN doc`,
     );

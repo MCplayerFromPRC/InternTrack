@@ -10,7 +10,9 @@ export const CkptInput = builder.inputType("CkptInput", {
     md5: t.string({ required: true }),
     config: t.string({ required: true }),
     step: t.int({ required: true }),
-    isDelivery: t.boolean({ required: true }),
+    isSnapshot: t.boolean({ required: false }),
+    isDelivery: t.boolean({ required: false }),
+    isRewardModel: t.boolean({ required: false }),
     saveTime: t.field({ type: "DateTime", required: true }),
   }),
 });
@@ -24,7 +26,20 @@ builder.mutationField("createCheckpoint", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      return createCkptMutation(args.input, context);
+      const {
+        isSnapshot = false,
+        isDelivery = false,
+        isRewardModel = false,
+      } = args.input;
+      return createCkptMutation(
+        {
+          ...args.input,
+          isSnapshot: isSnapshot === null ? false : isSnapshot,
+          isDelivery: isDelivery === null ? false : isDelivery,
+          isRewardModel: isRewardModel === null ? false : isRewardModel,
+        },
+        context,
+      );
     },
   });
 });

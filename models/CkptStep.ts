@@ -6,6 +6,7 @@ import { EdgeDocument } from "./Document";
 
 // [(Checkpoint -> Checkpoint), (TrainConfig -> Checkpoint)]
 export class CkptStep extends EdgeDocument {
+  steps: number;
   tokens: number;
   duration: Duration;
 
@@ -15,10 +16,12 @@ export class CkptStep extends EdgeDocument {
     _rev: string,
     _from: string,
     _to: string,
+    steps: number,
     tokens: number,
     duration: Duration,
   ) {
     super(_key, _id, _rev, _from, _to);
+    this.steps = steps;
     this.tokens = tokens;
     this.duration = duration;
   }

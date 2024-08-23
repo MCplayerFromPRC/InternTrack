@@ -1,4 +1,5 @@
 import { GQLContext } from "@/lib/properties";
+import { removeNullProperties } from "@/lib/utils";
 import { builder } from "@/graphql/builder";
 import { TrainConfig } from "@/models";
 import { TrainConfigType } from "./train_config.type";
@@ -6,11 +7,13 @@ import { TrainConfigType } from "./train_config.type";
 // 还需补充创建时添加ResumeCkpt请求逻辑
 export const TrainConfigInput = builder.inputType("TrainConfigInput", {
   fields: (t) => ({
-    modelName: t.string({ required: true }),
-    modelConfig: t.field({ type: "JSON", required: true }),
-    dataConfig: t.field({ type: "JSON", required: true }),
-    optimizerConfig: t.field({ type: "JSON", required: true }),
-    parallelConfig: t.field({ type: "JSON", required: true }),
+    task: t.string({ required: false }),
+    configContent: t.string({ required: true }),
+    startStep: t.int({ required: false }),
+    modelConfig: t.field({ type: "JSON", required: false }),
+    dataConfig: t.field({ type: "JSON", required: false }),
+    optimizerConfig: t.field({ type: "JSON", required: false }),
+    parallelConfig: t.field({ type: "JSON", required: false }),
   }),
 });
 
@@ -23,7 +26,10 @@ builder.mutationField("createTrainConfig", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      return createTrainConfigMutation(args.input, context);
+      return createTrainConfigMutation(
+        removeNullProperties(args.input),
+        context,
+      );
     },
   });
 });
