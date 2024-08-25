@@ -17,7 +17,7 @@ export const NodeType: ObjectRef<Partial<Node>> = builder.objectType(Node, {
     isSnapshot: t.exposeBoolean("isSnapshot", { nullable: true }),
     isDelivery: t.exposeBoolean("isDelivery", { nullable: true }),
     isRewardModel: t.exposeBoolean("isRewardModel", { nullable: true }),
-    ckptPath: t.exposeString("ckptPath"),
+    ckptPath: t.exposeString("ckptPath", { nullable: true }),
     saveTime: t.expose("saveTime", {
       type: "DateTime",
       nullable: true,
@@ -32,9 +32,9 @@ export const LineType: ObjectRef<Partial<Line>> = builder.objectType(Line, {
   name: "RoadmapLine",
   description: "InternLM Roadmap Line",
   fields: (t) => ({
-    id: t.exposeString("id"),
-    key: t.exposeString("key"),
-    revision: t.exposeString("revision"),
+    id: t.exposeString("id", { nullable: true }),
+    key: t.exposeString("key", { nullable: true }),
+    revision: t.exposeString("revision", { nullable: true }),
     type: t.exposeString("type"),
     from: t.exposeString("from"),
     to: t.exposeString("to"),
@@ -59,6 +59,6 @@ export const RoadmapType: ObjectRef<Roadmap> = builder.objectType(Roadmap, {
   fields: (t) => ({
     nodes: t.expose("nodes", { type: [NodeType] }),
     lines: t.expose("lines", { type: [LineType] }),
-    warnings: t.expose("warnings", { type: [WarningType] }),
+    warnings: t.expose("warnings", { type: [WarningType], nullable: true }),
   }),
 });

@@ -5,11 +5,14 @@ import { NodeDocument } from "./Document";
 
 export class EvalResult extends NodeDocument {
   ckpt: string;
-  datasetMd5: string;
-  datasetName: string;
-  subsetName: string;
-  score: number;
-  metrics: string;
+  scores: {
+    datasetMd5: string;
+    datasetName: string;
+    subsetName: string;
+    score: number;
+    metrics: string;
+  };
+  finishTime: Date;
   logFolder: string;
 
   constructor(
@@ -17,20 +20,20 @@ export class EvalResult extends NodeDocument {
     _id: string,
     _rev: string,
     ckpt: string,
-    datasetMd5: string,
-    datasetName: string,
-    subsetName: string,
-    score: number,
-    metrics: string,
+    scores: {
+      datasetMd5: string;
+      datasetName: string;
+      subsetName: string;
+      score: number;
+      metrics: string;
+    },
+    finishTime: Date,
     logFolder: string,
   ) {
     super(_key, _id, _rev);
     this.ckpt = ckpt;
-    this.datasetMd5 = datasetMd5;
-    this.datasetName = datasetName;
-    this.subsetName = subsetName;
-    this.score = score;
-    this.metrics = metrics;
+    this.scores = scores;
+    this.finishTime = finishTime;
     this.logFolder = logFolder;
   }
 }

@@ -1321,7 +1321,7 @@ export async function seed(db: Database) {
 
       lastCkpt = {
         _id: savedConfig._id,
-        step: savedConfig.startStep,
+        step: savedConfig.startStep || 0,
         tokens: 0,
         saveTime: new Date(), // startTime from TrainProc
       };
@@ -1349,7 +1349,7 @@ export async function seed(db: Database) {
           stepCollection.save({
             _from: lastCkpt._id,
             _to: savedCkpt._id,
-            step: ckpt.step - lastCkpt.step,
+            steps: ckpt.step - lastCkpt.step,
             tokens: tokens - lastCkpt.tokens,
             duration: moment.duration(
               moment(savingCkpt.saveTime).diff(moment(lastCkpt.saveTime)),
@@ -1379,7 +1379,7 @@ export async function seed(db: Database) {
         }
         lastCkpt = {
           _id: savedCkpt._id,
-          step: savedCkpt.step,
+          step: savingCkpt.step,
           tokens: tokens,
           saveTime: savingCkpt.saveTime,
         };

@@ -90,3 +90,11 @@ export function removeNullProperties<T extends object>(
     {} as Partial<NonNullProperties<T>>,
   );
 }
+
+export function isTypeOf<T>(
+  obj: any,
+  constructor: { new (...args: any[]): T },
+): obj is T {
+  const requiredKeys = Object.getOwnPropertyNames(new constructor());
+  return requiredKeys.every((key) => key in obj);
+}

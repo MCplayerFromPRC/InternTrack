@@ -1,4 +1,5 @@
 import { injectable, inject } from "inversify";
+import moment from "moment";
 
 import {
   Checkpoint,
@@ -6,6 +7,10 @@ import {
   ResumeCkpt,
   TrainConfig,
   TrainTask,
+  Node,
+  Line,
+  Warning,
+  Roadmap,
 } from "@/models";
 
 import {
@@ -16,7 +21,7 @@ import {
   TrainTaskDatasource,
 } from "@/dto";
 
-import { Node, Line, Warning, Roadmap } from "@/models";
+import { isTypeOf } from "@/lib/utils";
 
 type VertexDocument = Checkpoint | TrainConfig | TrainTask;
 type DBEdgeDocument = CkptStep | ResumeCkpt;
@@ -77,6 +82,27 @@ class WarningMessage {
   }
 }
 
+function isTrainTask(vertex: VertexDocument): vertex is TrainTask {
+  return isTypeOf(vertex, TrainTask);
+}
+
+function isTrainConfig(vertex: VertexDocument): vertex is TrainConfig {
+  return isTypeOf(vertex, TrainConfig);
+}
+
+function isCheckpoint(vertex: VertexDocument): vertex is Checkpoint {
+  return isTypeOf(vertex, Checkpoint);
+}
+
+function isCkptStep(edge: DBEdgeDocument): edge is CkptStep {
+  return isTypeOf(edge, CkptStep);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function isResumeCkpt(edge: DBEdgeDocument): edge is ResumeCkpt {
+  return isTypeOf(edge, ResumeCkpt);
+}
+
 class Graph {
   vertices = new Map<string, VertexDocument>();
   nodes = new Map<string, Partial<Node>>();
@@ -109,14 +135,14 @@ class Graph {
 
   topologicalSort(viewType: "ckpt" | "config") {
     const zeroInDegreeQueue: string[] = [];
-    let counter = 0;
+    const orderList = [];
 
     // Calculate in-degrees by using the reverse adjacency list
     const inDegrees: Map<string, number> = new Map();
     this.vertices.forEach((_, id) => {
-      const deg = this.reverseAdjacencyList.get(id)?.length || 0;
-      inDegrees.set(id, deg);
-      if (deg === 0) {
+      const inDeg = this.reverseAdjacencyList.get(id)?.length || 0;
+      inDegrees.set(id, inDeg);
+      if (inDeg === 0) {
         zeroInDegreeQueue.push(id);
       }
     });
@@ -133,12 +159,17 @@ class Graph {
           }
         },
       );
-      this.processNode(this.vertices.get(nodeId)!, viewType);
-      counter += 1;
+      const node = this.vertices.get(nodeId)!;
+      this.processNode(node, viewType);
+      orderList.push(node);
     }
 
-    if (counter !== this.vertices.size) {
+    if (orderList.length !== this.vertices.size) {
       throw new Error("Graph has a cycle, topological sorting not possible");
+    }
+
+    for (const node of orderList) {
+      this.skipNodeNotInView(node, viewType);
     }
   }
 
@@ -151,13 +182,6 @@ class Graph {
     const inLines = this.switchEdgeView(inEdges);
     if (inLines) {
       this.reverseAdjacencyList.set(vertex._id, inLines);
-      for (const inLine of inLines) {
-        this.skipNodeNotInView(this.vertices.get(inLine.from!)!, viewType);
-      }
-    }
-
-    if (outEdges.length === 0) {
-      this.skipNodeNotInView(vertex, viewType);
     }
   }
 
@@ -172,7 +196,7 @@ class Graph {
     const messageTypes = new Set<(args: WarningArgs) => string>();
 
     // Check the number of inEdges
-    if (vertex instanceof TrainTask && vertex.type == "rlhf_ppo") {
+    if (isTrainTask(vertex) && vertex.type == "rlhf_ppo") {
       if (inEdges.length > 2) {
         messageTypes.add(WarningMessage.TooManyPredecessors);
       }
@@ -181,15 +205,15 @@ class Graph {
     }
 
     // Check TrainTask type node
-    if (vertex instanceof TrainTask) {
+    if (isTrainTask(vertex)) {
       if (outEdges.length > 1) {
         messageTypes.add(WarningMessage.TooManySuccessors);
       } else if (outEdges.length === 0) {
         messageTypes.add(WarningMessage.NoConfigChildForTask);
       } else if (outEdges.length > 0) {
         for (const outEdge of outEdges) {
-          const outTarget = this.vertices.get(outEdge._id)!;
-          if (!(outTarget instanceof TrainConfig)) {
+          const outTarget = this.vertices.get(outEdge._to)!;
+          if (!isTrainConfig(outTarget)) {
             wrongOutEdges.add(outTarget._id);
             messageTypes.add(WarningMessage.WrongTypeChild);
           }
@@ -201,8 +225,8 @@ class Graph {
       ) {
         const ckptType = [];
         for (const inEdge of inEdges) {
-          const inSource = this.vertices.get(inEdge._id)!;
-          if (!(inSource instanceof Checkpoint)) {
+          const inSource = this.vertices.get(inEdge._from)!;
+          if (!isCheckpoint(inSource)) {
             wrongInEdges.add(inSource._id);
             messageTypes.add(WarningMessage.WrongTypeParent);
           } else {
@@ -220,22 +244,22 @@ class Graph {
     }
 
     // Check TrainConfig type node
-    if (vertex instanceof TrainConfig) {
+    if (isTrainConfig(vertex)) {
       if (viewType == "config") {
         if (outEdges.length > 1) {
           messageTypes.add(WarningMessage.TooManySuccessors);
         } else if (outEdges.length === 0) {
           messageTypes.add(WarningMessage.NoCkptChildForConfig);
         } else if (outEdges.length === 1) {
-          const outTarget = this.vertices.get(outEdges[0]._id)!;
-          if (!(outTarget instanceof Checkpoint)) {
+          const outTarget = this.vertices.get(outEdges[0]._to)!;
+          if (!isCheckpoint(outTarget)) {
             wrongOutEdges.add(outTarget._id);
             messageTypes.add(WarningMessage.WrongTypeChild);
           }
         }
         if (inEdges.length === 1) {
-          const inSource = this.vertices.get(inEdges[0]._id)!;
-          if (!(inSource instanceof TrainTask)) {
+          const inSource = this.vertices.get(inEdges[0]._from)!;
+          if (!isTrainTask(inSource)) {
             wrongInEdges.add(inSource._id);
             messageTypes.add(WarningMessage.WrongTypeParent);
           }
@@ -248,11 +272,11 @@ class Graph {
     }
 
     // Check Checkpoint type node
-    if (vertex instanceof Checkpoint) {
+    if (isCheckpoint(vertex)) {
       if (viewType == "ckpt") {
         for (const outEdge of outEdges) {
-          const outTarget = this.vertices.get(outEdge._id);
-          if (outTarget instanceof Checkpoint) {
+          const outTarget = this.vertices.get(outEdge._to)!;
+          if (isCheckpoint(outTarget)) {
             wrongOutEdges.add(outTarget._id);
           }
         }
@@ -270,14 +294,13 @@ class Graph {
         messages.push(
           warningMessage({
             id: vertex._id,
-            nodeType:
-              vertex instanceof TrainTask
-                ? "Task"
-                : vertex instanceof TrainConfig
-                  ? "Config"
-                  : "Checkpoint",
-            inEdges: inEdges.map((inEdge) => inEdge._id),
-            outEdges: outEdges.map((outEdge) => outEdge._id),
+            nodeType: isTrainTask(vertex)
+              ? "Task"
+              : isTrainConfig(vertex)
+                ? "Config"
+                : "Checkpoint",
+            inEdges: inEdges.map((inEdge) => inEdge._from),
+            outEdges: outEdges.map((outEdge) => outEdge._to),
             wrongInEdges: Array.from(wrongInEdges),
             wrongOutEdges: Array.from(wrongOutEdges),
           }),
@@ -288,7 +311,7 @@ class Graph {
   }
 
   switchNodeView(vertex: VertexDocument, viewType: "ckpt" | "config") {
-    if (vertex instanceof TrainTask) {
+    if (isTrainTask(vertex)) {
       const { _id, _key, _rev, name, desc } = vertex;
       this.nodes.set(_id, {
         id: _id,
@@ -302,7 +325,7 @@ class Graph {
       return _id;
     }
 
-    if (vertex instanceof TrainConfig && viewType === "config") {
+    if (isTrainConfig(vertex) && viewType === "config") {
       const { _id, _key, _rev, startStep } = vertex;
       this.nodes.set(_id, {
         id: _id,
@@ -316,7 +339,7 @@ class Graph {
       return _id;
     }
 
-    if (vertex instanceof Checkpoint && viewType === "ckpt") {
+    if (isCheckpoint(vertex) && viewType === "ckpt") {
       const { _id, _key, _rev, ...others } = vertex;
       this.nodes.set(_id, {
         id: _id,
@@ -341,7 +364,7 @@ class Graph {
         revision: _rev,
         from: _from,
         to: _to,
-        type: inEdge instanceof CkptStep ? "step" : "resume",
+        type: isCkptStep(inEdge) ? "step" : "resume",
         ...others,
       };
 
@@ -364,8 +387,8 @@ class Graph {
 
   skipNodeNotInView(vertex: VertexDocument, viewType: "ckpt" | "config"): void {
     if (
-      (vertex instanceof TrainConfig && viewType == "ckpt") ||
-      (vertex instanceof Checkpoint && viewType == "config")
+      (isTrainConfig(vertex) && viewType == "ckpt") ||
+      (isCheckpoint(vertex) && viewType == "config")
     ) {
       this.removeNode(vertex._id);
     }
@@ -374,7 +397,7 @@ class Graph {
   mergeProps<T>(
     propSource: T | undefined,
     propTarget: T | undefined,
-    combineFn: (a: T, b: T) => T,
+    combineFn: (a: T, b: T) => any,
   ): T | undefined {
     return propSource
       ? propTarget
@@ -400,20 +423,25 @@ class Graph {
     targets.forEach((target) => {
       sources.forEach((source) => {
         const crossLine: Partial<Line> = {
+          id: source.id + "->" + target.id,
           type:
             target.type === "step" || source.type === "step"
               ? "step"
               : "resume",
           from: source.from,
           to: target.to,
-          steps: this.mergeProps(source.steps, target.steps, (a, b) => a + b),
+          steps: this.mergeProps(
+            source.steps,
+            target.steps,
+            (a = 0, b = 0) => a + b,
+          ),
           tokens: this.mergeProps(
             source.tokens,
             target.tokens,
-            (a, b) => a + b,
+            (a = 0, b = 0) => a + b,
           ),
           duration: this.mergeProps(source.duration, target.duration, (a, b) =>
-            a.add(b),
+            moment.duration(a).add(moment.duration(b)).toISOString(),
           ),
         };
         forwardAdjList.get(source.from!)!.push(crossLine);
@@ -575,6 +603,7 @@ export class RoadmapService {
 
     const resume_ckpt_list = await this.resumeCkptDTO.findAll();
     resume_ckpt_list.forEach((resume_ckpt) => graph.addEdge(resume_ckpt));
+
     return graph;
   }
 
@@ -583,7 +612,6 @@ export class RoadmapService {
     nodes: string[] = [],
   ): Promise<Roadmap> {
     const graph = await this.fetchGraph();
-    console.log(`this ${graph.vertices.size}`);
     if (nodes.length) {
       graph.getConnectedComponents(nodes);
     }
