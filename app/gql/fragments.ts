@@ -14,9 +14,13 @@ export const checkpoint = gql`
     key
     revision
     md5
-    step
     config
+    step
+    path
+    isSnapshot
     isDelivery
+    isRewardModel
+    saveTime
   }
 `;
 
@@ -26,8 +30,20 @@ export const ckptStep = gql`
     key
     from
     to
+    steps
     tokens
     duration
+  }
+`;
+
+export const trainTask = gql`
+  fragment trainTask on TrainTask {
+    id
+    key
+    revision
+    name
+    type
+    desc
   }
 `;
 
@@ -35,7 +51,14 @@ export const trainConfig = gql`
   fragment trainConfig on TrainConfig {
     id
     key
-    modelName
+    revision
+    task
+    configContent
+    startStep
+    modelConfig
+    dataConfig
+    optimizerConfig
+    parallelConfig
   }
 `;
 
@@ -43,32 +66,72 @@ export const resumeCkpt = gql`
   fragment resumeCkpt on ResumeCkpt {
     id
     key
+    revision
     from
     to
-    isSameTask
+  }
+`;
+
+export const node = gql`
+  fragment node on RoadmapNode {
+    id
+    key
+    revision
+    type
+    isDeliveryBranch
+    taskName
+    taskDesc
+    md5
+    config
+    step
+    isSnapshot
+    isDelivery
+    isRewardModel
+    saveTime
+    ckptPath
+    saveTime
+    startStep
+    stopStep
+  }
+`;
+
+export const line = gql`
+  fragment line on RoadmapLine {
+    id
+    key
+    revision
+    type
+    from
+    to
+    steps
+    tokens
+    duration
+  }
+`;
+
+export const warning = gql`
+  fragment warning on RoadmapWarning {
+    id
+    message
   }
 `;
 
 export const roadmap = gql`
   fragment roadmap on Roadmap {
-    ckptList {
-      ...checkpoint
+    nodes {
+      ...node
     }
-    ckptStepList {
-      ...step
+    lines {
+      ...line
     }
-    trainConfigList {
-      ...trainConfig
-    }
-    resumeCkptList {
-      ...resumeCkpt
+    warnings {
+      ...warning
     }
   }
 
-  ${checkpoint}
-  ${ckptStep}
-  ${trainConfig}
-  ${resumeCkpt}
+  ${node}
+  ${line}
+  ${warning}
 `;
 
 export const getRoadmap = gql`

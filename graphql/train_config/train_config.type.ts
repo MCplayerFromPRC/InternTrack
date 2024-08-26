@@ -16,7 +16,7 @@ export const TrainConfigType: ObjectRef<TrainConfig> = builder.objectType(
       }),
       key: t.exposeString("_key"),
       revision: t.exposeString("_rev"),
-      modelName: t.exposeString("modelName"),
+      task: t.exposeString("task"),
       configContent: t.exposeString("configContent"),
       startStep: t.exposeInt("startStep"),
       modelConfig: t.expose("modelConfig", { type: "JSON" }),

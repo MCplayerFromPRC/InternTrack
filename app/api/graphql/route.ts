@@ -17,7 +17,10 @@ import {
   CkptStepDatasource,
   ResumeCkptDatasource,
   TrainConfigDatasource,
+  TrainTaskDatasource,
+  RetrievalViewDatasource,
 } from "@/dto";
+import { RoadmapService } from "@/service";
 
 const apolloServer = new ApolloServer<GQLContext>({
   cache: container.get<InMemoryLRUCache>(TYPES.KeyValueCache),
@@ -34,6 +37,9 @@ const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {
         ckptStep: container.get<CkptStepDatasource>(CkptStepDatasource),
         resumeCkpt: container.get<ResumeCkptDatasource>(ResumeCkptDatasource),
         config: container.get<TrainConfigDatasource>(TrainConfigDatasource),
+        task: container.get<TrainTaskDatasource>(TrainTaskDatasource),
+        search: container.get<RetrievalViewDatasource>(RetrievalViewDatasource),
+        roadmap: container.get<RoadmapService>(RoadmapService),
       },
       pubsub: container.get<PubSub>(TYPES.PubSub),
     };

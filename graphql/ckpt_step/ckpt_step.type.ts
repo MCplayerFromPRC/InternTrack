@@ -9,13 +9,13 @@ export const CkptStepType: ObjectRef<CkptStep> = builder.objectType(CkptStep, {
   description: "The step between two saved checkpoints",
   fields: (t) => ({
     id: t.exposeString("_id", {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       directives: [useLogDirective({ type: type_name })],
     }),
     key: t.exposeString("_key"),
     revision: t.exposeString("_rev"),
     from: t.exposeString("_from"),
     to: t.exposeString("_to"),
+    steps: t.expose("steps", { type: "PositiveInt" }),
     tokens: t.expose("tokens", { type: "PositiveInt" }),
     duration: t.expose("duration", { type: "Duration" }),
   }),

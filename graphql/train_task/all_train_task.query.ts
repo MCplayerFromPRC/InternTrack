@@ -1,12 +1,12 @@
 import { GQLContext } from "@/lib/properties";
-import { Checkpoint } from "@/models";
 import { builder } from "@/graphql/builder";
+import { TrainTaskType } from "./train_task.type";
 
-builder.queryField("allCheckpoints", (t) => {
+builder.queryField("allTrainTasks", (t) => {
   return t.field({
-    type: [Checkpoint],
+    type: [TrainTaskType],
     args: {},
-    description: `All the Checkpoints`,
+    description: "TrainTask",
     nullable: true,
     resolve: async (parent, args, context: GQLContext) => {
       return postQuery(context);
@@ -15,5 +15,5 @@ builder.queryField("allCheckpoints", (t) => {
 });
 
 export function postQuery(context: GQLContext) {
-  return context.dataSources?.ckpts.findAll();
+  return context.dataSources?.task.findAll();
 }

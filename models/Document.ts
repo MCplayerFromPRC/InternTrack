@@ -14,6 +14,12 @@ export class NodeDocument implements Document {
     this._id = _id;
     this._rev = _rev;
   }
+
+  get saveDocument(): object {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _key, _id, _rev, ...others } = this;
+    return others;
+  }
 }
 
 // for ([(Checkpoint -> EvalResult)])

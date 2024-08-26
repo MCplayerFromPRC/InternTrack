@@ -16,4 +16,28 @@ export class TrainConfigDatasource extends BaseCollectionDatasource<TrainConfig>
   ) {
     super(db, db.collection("TrainConfig"), cache, options);
   }
+
+  async findManyByTask(task_id: string): Promise<TrainConfig[]> {
+    // const query = `FOR doc IN ${this.collection} FILTER doc.task == ${task_id} RETURN doc`;
+    return this.findManyByKeys({ task: task_id });
+  }
+
+  async findOneByCkptId(ckpt_id: string): Promise<TrainConfig> {
+    const query = `FOR ckpt IN Checkpoint FILTER ckpt._id == ${ckpt_id} FOR doc IN ${this.collection} FILTER doc._id == ckpt.config RETURN doc`;
+    const cursor = await this.db.query<TrainConfig>(query);
+    const count = cursor.count;
+    if (count == 1) {
+      const result = await cursor.next();
+      if (result !== undefined) {
+        return result;
+      }
+    } else if (count == 0) {
+      throw new Error(`The config of checkpoint ${ckpt_id} not found`);
+    } else {
+      throw new Error(
+        `Checkpoint ${ckpt_id} has multiple configs ${cursor.all().then((items) => items.map((item) => item._id))}`,
+      );
+    }
+    return {} as TrainConfig;
+  }
 }

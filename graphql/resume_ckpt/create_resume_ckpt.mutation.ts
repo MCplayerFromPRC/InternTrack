@@ -7,7 +7,6 @@ export const ResumeCkptInput = builder.inputType("ResumeCkptInput", {
   fields: (t) => ({
     from: t.string({ required: true }),
     to: t.string({ required: true }),
-    isSameTask: t.boolean({ required: true }),
   }),
 });
 
