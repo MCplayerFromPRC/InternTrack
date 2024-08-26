@@ -1,6 +1,6 @@
 import { INodeInfo } from "@/app/ui/detail/Display";
 import { useEffect, useState } from "react";
-
+import { message } from 'antd';
 type SpecialQueue<T> = {
   enqueue: (nodeId: string, item: string) => void;
   dequeue: (idx: number) => void;
@@ -21,8 +21,10 @@ function useSpecialQueue<T>(): SpecialQueue<T> {
     const tempArr = [...queue];
     const len = tempArr.length;
     // 处理queue
-    // 如果nodeId，type都和queue的最后一项相同，直接return
-    if (nodeId === queue?.[len - 1]?.name) {
+    // 如果nodeId，且nodeid已经存在列表里了，直接return
+    const existingItem = queue.find(item => item.name === nodeId);
+    if (existingItem) {
+      message.warning(`${nodeId} already exists in queue.`);
       return;
     }
     // queue为空，或者length<2且前面一项的type相同，直接push
@@ -32,18 +34,25 @@ function useSpecialQueue<T>(): SpecialQueue<T> {
       return;
     }
     // 如果已有两项，替换后面那一项
-    // if (tempArr.length === 2) {
-
-    // }
+    if (tempArr.length === 2 && nodeId !== queue?.[len - 1]?.name) {
+      tempArr.splice(len - 1, 1, nodeInfo);
+      setQueue(tempArr);
+    }
   };
 
   const dequeue = (idx: number) => {
-    const tempArr = [...queue].slice(idx, 1);
-    setQueue(tempArr)
+    if (idx < 0 || idx >= queue.length) {
+      console.error(`Invalid index ${idx}, cannot dequeue.`);
+      return;
+    }
+    const newQueue = [...queue.slice(0, idx), ...queue.slice(idx + 1)];
+    console.log('dequeue-----', idx, newQueue);
+    // const tempArr = [...queue].splice(idx, 1);
+    setQueue(newQueue)
   };
 
   useEffect(() => {
-    setIsEmpty(queue[0] === null && queue[1] === null);
+    setIsEmpty(queue?.length === 0);
   }, [queue]);
 
   return {

@@ -40,10 +40,19 @@ export const RoadmapGraph = ({
   //const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
   // TODO: 数据现在是mock的，要换成接口请求
   const [graphViewData, setGraphViewData] = useState<RGJsonData | null>(null);
-  const { enqueue, dequeue, isEmpty, queue } = useSpecialQueue<string>(); // 留给代码块的
+  const { enqueue, dequeue, queue } = useSpecialQueue<string>(); // 留给代码块的
   const [warningList, setWarning] = useState<IWarningInfo[]>([]);
   const [cardType, setCardType] = useState('');
   const [tableRes, setTableRes] = useState<any[]>([]);
+  const [showDiscard, setShowDiscard] = useState(false);
+  const closePopMask = (idx: number) => {
+    if (cardType === 'result') {
+      setTableRes([]);
+    } else {
+      dequeue(idx);
+    }
+    setShowDiscard(false);
+  };
   const handleSearch = async (newSearchKey: string) => {
     console.log('keyword----', newSearchKey);
     // 搜索框里search的点击
@@ -68,7 +77,8 @@ export const RoadmapGraph = ({
 
   const queryConfig = (nodeId: string) => {
     // TODO: 根据id请求config信息
-    const config = `parallel = dict(
+    const config = `${nodeId}--------
+    parallel = dict(
       zero1=dict(size=-1),
       tensor=dict(size=16, mode="fsp"),
       pipeline=dict(size=1, interleaved_overlap=True),
@@ -92,11 +102,15 @@ export const RoadmapGraph = ({
       drop_last=True,
       tokenizer_chunk_num=512,
     )`;
-
+    setShowDiscard(true);
     enqueue(nodeId, config);
   };
 
   const queryTableRes = () => {
+    queue.forEach((item, idx) => {
+      dequeue(idx);
+    })
+    setShowDiscard(true);
     setTableRes([
       {
         id: '1',
@@ -173,8 +187,8 @@ export const RoadmapGraph = ({
 
   return (
     <div>
-      {!isEmpty && (
-        <DetailCard onclickFuncs={dequeue} queue={queue} tableRes={tableRes} cardType={cardType} />
+      {(showDiscard && (queue.length > 0 || tableRes.length > 0)) && (
+        <DetailCard onclickFuncs={closePopMask} queue={queue} tableRes={tableRes} cardType={cardType} />
       )}
       <SimpleGraph
         warningList={warningList}

@@ -31,7 +31,7 @@ export default function DetailCard({ onclickFuncs, queue, tableRes, cardType }: 
   tableRes?: any,
   cardType: string
 }) {
-  const [size, setSize] = useState({ width: "500", height: "500" });
+  const [size] = useState({ width: "500", height: "500" });
   return (
     <Rnd
       className="rnd-container"
