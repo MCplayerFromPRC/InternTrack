@@ -18,6 +18,8 @@ import {
   ResumeCkptDatasource,
   TrainConfigDatasource,
   TrainTaskDatasource,
+  EvalResultDatasource,
+  CkptEvalDatasource,
   RetrievalViewDatasource,
 } from "@/dto";
 import { RoadmapService } from "@/service";
@@ -38,6 +40,8 @@ const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {
         resumeCkpt: container.get<ResumeCkptDatasource>(ResumeCkptDatasource),
         config: container.get<TrainConfigDatasource>(TrainConfigDatasource),
         task: container.get<TrainTaskDatasource>(TrainTaskDatasource),
+        result: container.get<EvalResultDatasource>(EvalResultDatasource),
+        ckptEval: container.get<CkptEvalDatasource>(CkptEvalDatasource),
         search: container.get<RetrievalViewDatasource>(RetrievalViewDatasource),
         roadmap: container.get<RoadmapService>(RoadmapService),
       },

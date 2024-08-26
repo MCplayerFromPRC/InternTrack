@@ -20,7 +20,7 @@ export class BaseViewDatasource<
   TData extends Partial<NodeDocument>,
 > extends BaseDatasource {
   view: View;
-  fields: string[] = ["TrainTask.name", "TrainConfig.configContent"];
+  fields: string[] = ["name", "configContent"];
 
   constructor(db: Database, view: View, options = {}) {
     super(db, options);

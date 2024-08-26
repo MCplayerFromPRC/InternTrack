@@ -51,7 +51,7 @@ class WarningMessage {
   }
 
   static WrongTypeParent({ id, nodeType, wrongInEdges }: WarningArgs): string {
-    return `${nodeType} ${id} has wrong type child ${wrongInEdges.join(", ")}`;
+    return `${nodeType} ${id} has wrong type parent ${wrongInEdges.join(", ")}`;
   }
 
   // Task Warning
@@ -106,6 +106,7 @@ function isResumeCkpt(edge: DBEdgeDocument): edge is ResumeCkpt {
 class Graph {
   vertices = new Map<string, VertexDocument>();
   nodes = new Map<string, Partial<Node>>();
+  searchedNodes: string[] = [];
   warnings: Warning[] = [];
   adjacencyList: Map<string, EdgeDocument[]> = new Map();
   reverseAdjacencyList: Map<string, EdgeDocument[]> = new Map();
@@ -259,7 +260,7 @@ class Graph {
         }
         if (inEdges.length === 1) {
           const inSource = this.vertices.get(inEdges[0]._from)!;
-          if (!isTrainTask(inSource)) {
+          if (!(isTrainTask(inSource) || isCheckpoint(inSource))) {
             wrongInEdges.add(inSource._id);
             messageTypes.add(WarningMessage.WrongTypeParent);
           }
@@ -311,6 +312,7 @@ class Graph {
   }
 
   switchNodeView(vertex: VertexDocument, viewType: "ckpt" | "config") {
+    const isSearchResult = this.searchedNodes.includes(vertex._id);
     if (isTrainTask(vertex)) {
       const { _id, _key, _rev, name, desc } = vertex;
       this.nodes.set(_id, {
@@ -319,6 +321,7 @@ class Graph {
         revision: _rev,
         type: "task",
         isDeliveryBranch: false,
+        isSearchResult,
         taskName: name,
         taskDesc: desc,
       });
@@ -333,6 +336,7 @@ class Graph {
         revision: _rev,
         type: "config",
         isDeliveryBranch: false,
+        isSearchResult,
         startStep,
         stopStep: -1,
       });
@@ -347,6 +351,7 @@ class Graph {
         revision: _rev,
         type: "ckpt",
         isDeliveryBranch: false,
+        isSearchResult,
         ckptPath: path,
         ...others,
       });
@@ -521,6 +526,7 @@ class Graph {
   }
 
   findWeaklyConnectedComponents(nodes: string[]): string[] {
+    this.searchedNodes = nodes;
     const visited = new Set<string>();
 
     for (const nodeId of nodes) {
@@ -610,10 +616,10 @@ export class RoadmapService {
 
   async getGraphView(
     viewType: "ckpt" | "config",
-    nodes: string[] = [],
+    nodes: string[] | null = null,
   ): Promise<Roadmap> {
     const graph = await this.fetchGraph();
-    if (nodes.length) {
+    if (nodes !== null) {
       graph.getConnectedComponents(nodes);
     }
     graph.topologicalSort(viewType);

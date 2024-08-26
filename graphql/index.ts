@@ -27,6 +27,12 @@ import "./train_task/create_train_task.mutation";
 import "./train_task/train_task.query";
 import "./train_task/train_task.type";
 
+import "./eval_result/all_eval_results.query";
+import "./eval_result/create_eval_result.mutation";
+import "./eval_result/delete_eval_result.mutation";
+import "./eval_result/eval_result.query";
+import "./eval_result/eval_result.type";
+
 import "./ckpt_step/all_ckpt_steps.query";
 import "./ckpt_step/ckpt_step.query";
 import "./ckpt_step/ckpt_step.type";

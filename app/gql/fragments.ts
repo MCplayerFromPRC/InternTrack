@@ -135,8 +135,8 @@ export const roadmap = gql`
 `;
 
 export const getRoadmap = gql`
-  query Roadmap {
-    roadmap {
+  query Roadmap($keyword: String, $viewType: String, $limit: int) {
+    roadmap(keyword: $keyword, viewType: $viewType, limit: $limit) {
       ...roadmap
     }
   }
