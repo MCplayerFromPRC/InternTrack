@@ -12,7 +12,11 @@
 }
 
 .isDelivery {
-  border: 5px solid rgb(249, 100, 7);
+  // border: 5px solid rgb(249, 100, 7);
+}
+
+.noResult {
+  background-color: rgb(185 160 157);
 }
 
 .taskNode {
@@ -31,17 +35,16 @@
 }
 
 .weightNode {
-  min-width: 100px;
   aspect-ratio: 1;
-  padding: 10px;
+  padding: 4px;
   border-radius: 50%;
   background-color: rgb(254, 227, 224);
 }
 
 .configNode {
-  min-width: 100px;
+  // min-width: 100px;
   aspect-ratio: 1;
-  padding: 10px;
+  padding: 4px;
   border-radius: 50%;
   background-color: rgb(252, 193, 125);
 }

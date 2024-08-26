@@ -3,7 +3,6 @@
 import React, { useState, useRef } from "react";
 import { RefObject, PropsWithChildren } from "react";
 import RelationGraph, {
-  RGLine,
   RGNode,
   RGNodeSlotProps,
   RGOptionsFull,
@@ -17,14 +16,7 @@ import './node.scss';
 import Upload from '../upload';
 import { IWarningInfo } from '../../dashboard/roadmap/graph_component';
 import { message } from 'antd';
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const onLineClick = (
-  line: RGLine,
-  // _link: RGLink,
-  // _e: MouseEvent | TouchEvent,
-) => {
-  console.log("onLineClick:", line.text, line.from, line.to);
-};
+import classNames from 'classnames';
 /* eslint-enable @typescript-eslint/no-unused-vars */
 const options: Partial<RGOptionsFull> = {
   debug: false,
@@ -32,7 +24,7 @@ const options: Partial<RGOptionsFull> = {
   layout: {
     layoutName: 'tree',
     from: 'left',
-    min_per_width: 500,
+    min_per_width: 350,
     max_per_width: 800,
     min_per_height: 100,
     max_per_height: undefined,
@@ -51,11 +43,13 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
   graphRef: RefObject<RelationGraphComponent>,
   onPanelClick: CallableFunction,
   onNodeClickFn: CallableFunction,
+  changeViewType: CallableFunction,
 }>> = ({
   warningList,
   graphRef,
   onPanelClick,
   onNodeClickFn,
+  changeViewType
 }) => {
     const myPage = useRef<HTMLDivElement>(null);
     const [isShowNodeMenuPanel, setIsShowNodeMenuPanel] = useState(false);
@@ -70,23 +64,15 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
 
     const onNodeClick = (node: RGNode) => {
       console.log("onNodeClick:", node.text);
-      // 点击task节点无反应
+      // 点击task节点无反应,ckpt节点需要菜单，所以只有config节点需要有直接的反馈
       if (node.type === 'task' || node.type === 'ckpt') return;
       onNodeClickFn(String(node.id), 'config');
-    };
-
-    const nodeSlotOver = (nodeObject: RGNode) => {
-      console.log('nodeSlotOver:', nodeObject);
-    };
-
-    const nodeSlotOut = (nodeObject: RGNode) => {
-      console.log('nodeSlotOut:', nodeObject);
     };
 
     const showNodeMenus = (nodeObject: RGNode, $event: React.MouseEvent<HTMLDivElement>) => {
       setCurrentNode(nodeObject);
       const _base_position = myPage.current?.getBoundingClientRect();
-      console.log('showNodeMenus:', $event, $event.currentTarget.offsetWidth, _base_position);
+      // console.log('showNodeMenus:', $event, $event.currentTarget.offsetWidth, _base_position);
       setIsShowNodeMenuPanel(true);
       setNodeMenuPanelPosition({
         x: $event.clientX - 20,
@@ -116,7 +102,10 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
       // console.log("NodeSlot:");
       if (node.type === "task") {
         return (
-          <div className={node.borderColor === "#f90" ? "commonNode taskNode isDelivery" : "commonNode taskNode"}>
+          <div className={classNames(
+            "commonNode taskNode",
+            // node?.data?.isDeliveryBranch ? "isDelivery" : "",
+          )}>
             <p className="bold">task</p>
             <span className="text">{node.text}</span>
           </div>
@@ -124,11 +113,14 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
       }
 
       return (
-        <div className={node.borderColor === "#f90" ? "commonNode weightNode isDelivery" : "commonNode weightNode"}
+        <div className={classNames("commonNode",
+          node.type === 'ckpt' ? "weightNode" : "",
+          node.type === 'config' ? "configNode" : "",
+          // node?.data?.isDeliveryBranch ? "isDelivery" : "",
+          // !node?.data?.hasEvalResult ? "weightNode noResult" : ""
+        )}
           onClick={(event) => showNodeMenus(node, event)}
           onContextMenu={(event) => showNodeMenus(node, event)}
-          onMouseEnter={() => nodeSlotOver(node)}
-          onMouseLeave={() => nodeSlotOut(node)}
         >
           <p className="bold">{node.type === "ckpt" ? 'ckpt' : 'config'}</p>
           <span className="text">{node.text}</span>
@@ -150,8 +142,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           options={options}
           nodeSlot={NodeSlot}
           onNodeClick={onNodeClick}
-          onLineClick={onLineClick}
-          toolBarSlot={<MyToolbar />}
+          toolBarSlot={<MyToolbar changeViewType={changeViewType} />}
           graphPlugSlot={
             <>
               <Panel onSearchClick={onPanelClick} warningList={warningList} graphRef={graphRef} />

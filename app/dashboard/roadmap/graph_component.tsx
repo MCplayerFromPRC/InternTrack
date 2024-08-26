@@ -10,69 +10,73 @@ export interface IWarningInfo {
 }
 import React from 'react';
 import { Suspense, useEffect, useRef, useState } from "react";
-import { useReadQuery, useBackgroundQuery, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { RGJsonData, RelationGraphComponent } from "relation-graph-react";
-import { QueryRef } from "@apollo/client/react";
 import { SimpleGraph } from "@/app/ui/roadmap/SimpleGraph";
 import Loading from "@/app/dashboard/(overview)/loading"
 import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/fragments.generated"
-// import { layout } from "./client_layout"
 import useSpecialQueue from "./detail_queue"
 import DetailCard from "@/app/ui/detail/Config";
-import { mockData } from './mock';
+import { message } from 'antd';
 
 export const GraphWrapper = () => {
-  const [queryRef] = useBackgroundQuery<RoadmapQuery>(RoadmapDocument);
   return (
     <Suspense fallback={<Loading />}>
-      <RoadmapGraph queryRef={queryRef} />
+      <RoadmapGraph />
     </Suspense>
   );
 };
 
-export const RoadmapGraph = ({
-  queryRef,
-}: {
-  queryRef: QueryRef<RoadmapQuery, RoadmapQueryVariables>;
-}) => {
-  // const { data } = useReadQuery(queryRef);
-  // console.log('roadmap data-----', data);
-  //const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: {} }); // fetchData是留给search的
-  // TODO: 数据现在是mock的，要换成接口请求
+export const RoadmapGraph = () => {
+  const [roadMapData, setRoadMapData] = useState<any>(null);
   const [graphViewData, setGraphViewData] = useState<RGJsonData | null>(null);
-  const { enqueue, dequeue, queue } = useSpecialQueue<string>(); // 留给代码块的
+  const { enqueue, dequeue, queue } = useSpecialQueue<string>(); // 留给config代码块的
   const [warningList, setWarning] = useState<IWarningInfo[]>([]);
   const [cardType, setCardType] = useState('');
   const [tableRes, setTableRes] = useState<any[]>([]);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [keyword, setKeyWord] = useState('');
+  const [viewType, setViewType] = useState('ckpt');
+  const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: { keyword, viewType } }); // fetchData是留给search的
   const closePopMask = (idx: number) => {
     if (cardType === 'result') {
       setTableRes([]);
+      setShowDiscard(false);
     } else {
       dequeue(idx);
     }
-    setShowDiscard(false);
   };
-  const handleSearch = async (newSearchKey: string) => {
+
+  const handleSearch = (newSearchKey: string) => {
+    if (!newSearchKey) {
+      message.warning('请输入搜索词！');
+      return;
+    }
     console.log('keyword----', newSearchKey);
+    setKeyWord(newSearchKey);
     // 搜索框里search的点击
-    // let result;
-    // if (newSearchKey) {
-    //   result = await fetchData();
-    // } else {
-    //   result = await fetchData();
-    // }
-    // console.log(result);
     // setGraphViewData(layout(result.data as RoadmapQuery));
   };
 
+  const fetchNewData = async () => {
+    // type类型ckpt或者config
+    const result = await fetchData();
+    console.log('search or viewtype changed, res is------', result?.data?.roadmap);
+    // setGraphViewData(result?.data?.roadmap);
+    setRoadMapData(result?.data?.roadmap);
+  };
+
   const showGraph = async (graphViewData: RGJsonData) => {
+    console.log('show graph-----');
     // 获取数据渲染画布
     const graphInstance = graphRef.current!.getInstance();
-    await graphInstance.setJsonData(graphViewData);
-    await graphInstance.toggleAutoLayout();
-    await graphInstance.moveToCenter();
-    await graphInstance.zoomToFit();
+    if (graphInstance) {
+      await graphInstance.setJsonData(graphViewData);
+      await graphInstance.refresh();
+      // await graphInstance.toggleAutoLayout();
+      // await graphInstance.moveToCenter();
+      // await graphInstance.zoomToFit();
+    }
   };
 
   const queryConfig = (nodeId: string) => {
@@ -149,6 +153,36 @@ export const RoadmapGraph = ({
     }
   };
 
+  const generateGraphData = () => {
+    const { nodes, lines, warnings } = roadMapData;
+    // 处理warning数据
+    if (warnings?.length) {
+      setWarning(warnings);
+    }
+    const temp: any = {};
+    temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step, hasEvalResult }: any) => {
+      return {
+        id,
+        type,
+        nodeShape: type === 'task' ? 1 : 0,
+        text: type === 'task' ? taskName : step,
+        borderWidth: isDeliveryBranch ? 4 : 0,
+        borderColor: isDeliveryBranch ? '#f90' : '',
+        data: {
+          hasEvalResult,
+          isDeliveryBranch
+        }
+      }
+    });
+    temp.lines = lines.map(({ from, to }: any) => {
+      return {
+        from,
+        to
+      }
+    });
+    setGraphViewData(temp);
+  };
+
   const graphRef = useRef<RelationGraphComponent>(null);
 
   useEffect(() => {
@@ -158,32 +192,20 @@ export const RoadmapGraph = ({
   }, [graphViewData]);
 
   useEffect(() => {
-    if (!mockData) return;
-    console.log('mock data is-----', mockData);
-    const { nodes, lines, warnings } = mockData;
-    // 处理warning数据
-    if (warnings.length) {
-      setWarning(warnings);
-    }
-    const temp: any = { rootId: mockData.rootId };
-    temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step }) => {
-      return {
-        id,
-        type,
-        nodeShape: type === 'task' ? 1 : 0,
-        text: type === 'task' ? taskName : step,
-        borderWidth: 0,
-        borderColor: isDeliveryBranch ? '#f90' : '',
-      }
-    });
-    temp.lines = lines.map(({ from, to }) => {
-      return {
-        from,
-        to
-      }
-    });
-    setGraphViewData(temp);
-  }, [mockData]);
+    if (!roadMapData) return;
+    generateGraphData();
+  }, [roadMapData]);
+
+  useEffect(() => {
+    if (!keyword) return;
+    console.log('keyword changed-----', keyword);
+    fetchNewData();
+  }, [keyword]);
+
+  useEffect(() => {
+    console.log('viewType changed-----', viewType);
+    fetchNewData();
+  }, [viewType]);
 
   return (
     <div>
@@ -191,6 +213,7 @@ export const RoadmapGraph = ({
         <DetailCard onclickFuncs={closePopMask} queue={queue} tableRes={tableRes} cardType={cardType} />
       )}
       <SimpleGraph
+        changeViewType={(val: string) => { setViewType(val) }}
         warningList={warningList}
         graphRef={graphRef}
         onPanelClick={handleSearch}

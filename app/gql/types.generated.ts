@@ -1,14 +1,8 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -43,7 +37,7 @@ export type Scalars = {
    */
   Duration: string;
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: Record<string, any>;
+  JSON: Record;
   /** Integers that will have a value of 0 or more. */
   NonNegativeInt: number;
   /** Integers that will have a value greater than 0. */
@@ -52,53 +46,53 @@ export type Scalars = {
 
 /** Large Language Model Checkpoint */
 export type Checkpoint = {
-  __typename?: "Checkpoint";
-  config: Scalars["String"];
-  id: Scalars["String"];
-  isDelivery: Scalars["Boolean"];
-  isRewardModel: Scalars["Boolean"];
-  isSnapshot: Scalars["Boolean"];
-  key: Scalars["String"];
-  md5: Scalars["String"];
-  path: Scalars["String"];
-  revision: Scalars["String"];
-  saveTime: Scalars["DateTime"];
-  step: Scalars["Int"];
+  __typename?: 'Checkpoint';
+  config: Scalars['String'];
+  id: Scalars['String'];
+  isDelivery: Scalars['Boolean'];
+  isRewardModel: Scalars['Boolean'];
+  isSnapshot: Scalars['Boolean'];
+  key: Scalars['String'];
+  md5: Scalars['String'];
+  path: Scalars['String'];
+  revision: Scalars['String'];
+  saveTime: Scalars['DateTime'];
+  step: Scalars['Int'];
 };
 
 export enum CkptEventType {
-  NewCkpt = "NewCkpt",
+  NewCkpt = 'NewCkpt'
 }
 
 export type CkptInput = {
-  config: Scalars["String"];
-  isDelivery?: InputMaybe<Scalars["Boolean"]>;
-  isRewardModel?: InputMaybe<Scalars["Boolean"]>;
-  isSnapshot?: InputMaybe<Scalars["Boolean"]>;
-  md5: Scalars["String"];
-  path: Scalars["String"];
-  saveTime: Scalars["DateTime"];
-  step: Scalars["Int"];
+  config: Scalars['String'];
+  isDelivery?: InputMaybe<Scalars['Boolean']>;
+  isRewardModel?: InputMaybe<Scalars['Boolean']>;
+  isSnapshot?: InputMaybe<Scalars['Boolean']>;
+  md5: Scalars['String'];
+  path: Scalars['String'];
+  saveTime: Scalars['DateTime'];
+  step: Scalars['Int'];
 };
 
 /** The step between two saved checkpoints */
 export type CkptStep = {
-  __typename?: "CkptStep";
-  duration: Scalars["Duration"];
-  from: Scalars["String"];
-  id: Scalars["String"];
-  key: Scalars["String"];
-  revision: Scalars["String"];
-  steps: Scalars["PositiveInt"];
-  to: Scalars["String"];
-  tokens: Scalars["PositiveInt"];
+  __typename?: 'CkptStep';
+  duration: Scalars['Duration'];
+  from: Scalars['String'];
+  id: Scalars['String'];
+  key: Scalars['String'];
+  revision: Scalars['String'];
+  steps: Scalars['PositiveInt'];
+  to: Scalars['String'];
+  tokens: Scalars['PositiveInt'];
 };
 
 export type CkptStepInput = {
-  duration: Scalars["Duration"];
-  from: Scalars["String"];
-  to: Scalars["String"];
-  tokens: Scalars["Int"];
+  duration: Scalars['Duration'];
+  from: Scalars['String'];
+  to: Scalars['String'];
+  tokens: Scalars['Int'];
 };
 
 export type IBaseCkptEvent = {
@@ -107,7 +101,7 @@ export type IBaseCkptEvent = {
 };
 
 export type Mutation = {
-  __typename?: "Mutation";
+  __typename?: 'Mutation';
   createCheckpoint: Checkpoint;
   createCkptStep: CkptStep;
   createResumeCkpt: ResumeCkpt;
@@ -115,21 +109,26 @@ export type Mutation = {
   createTrainTask: TrainTask;
 };
 
+
 export type MutationCreateCheckpointArgs = {
   input: CkptInput;
 };
+
 
 export type MutationCreateCkptStepArgs = {
   input: CkptStepInput;
 };
 
+
 export type MutationCreateResumeCkptArgs = {
   input: ResumeCkptInput;
 };
 
+
 export type MutationCreateTrainConfigArgs = {
   input: TrainConfigInput;
 };
+
 
 export type MutationCreateTrainTaskArgs = {
   input: TrainTaskInput;
@@ -137,14 +136,14 @@ export type MutationCreateTrainTaskArgs = {
 
 /** When a new post is created */
 export type NewPostEvent = IBaseCkptEvent & {
-  __typename?: "NewPostEvent";
+  __typename?: 'NewPostEvent';
   /** Event type */
   eventType: CkptEventType;
   result: Checkpoint;
 };
 
 export type Query = {
-  __typename?: "Query";
+  __typename?: 'Query';
   /** All the Checkpoints */
   allCheckpoints?: Maybe<Array<Checkpoint>>;
   /** Query the step by id */
@@ -169,54 +168,61 @@ export type Query = {
   trainTask?: Maybe<TrainTask>;
 };
 
+
 export type QueryAllResumeCkptsArgs = {
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
 };
+
 
 export type QueryCheckpointArgs = {
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
 };
+
 
 export type QueryCkptStepArgs = {
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
 };
+
 
 export type QueryResumeCkptArgs = {
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
 };
+
 
 export type QueryRoadmapArgs = {
-  keyword?: InputMaybe<Scalars["String"]>;
-  viewType?: InputMaybe<Scalars["String"]>;
+  keyword?: InputMaybe<Scalars['String']>;
+  viewType?: InputMaybe<Scalars['String']>;
 };
+
 
 export type QueryTrainConfigArgs = {
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
 };
 
+
 export type QueryTrainTaskArgs = {
-  id?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 /** Continue training config from checkpoints */
 export type ResumeCkpt = {
-  __typename?: "ResumeCkpt";
-  from: Scalars["String"];
-  id: Scalars["String"];
-  key: Scalars["String"];
-  revision: Scalars["String"];
-  to: Scalars["String"];
+  __typename?: 'ResumeCkpt';
+  from: Scalars['String'];
+  id: Scalars['String'];
+  key: Scalars['String'];
+  revision: Scalars['String'];
+  to: Scalars['String'];
 };
 
 export type ResumeCkptInput = {
-  from: Scalars["String"];
-  to: Scalars["String"];
+  from: Scalars['String'];
+  to: Scalars['String'];
 };
 
 /** InternLM Roadmap */
 export type Roadmap = {
-  __typename?: "Roadmap";
+  __typename?: 'Roadmap';
   lines: Array<RoadmapLine>;
   nodes: Array<RoadmapNode>;
   warnings?: Maybe<Array<RoadmapWarning>>;
@@ -224,102 +230,102 @@ export type Roadmap = {
 
 /** InternLM Roadmap Line */
 export type RoadmapLine = {
-  __typename?: "RoadmapLine";
-  duration?: Maybe<Scalars["Duration"]>;
-  from: Scalars["String"];
-  id?: Maybe<Scalars["String"]>;
-  key?: Maybe<Scalars["String"]>;
-  revision?: Maybe<Scalars["String"]>;
-  steps?: Maybe<Scalars["PositiveInt"]>;
-  to: Scalars["String"];
-  tokens?: Maybe<Scalars["PositiveInt"]>;
-  type: Scalars["String"];
+  __typename?: 'RoadmapLine';
+  duration?: Maybe<Scalars['Duration']>;
+  from: Scalars['String'];
+  id?: Maybe<Scalars['String']>;
+  key?: Maybe<Scalars['String']>;
+  revision?: Maybe<Scalars['String']>;
+  steps?: Maybe<Scalars['PositiveInt']>;
+  to: Scalars['String'];
+  tokens?: Maybe<Scalars['PositiveInt']>;
+  type: Scalars['String'];
 };
 
 /** InternLM Roadmap Node */
 export type RoadmapNode = {
-  __typename?: "RoadmapNode";
-  ckptPath?: Maybe<Scalars["String"]>;
-  config?: Maybe<Scalars["String"]>;
-  id: Scalars["String"];
-  isDelivery?: Maybe<Scalars["Boolean"]>;
-  isDeliveryBranch: Scalars["Boolean"];
-  isRewardModel?: Maybe<Scalars["Boolean"]>;
-  isSnapshot?: Maybe<Scalars["Boolean"]>;
-  key: Scalars["String"];
-  md5?: Maybe<Scalars["String"]>;
-  revision: Scalars["String"];
-  saveTime?: Maybe<Scalars["DateTime"]>;
-  startStep?: Maybe<Scalars["Int"]>;
-  step?: Maybe<Scalars["Int"]>;
-  stopStep?: Maybe<Scalars["Int"]>;
-  taskDesc?: Maybe<Scalars["String"]>;
-  taskName?: Maybe<Scalars["String"]>;
-  type: Scalars["String"];
+  __typename?: 'RoadmapNode';
+  ckptPath?: Maybe<Scalars['String']>;
+  config?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isDelivery?: Maybe<Scalars['Boolean']>;
+  isDeliveryBranch: Scalars['Boolean'];
+  isRewardModel?: Maybe<Scalars['Boolean']>;
+  isSnapshot?: Maybe<Scalars['Boolean']>;
+  key: Scalars['String'];
+  md5?: Maybe<Scalars['String']>;
+  revision: Scalars['String'];
+  saveTime?: Maybe<Scalars['DateTime']>;
+  startStep?: Maybe<Scalars['Int']>;
+  step?: Maybe<Scalars['Int']>;
+  stopStep?: Maybe<Scalars['Int']>;
+  taskDesc?: Maybe<Scalars['String']>;
+  taskName?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
 };
 
 /** InternLM Roadmap Warning */
 export type RoadmapWarning = {
-  __typename?: "RoadmapWarning";
-  id: Scalars["String"];
-  message: Scalars["String"];
+  __typename?: 'RoadmapWarning';
+  id: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type Subscription = {
-  __typename?: "Subscription";
+  __typename?: 'Subscription';
   /** Events related to posts */
   postEvents: IBaseCkptEvent;
 };
 
 export enum TaskType {
-  Pretrain = "pretrain",
-  RlhfPpo = "rlhf_ppo",
-  RlhfRm = "rlhf_rm",
-  Sft = "sft",
+  Pretrain = 'pretrain',
+  RlhfPpo = 'rlhf_ppo',
+  RlhfRm = 'rlhf_rm',
+  Sft = 'sft'
 }
 
 /** Training Config */
 export type TrainConfig = {
-  __typename?: "TrainConfig";
+  __typename?: 'TrainConfig';
   /** TrainConfig's Checkpoints */
   ckpts: Array<Checkpoint>;
-  configContent: Scalars["String"];
-  dataConfig: Scalars["JSON"];
-  id: Scalars["String"];
-  key: Scalars["String"];
-  modelConfig: Scalars["JSON"];
-  optimizerConfig: Scalars["JSON"];
-  parallelConfig: Scalars["JSON"];
-  revision: Scalars["String"];
-  startStep: Scalars["Int"];
-  task: Scalars["String"];
+  configContent: Scalars['String'];
+  dataConfig: Scalars['JSON'];
+  id: Scalars['String'];
+  key: Scalars['String'];
+  modelConfig: Scalars['JSON'];
+  optimizerConfig: Scalars['JSON'];
+  parallelConfig: Scalars['JSON'];
+  revision: Scalars['String'];
+  startStep: Scalars['Int'];
+  task: Scalars['String'];
 };
 
 export type TrainConfigInput = {
-  configContent: Scalars["String"];
-  dataConfig?: InputMaybe<Scalars["JSON"]>;
-  modelConfig?: InputMaybe<Scalars["JSON"]>;
-  optimizerConfig?: InputMaybe<Scalars["JSON"]>;
-  parallelConfig?: InputMaybe<Scalars["JSON"]>;
-  startStep?: InputMaybe<Scalars["Int"]>;
-  task?: InputMaybe<Scalars["String"]>;
+  configContent: Scalars['String'];
+  dataConfig?: InputMaybe<Scalars['JSON']>;
+  modelConfig?: InputMaybe<Scalars['JSON']>;
+  optimizerConfig?: InputMaybe<Scalars['JSON']>;
+  parallelConfig?: InputMaybe<Scalars['JSON']>;
+  startStep?: InputMaybe<Scalars['Int']>;
+  task?: InputMaybe<Scalars['String']>;
 };
 
 /** Training Task */
 export type TrainTask = {
-  __typename?: "TrainTask";
+  __typename?: 'TrainTask';
   /** TrainTask's TrainConfig */
   configs: Array<TrainConfig>;
-  desc: Scalars["String"];
-  id: Scalars["String"];
-  key: Scalars["String"];
-  name: Scalars["String"];
-  revision: Scalars["String"];
-  type: Scalars["String"];
+  desc: Scalars['String'];
+  id: Scalars['String'];
+  key: Scalars['String'];
+  name: Scalars['String'];
+  revision: Scalars['String'];
+  type: Scalars['String'];
 };
 
 export type TrainTaskInput = {
-  desc?: InputMaybe<Scalars["String"]>;
-  name: Scalars["String"];
+  desc?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
   type?: InputMaybe<TaskType>;
 };

@@ -4,18 +4,22 @@ import { useContext, useEffect, useState } from "react";
 import { RelationGraphStoreContext } from "relation-graph-react";
 
 // https://heroicons.com/
-const MyToolbar = () => {
+const MyToolbar = (props: any) => {
+  const { changeViewType } = props;
   const graphInstance = useContext(RelationGraphStoreContext);
   const [options, setOptions] = useState(graphInstance.options);
+  const [viewType, setViewType] = useState('ckpt');
 
   const refresh = () => {
     graphInstance.refresh();
   };
 
   //eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const switchLayout = (layoutConfig: any) => {
-    console.log("change layout:", layoutConfig);
-    // graphInstance.switchLayout(layoutConfig);
+  const switchLayout = () => {
+    const newType = viewType === 'ckpt' ? 'config' : 'ckpt';
+    setViewType(newType);
+    changeViewType(newType);
+    console.log("change layout:", newType);
   };
 
   // const toggleAutoLayout = () => {
@@ -26,14 +30,13 @@ const MyToolbar = () => {
     graphInstance.downloadAsImage("png");
   };
 
-  const zoomToFit = async () => {
-    await graphInstance.setZoom(100);
-    await graphInstance.moveToCenter();
-    await graphInstance.zoomToFit();
-  };
+  // const zoomToFit = async () => {
+  //   await graphInstance.setZoom(100);
+  //   await graphInstance.moveToCenter();
+  //   await graphInstance.zoomToFit();
+  // };
 
   useEffect(() => {
-    console.log(graphInstance.options);
     setOptions(graphInstance.options);
   }, [graphInstance.options]);
 
@@ -64,9 +67,9 @@ const MyToolbar = () => {
         </svg>
 
       </div>
-      <div className="c-current-zoom" onDoubleClick={zoomToFit}>
+      {/* <div className="c-current-zoom" onDoubleClick={zoomToFit}>
         {options.canvasZoom}%
-      </div>
+      </div> */}
       <div
         className="c-mb-button mb-0"
         onClick={() => graphInstance.zoom(-20)}
