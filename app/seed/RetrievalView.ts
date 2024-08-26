@@ -5,36 +5,86 @@ const options: CreateArangoSearchViewOptions = {
   type: "arangosearch",
   primarySort: [
     {
-      field: "flights.DepTimeUTC",
+      field: "TrainTask.name",
+      asc: true,
+    },
+    {
+      field: "TrainConfig.configContent",
       asc: true,
     },
   ],
   storedValues: [
+    ["TrainTask._id", "TrainTask.type", "TrainTask.desc"],
     [
-      "flights._from",
-      "flights._to",
-      "flights.UniqueCarrier",
-      "flights.FlightNum",
+      "TrainConfig._id",
+      "TrainConfig.startStep",
+      "TrainConfig.modelConfig",
+      "TrainConfig.dataConfig",
+      "TrainConfig.optimizerConfig",
+      "TrainConfig.parallelConfig",
     ],
-    ["airports.name", "airports.city", "airports.country"],
+    [
+      "Checkpoint._id",
+      "Checkpoint.isSnapshot",
+      "Checkpoint.isDelivery",
+      "Checkpoint.isRewardModel",
+      "Checkpoint.step",
+      "Checkpoint.saveTime",
+    ],
+    [
+      "CkptStep._from",
+      "CkptStep._to",
+      "CkptStep.steps",
+      "CkptStep.tokens",
+      "CkptStep.duration",
+    ],
+    ["ResumeCkpt._from", "ResumeCkpt._to"],
   ],
   links: {
-    flights: {
-      includeAllFields: false,
-      fields: {
-        DepTimeUTC: { analyzers: ["identity"] },
-        _from: { analyzers: ["identity"] },
-        _to: { analyzers: ["identity"] },
-        UniqueCarrier: { analyzers: ["text_en"] },
-        FlightNum: { analyzers: ["text_en"] },
-      },
-    },
-    airports: {
+    TrainTask: {
       includeAllFields: false,
       fields: {
         name: { analyzers: ["text_en"] },
-        city: { analyzers: ["text_en"] },
-        country: { analyzers: ["text_en"] },
+        type: { analyzers: ["identity"] },
+        desc: { analyzers: ["text_en"] },
+      },
+    },
+    TrainConfig: {
+      includeAllFields: false,
+      fields: {
+        configContent: { analyzers: ["text_en"] },
+        startStep: { analyzers: ["identity"] },
+        modelConfig: { analyzers: ["text_en"] },
+        dataConfig: { analyzers: ["text_en"] },
+        optimizerConfig: { analyzers: ["text_en"] },
+        parallelConfig: { analyzers: ["text_en"] },
+      },
+    },
+    Checkpoint: {
+      includeAllFields: false,
+      fields: {
+        isSnapshot: { analyzers: ["identity"] },
+        isDelivery: { analyzers: ["identity"] },
+        isRewardModel: { analyzers: ["identity"] },
+        step: { analyzers: ["identity"] },
+        saveTime: { analyzers: ["text_en"] },
+      },
+    },
+    CkptStep: {
+      includeAllFields: false,
+      fields: {
+        _from: { analyzers: ["identity"] },
+        _to: { analyzers: ["identity"] },
+        steps: { analyzers: ["identity"] },
+        tokens: { analyzers: ["identity"] },
+        duration: { analyzers: ["identity"] },
+      },
+    },
+    ResumeCkpt: {
+      includeAllFields: false,
+      fields: {
+        _from: { analyzers: ["identity"] },
+        _to: { analyzers: ["identity"] },
       },
     },
   },

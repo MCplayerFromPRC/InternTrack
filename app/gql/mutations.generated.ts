@@ -13,9 +13,13 @@ export type CreateCheckpointMutation = {
     key: string;
     revision: string;
     md5: string;
-    step: number;
     config: string;
+    step: number;
+    path: string;
+    isSnapshot: boolean;
     isDelivery: boolean;
+    isRewardModel: boolean;
+    saveTime: Date;
   };
 };
 
@@ -31,6 +35,7 @@ export type CreateCkptStepMutation = {
     key: string;
     from: string;
     to: string;
+    steps: number;
     tokens: number;
     duration: string;
   };
@@ -46,9 +51,9 @@ export type CreateResumeCkptMutation = {
     __typename?: "ResumeCkpt";
     id: string;
     key: string;
+    revision: string;
     from: string;
     to: string;
-    isSameTask: boolean;
   };
 };
 
@@ -62,54 +67,14 @@ export type CreateTrainConfigMutation = {
     __typename?: "TrainConfig";
     id: string;
     key: string;
-    modelName: string;
-  };
-};
-
-export type CreateRoadmapMutationVariables = Types.Exact<{
-  ckptList: Array<Types.CkptInput> | Types.CkptInput;
-  ckptStepList: Array<Types.CkptStepInput> | Types.CkptStepInput;
-  trainConfigList: Array<Types.TrainConfigInput> | Types.TrainConfigInput;
-  resumeCkptList: Array<Types.ResumeCkptInput> | Types.ResumeCkptInput;
-}>;
-
-export type CreateRoadmapMutation = {
-  __typename?: "Mutation";
-  createRoadmap: {
-    __typename?: "Roadmap";
-    ckptList: Array<{
-      __typename?: "Checkpoint";
-      id: string;
-      key: string;
-      revision: string;
-      md5: string;
-      step: number;
-      config: string;
-      isDelivery: boolean;
-    }>;
-    ckptStepList: Array<{
-      __typename?: "CkptStep";
-      id: string;
-      key: string;
-      from: string;
-      to: string;
-      tokens: number;
-      duration: string;
-    }>;
-    trainConfigList: Array<{
-      __typename?: "TrainConfig";
-      id: string;
-      key: string;
-      modelName: string;
-    }>;
-    resumeCkptList: Array<{
-      __typename?: "ResumeCkpt";
-      id: string;
-      key: string;
-      from: string;
-      to: string;
-      isSameTask: boolean;
-    }>;
+    revision: string;
+    task: string;
+    configContent: string;
+    startStep: number;
+    modelConfig: Record<string, any>;
+    dataConfig: Record<string, any>;
+    optimizerConfig: Record<string, any>;
+    parallelConfig: Record<string, any>;
   };
 };
 
@@ -179,9 +144,13 @@ export const CreateCheckpointDocument = {
           { kind: "Field", name: { kind: "Name", value: "key" } },
           { kind: "Field", name: { kind: "Name", value: "revision" } },
           { kind: "Field", name: { kind: "Name", value: "md5" } },
-          { kind: "Field", name: { kind: "Name", value: "step" } },
           { kind: "Field", name: { kind: "Name", value: "config" } },
+          { kind: "Field", name: { kind: "Name", value: "step" } },
+          { kind: "Field", name: { kind: "Name", value: "path" } },
+          { kind: "Field", name: { kind: "Name", value: "isSnapshot" } },
           { kind: "Field", name: { kind: "Name", value: "isDelivery" } },
+          { kind: "Field", name: { kind: "Name", value: "isRewardModel" } },
+          { kind: "Field", name: { kind: "Name", value: "saveTime" } },
         ],
       },
     },
@@ -256,6 +225,7 @@ export const CreateCkptStepDocument = {
           { kind: "Field", name: { kind: "Name", value: "key" } },
           { kind: "Field", name: { kind: "Name", value: "from" } },
           { kind: "Field", name: { kind: "Name", value: "to" } },
+          { kind: "Field", name: { kind: "Name", value: "steps" } },
           { kind: "Field", name: { kind: "Name", value: "tokens" } },
           { kind: "Field", name: { kind: "Name", value: "duration" } },
         ],
@@ -330,9 +300,9 @@ export const CreateResumeCkptDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "key" } },
+          { kind: "Field", name: { kind: "Name", value: "revision" } },
           { kind: "Field", name: { kind: "Name", value: "from" } },
           { kind: "Field", name: { kind: "Name", value: "to" } },
-          { kind: "Field", name: { kind: "Name", value: "isSameTask" } },
         ],
       },
     },
@@ -405,7 +375,14 @@ export const CreateTrainConfigDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "modelName" } },
+          { kind: "Field", name: { kind: "Name", value: "revision" } },
+          { kind: "Field", name: { kind: "Name", value: "task" } },
+          { kind: "Field", name: { kind: "Name", value: "configContent" } },
+          { kind: "Field", name: { kind: "Name", value: "startStep" } },
+          { kind: "Field", name: { kind: "Name", value: "modelConfig" } },
+          { kind: "Field", name: { kind: "Name", value: "dataConfig" } },
+          { kind: "Field", name: { kind: "Name", value: "optimizerConfig" } },
+          { kind: "Field", name: { kind: "Name", value: "parallelConfig" } },
         ],
       },
     },
@@ -413,289 +390,4 @@ export const CreateTrainConfigDocument = {
 } as unknown as DocumentNode<
   CreateTrainConfigMutation,
   CreateTrainConfigMutationVariables
->;
-export const CreateRoadmapDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "createRoadmap" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "ckptList" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "ListType",
-              type: {
-                kind: "NonNullType",
-                type: {
-                  kind: "NamedType",
-                  name: { kind: "Name", value: "CkptInput" },
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "ckptStepList" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "ListType",
-              type: {
-                kind: "NonNullType",
-                type: {
-                  kind: "NamedType",
-                  name: { kind: "Name", value: "CkptStepInput" },
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "trainConfigList" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "ListType",
-              type: {
-                kind: "NonNullType",
-                type: {
-                  kind: "NamedType",
-                  name: { kind: "Name", value: "TrainConfigInput" },
-                },
-              },
-            },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "resumeCkptList" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "ListType",
-              type: {
-                kind: "NonNullType",
-                type: {
-                  kind: "NamedType",
-                  name: { kind: "Name", value: "ResumeCkptInput" },
-                },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createRoadmap" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "ckptList" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "ckptList" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "ckptStepList" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "ckptStepList" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "trainConfigList" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "trainConfigList" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "resumeCkptList" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "resumeCkptList" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "roadmap" },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "checkpoint" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Checkpoint" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "revision" } },
-          { kind: "Field", name: { kind: "Name", value: "md5" } },
-          { kind: "Field", name: { kind: "Name", value: "step" } },
-          { kind: "Field", name: { kind: "Name", value: "config" } },
-          { kind: "Field", name: { kind: "Name", value: "isDelivery" } },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "step" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "CkptStep" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "from" } },
-          { kind: "Field", name: { kind: "Name", value: "to" } },
-          { kind: "Field", name: { kind: "Name", value: "tokens" } },
-          { kind: "Field", name: { kind: "Name", value: "duration" } },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "trainConfig" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "TrainConfig" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "modelName" } },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "resumeCkpt" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ResumeCkpt" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "key" } },
-          { kind: "Field", name: { kind: "Name", value: "from" } },
-          { kind: "Field", name: { kind: "Name", value: "to" } },
-          { kind: "Field", name: { kind: "Name", value: "isSameTask" } },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "roadmap" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Roadmap" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "ckptList" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "checkpoint" },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "ckptStepList" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "step" },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "trainConfigList" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "trainConfig" },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "resumeCkptList" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "resumeCkpt" },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateRoadmapMutation,
-  CreateRoadmapMutationVariables
 >;

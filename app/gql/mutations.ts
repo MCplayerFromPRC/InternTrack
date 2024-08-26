@@ -1,11 +1,5 @@
 import gql from "graphql-tag";
-import {
-  checkpoint,
-  ckptStep,
-  resumeCkpt,
-  trainConfig,
-  roadmap,
-} from "./fragments";
+import { checkpoint, ckptStep, resumeCkpt, trainConfig } from "./fragments";
 
 export const createCheckpoint = gql`
   mutation createCheckpoint($input: CkptInput!) {
@@ -45,24 +39,4 @@ export const createTrainConfig = gql`
   }
 
   ${trainConfig}
-`;
-
-export const createRoadmap = gql`
-  mutation createRoadmap(
-    $ckptList: [CkptInput!]!
-    $ckptStepList: [CkptStepInput!]!
-    $trainConfigList: [TrainConfigInput!]!
-    $resumeCkptList: [ResumeCkptInput!]!
-  ) {
-    createRoadmap(
-      ckptList: $ckptList
-      ckptStepList: $ckptStepList
-      trainConfigList: $trainConfigList
-      resumeCkptList: $resumeCkptList
-    ) {
-      ...roadmap
-    }
-  }
-
-  ${roadmap}
 `;

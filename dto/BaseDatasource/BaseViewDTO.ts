@@ -17,15 +17,15 @@ import { BaseDatasource } from "./BaseDTO";
 // BaseViewDatasource<Checkpoint|TrainingConfig>
 @injectable()
 export class BaseViewDatasource<
-  TData extends NodeDocument,
+  TData extends Partial<NodeDocument>,
 > extends BaseDatasource {
   view: View;
-  fields: string[] = [];
+  fields: string[] = ["TrainTask.name", "TrainConfig.configContent"];
 
   constructor(db: Database, view: View, options = {}) {
     super(db, options);
     this.view = view;
-    this.getFields();
+    // this.getFields();
   }
 
   async getFields() {
@@ -55,7 +55,7 @@ export class BaseViewDatasource<
     const allFieldsMatching = this.fields
       .map(
         (field) =>
-          `ANALYZER(doc.${field} IN TOKENS(${searchKey}, "text_en"), "text_en")`,
+          `ANALYZER(doc.${field} IN TOKENS("${searchKey}", "text_en"), "text_en")`,
       )
       .join(" OR ");
     const query = `FOR doc IN ${this.view.name} SEARCH ${allFieldsMatching} SORT BM25(doc) DESC LIMIT ${limit} RETURN doc`;

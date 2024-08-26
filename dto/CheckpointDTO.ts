@@ -18,7 +18,8 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
   }
 
   async findManyByConfig(config_id: string): Promise<Checkpoint[]> {
-    const query = `FOR doc IN ${this.collection} FILTER doc.config == ${config_id} RETURN doc`;
-    return this.executeQuery<Checkpoint>(query);
+    // const query = `FOR doc IN ${this.collection} FILTER doc.config == ${config_id} RETURN doc`;
+    // return this.executeQuery<Checkpoint>(query);
+    return this.findManyByKeys({ config: config_id });
   }
 }

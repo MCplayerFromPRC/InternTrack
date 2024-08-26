@@ -12,6 +12,7 @@ import { registerDirectives } from "@/graphql/directives";
 import { DataSourceOptions } from "@/dto/BaseDatasource/BaseDTO";
 import { config } from "@/lib/database";
 import * as dto from "@/dto";
+import * as service from "@/service";
 
 export const TYPES = {
   PubSub: Symbol.for("PubSub"),
@@ -51,7 +52,10 @@ export interface GQLContext extends BaseContext {
     ckpts: dto.CheckpointDatasource;
     ckptStep: dto.CkptStepDatasource;
     resumeCkpt: dto.ResumeCkptDatasource;
+    task: dto.TrainTaskDatasource;
     config: dto.TrainConfigDatasource;
+    search: dto.RetrievalViewDatasource;
+    roadmap: service.RoadmapService;
   };
   pubsub?: PubSub;
 }

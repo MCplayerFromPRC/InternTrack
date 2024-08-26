@@ -7,7 +7,10 @@ export class Checkpoint extends NodeDocument {
   md5!: string;
   config!: string;
   step: number;
+  path: string;
+  isSnapshot: boolean;
   isDelivery: boolean;
+  isRewardModel: boolean;
   saveTime: Date;
 
   constructor(
@@ -17,14 +20,20 @@ export class Checkpoint extends NodeDocument {
     md5: string,
     config: string,
     step: number,
-    isDelivery: boolean,
+    path: string,
     saveTime: Date,
+    isSnapshot: boolean = false,
+    isDelivery: boolean = false,
+    isRewardModel: boolean = false,
   ) {
     super(_key, _id, _rev);
     this.md5 = md5;
-    this.step = step;
     this.config = config;
+    this.step = step;
+    this.path = path;
+    this.isSnapshot = isSnapshot;
     this.isDelivery = isDelivery;
+    this.isRewardModel = isRewardModel;
     this.saveTime = saveTime;
   }
 }

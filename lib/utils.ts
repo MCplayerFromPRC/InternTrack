@@ -67,3 +67,34 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+type NonNullProperty<T> = T extends null | undefined ? never : T;
+
+type NonNullProperties<T> = {
+  [P in keyof T]: NonNullProperty<T[P]>;
+};
+
+export function removeNullProperties<T extends object>(
+  obj: T,
+): Partial<NonNullProperties<T>> {
+  return Object.keys(obj).reduce(
+    (acc, key) => {
+      const typedKey = key as keyof T;
+      const value = obj[typedKey];
+      if (value !== null) {
+        // To maintain type safety, assign only if not null
+        acc[typedKey] = value as NonNullProperty<T[typeof typedKey]>;
+      }
+      return acc;
+    },
+    {} as Partial<NonNullProperties<T>>,
+  );
+}
+
+export function isTypeOf<T>(
+  obj: any,
+  constructor: { new (...args: any[]): T },
+): obj is T {
+  const requiredKeys = Object.getOwnPropertyNames(new constructor());
+  return requiredKeys.every((key) => key in obj);
+}
