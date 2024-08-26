@@ -11,8 +11,11 @@ type Checkpoint {
   config: String!
   id: String!
   isDelivery: Boolean!
+  isRewardModel: Boolean!
+  isSnapshot: Boolean!
   key: String!
   md5: String!
+  path: String!
   revision: String!
   saveTime: DateTime!
   step: Int!
@@ -24,8 +27,11 @@ enum CkptEventType {
 
 input CkptInput {
   config: String!
-  isDelivery: Boolean!
+  isDelivery: Boolean
+  isRewardModel: Boolean
+  isSnapshot: Boolean
   md5: String!
+  path: String!
   saveTime: DateTime!
   step: Int!
 }
@@ -39,6 +45,7 @@ type CkptStep {
   id: String!
   key: String!
   revision: String!
+  steps: PositiveInt!
   to: String!
   tokens: PositiveInt!
 }
@@ -91,13 +98,8 @@ type Mutation {
   createCheckpoint(input: CkptInput!): Checkpoint!
   createCkptStep(input: CkptStepInput!): CkptStep!
   createResumeCkpt(input: ResumeCkptInput!): ResumeCkpt!
-  createRoadmap(
-    ckptList: [CkptInput!]!
-    ckptStepList: [CkptStepInput!]!
-    resumeCkptList: [ResumeCkptInput!]!
-    trainConfigList: [TrainConfigInput!]!
-  ): Roadmap!
   createTrainConfig(input: TrainConfigInput!): TrainConfig!
+  createTrainTask(input: TrainTaskInput!): TrainTask!
 }
 
 """
@@ -139,6 +141,10 @@ type Query {
   """
   allTrainConfigs: [TrainConfig!]
   """
+  TrainTask
+  """
+  allTrainTasks: [TrainTask!]
+  """
   Saved Checkpoint
   """
   checkpoint(id: String): Checkpoint
@@ -153,11 +159,15 @@ type Query {
   """
   Saved Checkpoint
   """
-  roadmap: Roadmap
+  roadmap(keyword: String, viewType: String): Roadmap
   """
   TrainConfig
   """
   trainConfig(id: String): TrainConfig
+  """
+  TrainTask
+  """
+  trainTask(id: String, name: String): TrainTask
 }
 
 """
@@ -166,7 +176,6 @@ Continue training config from checkpoints
 type ResumeCkpt {
   from: String!
   id: String!
-  isSameTask: Boolean!
   key: String!
   revision: String!
   to: String!
@@ -174,7 +183,6 @@ type ResumeCkpt {
 
 input ResumeCkptInput {
   from: String!
-  isSameTask: Boolean!
   to: String!
 }
 
@@ -182,10 +190,55 @@ input ResumeCkptInput {
 InternLM Roadmap
 """
 type Roadmap {
-  ckptList: [Checkpoint!]!
-  ckptStepList: [CkptStep!]!
-  resumeCkptList: [ResumeCkpt!]!
-  trainConfigList: [TrainConfig!]!
+  lines: [RoadmapLine!]!
+  nodes: [RoadmapNode!]!
+  warnings: [RoadmapWarning!]
+}
+
+"""
+InternLM Roadmap Line
+"""
+type RoadmapLine {
+  duration: Duration
+  from: String!
+  id: String
+  key: String
+  revision: String
+  steps: PositiveInt
+  to: String!
+  tokens: PositiveInt
+  type: String!
+}
+
+"""
+InternLM Roadmap Node
+"""
+type RoadmapNode {
+  ckptPath: String
+  config: String
+  id: String!
+  isDelivery: Boolean
+  isDeliveryBranch: Boolean!
+  isRewardModel: Boolean
+  isSnapshot: Boolean
+  key: String!
+  md5: String
+  revision: String!
+  saveTime: DateTime
+  startStep: Int
+  step: Int
+  stopStep: Int
+  taskDesc: String
+  taskName: String
+  type: String!
+}
+
+"""
+InternLM Roadmap Warning
+"""
+type RoadmapWarning {
+  id: String!
+  message: String!
 }
 
 type Subscription {
@@ -193,6 +246,13 @@ type Subscription {
   Events related to posts
   """
   postEvents: IBaseCkptEvent!
+}
+
+enum TaskType {
+  pretrain
+  rlhf_ppo
+  rlhf_rm
+  sft
 }
 
 """
@@ -203,20 +263,46 @@ type TrainConfig {
   TrainConfig's Checkpoints
   """
   ckpts: [Checkpoint!]!
+  configContent: String!
   dataConfig: JSON!
   id: String!
   key: String!
   modelConfig: JSON!
-  modelName: String!
   optimizerConfig: JSON!
   parallelConfig: JSON!
   revision: String!
+  startStep: Int!
+  task: String!
 }
 
 input TrainConfigInput {
-  dataConfig: JSON!
-  modelConfig: JSON!
-  modelName: String!
-  optimizerConfig: JSON!
-  parallelConfig: JSON!
+  configContent: String!
+  dataConfig: JSON
+  modelConfig: JSON
+  optimizerConfig: JSON
+  parallelConfig: JSON
+  startStep: Int
+  task: String
+}
+
+"""
+Training Task
+"""
+type TrainTask {
+  """
+  TrainTask's TrainConfig
+  """
+  configs: [TrainConfig!]!
+  desc: String!
+  id: String!
+  key: String!
+  name: String!
+  revision: String!
+  type: String!
+}
+
+input TrainTaskInput {
+  desc: String
+  name: String!
+  type: TaskType = pretrain
 }

@@ -1335,6 +1335,7 @@ export async function seed(db: Database) {
           ckpt.md5,
           savedConfig._id,
           ckpt.step,
+          ckpt.path,
           "saveTime" in ckpt ? ckpt.saveTime : new Date(),
           "isSnapshot" in ckpt ? ckpt.isSnapshot : false,
           "isDelivery" in ckpt ? ckpt.isDelivery : false,

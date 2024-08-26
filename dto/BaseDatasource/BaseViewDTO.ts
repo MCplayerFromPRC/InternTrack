@@ -25,7 +25,7 @@ export class BaseViewDatasource<
   constructor(db: Database, view: View, options = {}) {
     super(db, options);
     this.view = view;
-    this.getFields();
+    // this.getFields();
   }
 
   async getFields() {

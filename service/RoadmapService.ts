@@ -340,13 +340,14 @@ class Graph {
     }
 
     if (isCheckpoint(vertex) && viewType === "ckpt") {
-      const { _id, _key, _rev, ...others } = vertex;
+      const { _id, _key, _rev, path, ...others } = vertex;
       this.nodes.set(_id, {
         id: _id,
         key: _key,
         revision: _rev,
         type: "ckpt",
         isDeliveryBranch: false,
+        ckptPath: path,
         ...others,
       });
       return _id;

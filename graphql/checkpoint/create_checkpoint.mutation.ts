@@ -10,6 +10,7 @@ export const CkptInput = builder.inputType("CkptInput", {
     md5: t.string({ required: true }),
     config: t.string({ required: true }),
     step: t.int({ required: true }),
+    path: t.string({ required: true }),
     isSnapshot: t.boolean({ required: false }),
     isDelivery: t.boolean({ required: false }),
     isRewardModel: t.boolean({ required: false }),

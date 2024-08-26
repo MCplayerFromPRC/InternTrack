@@ -14,6 +14,7 @@ export const NodeType: ObjectRef<Partial<Node>> = builder.objectType(Node, {
     taskName: t.exposeString("taskName", { nullable: true }),
     taskDesc: t.exposeString("taskDesc", { nullable: true }),
     md5: t.exposeString("md5", { nullable: true }),
+    config: t.exposeString("config", { nullable: true }),
     isSnapshot: t.exposeBoolean("isSnapshot", { nullable: true }),
     isDelivery: t.exposeBoolean("isDelivery", { nullable: true }),
     isRewardModel: t.exposeBoolean("isRewardModel", { nullable: true }),

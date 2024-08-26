@@ -16,14 +16,15 @@ export const CheckpointType: ObjectRef<Checkpoint> = builder.objectType(
       key: t.exposeString("_key"),
       revision: t.exposeString("_rev"),
       md5: t.exposeString("md5"),
+      config: t.exposeString("config"),
       step: t.exposeInt("step"),
+      path: t.exposeString("path"),
       isSnapshot: t.exposeBoolean("isSnapshot"),
       isDelivery: t.exposeBoolean("isDelivery"),
       isRewardModel: t.exposeBoolean("isRewardModel"),
       saveTime: t.expose("saveTime", {
         type: "DateTime",
       }),
-      config: t.exposeString("config"),
     }),
   },
 );

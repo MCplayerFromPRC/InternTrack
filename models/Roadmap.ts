@@ -11,12 +11,13 @@ export class Node {
   taskDesc: string;
 
   md5: string;
+  config: string;
+  step: number;
   isSnapshot: boolean;
   isDelivery: boolean;
   isRewardModel: boolean;
   ckptPath: string;
   saveTime: Date;
-  step: number;
 
   startStep: number;
   stopStep: number;
@@ -30,6 +31,7 @@ export class Node {
     taskName: string,
     taskDesc: string,
     md5: string,
+    config: string,
     isSnapshot: boolean,
     isDelivery: boolean,
     isRewardModel: boolean,
@@ -47,6 +49,7 @@ export class Node {
     this.taskName = taskName;
     this.taskDesc = taskDesc;
     this.md5 = md5;
+    this.config = config;
     this.isSnapshot = isSnapshot;
     this.isDelivery = isDelivery;
     this.isRewardModel = isRewardModel;
