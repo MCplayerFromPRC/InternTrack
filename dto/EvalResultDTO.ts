@@ -1,5 +1,6 @@
 import type { KeyValueCache } from "@apollo/utils.keyvaluecache";
 import { Database } from "arangojs";
+import Papa from "papaparse";
 import { injectable, inject } from "inversify";
 
 import { EvalScore, EvalResult } from "@/models";
@@ -10,7 +11,7 @@ import { TYPES } from "@/lib/properties";
 @injectable()
 export class EvalResultDatasource extends BaseCollectionDatasource<EvalResult> {
   constructor(
-    @inject(Database) db: Database,
+    @inject(TYPES.Database) db: Database,
     @inject(TYPES.KeyValueCache) cache: KeyValueCache,
     @inject(TYPES.DataSourceOptions) options: DataSourceOptions = {},
   ) {
@@ -45,48 +46,50 @@ export class EvalResultDatasource extends BaseCollectionDatasource<EvalResult> {
   }
 }
 
-export function handleFiles(files: FileList | null): EvalResult | undefined {
-  if (!files || files.length !== 1) return;
-  const file = files[0];
+export function handleFile(fileBuffer: Buffer): EvalResult {
+  const file = fileBuffer.toString("utf-8");
   const result = new EvalResult(
     "_key",
     "_id",
     "_rev",
     "ckptId",
     [],
-    new Date(file.lastModified),
-    "../../",
+    new Date(),
     true,
   );
-  const reader = new FileReader();
 
-  reader.onload = function (event) {
-    const text = event.target?.result;
-    result.scores.push(...parseCSV(text as string));
-  };
-
-  reader.readAsText(file);
-  return result;
-}
-
-function parseCSV(csvData: string): EvalScore[] {
-  const result: EvalScore[] = [];
-  const lines = csvData.split("\n");
-  const dataList = lines.map((line) => line.split(","));
-  // const headers = dataList[0];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  dataList.slice(1).forEach((item, id) => {
-    const [datasetName, datasetMd5, metric, mode, score] = item;
-    result.push(
-      new EvalScore(
-        datasetMd5,
-        datasetName,
-        datasetName.split("-")[0],
-        metric,
-        mode,
-        Number(score),
-      ),
-    );
+  Papa.parse<Omit<EvalScore, "datasetName">>(file, {
+    header: true,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    transformHeader: (header) => {
+      switch (header) {
+        case "dataset":
+          return "subsetName";
+        case "version":
+          return "datasetMd5";
+        case "metric":
+          return "metric";
+        case "mode":
+          return "mode";
+        default:
+          return "score";
+      }
+    },
+    complete: (results) => {
+      for (const data of results.data) {
+        const { subsetName, ...others } = data;
+        result.scores.push({
+          subsetName,
+          datasetName: subsetName.split("-")[0],
+          ...others,
+        });
+      }
+    },
+    error: (error: Error) => {
+      throw error;
+    },
   });
+
   return result;
 }

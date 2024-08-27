@@ -34,7 +34,7 @@ export const EvalResultType: ObjectRef<EvalResult> = builder.objectType(
       ckpt: t.exposeString("ckpt"),
       scores: t.expose("scores", { type: [EvalScoreType] }),
       finishTime: t.expose("finishTime", { type: "DateTime" }),
-      logFolder: t.exposeString("logFolder"),
+      logFolder: t.exposeString("logFolder", { nullable: true }),
       isValid: t.exposeBoolean("isValid"),
     }),
   },

@@ -32,8 +32,8 @@ export class EvalResult extends NodeDocument {
   ckpt: string;
   scores: EvalScore[];
   finishTime: Date;
-  logFolder: string;
   isValid: boolean;
+  logFolder?: string;
 
   constructor(
     _key: string,
@@ -42,15 +42,15 @@ export class EvalResult extends NodeDocument {
     ckpt: string,
     scores: EvalScore[],
     finishTime: Date,
-    logFolder: string,
     isValid: boolean,
+    logFolder?: string,
   ) {
     super(_key, _id, _rev);
     this.ckpt = ckpt;
     this.scores = scores;
     this.finishTime = finishTime;
-    this.logFolder = logFolder;
     this.isValid = isValid;
+    this.logFolder = logFolder;
   }
 }
 

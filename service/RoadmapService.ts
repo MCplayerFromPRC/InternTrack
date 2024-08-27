@@ -7,6 +7,8 @@ import {
   ResumeCkpt,
   TrainConfig,
   TrainTask,
+  EvalResult,
+  CkptEval,
   Node,
   Line,
   Warning,
@@ -19,12 +21,14 @@ import {
   ResumeCkptDatasource,
   TrainConfigDatasource,
   TrainTaskDatasource,
+  CkptEvalDatasource,
+  EvalResultDatasource,
 } from "@/dto";
 
 import { isTypeOf } from "@/lib/utils";
 
-type VertexDocument = Checkpoint | TrainConfig | TrainTask;
-type DBEdgeDocument = CkptStep | ResumeCkpt;
+type VertexDocument = Checkpoint | TrainConfig | TrainTask | EvalResult;
+type DBEdgeDocument = CkptStep | ResumeCkpt | CkptEval;
 type EdgeDocument = DBEdgeDocument | Partial<Line>;
 
 interface WarningArgs {
@@ -101,6 +105,15 @@ function isCkptStep(edge: DBEdgeDocument): edge is CkptStep {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function isResumeCkpt(edge: DBEdgeDocument): edge is ResumeCkpt {
   return isTypeOf(edge, ResumeCkpt);
+}
+
+function isEvalResult(vertex: VertexDocument): vertex is EvalResult {
+  return isTypeOf(vertex, EvalResult);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function isCkptEval(edge: DBEdgeDocument): edge is CkptEval {
+  return isTypeOf(edge, CkptEval);
 }
 
 class Graph {
@@ -345,6 +358,15 @@ class Graph {
 
     if (isCheckpoint(vertex) && viewType === "ckpt") {
       const { _id, _key, _rev, path, ...others } = vertex;
+      const outEdges = <DBEdgeDocument[]>this.adjacencyList.get(_id)!;
+      let hasEvalResult = false;
+      for (const outEdge of outEdges) {
+        const child = this.vertices.get(outEdge._to)!;
+        if (isEvalResult(child) && child.isValid) {
+          hasEvalResult = true;
+          break;
+        }
+      }
       this.nodes.set(_id, {
         id: _id,
         key: _key,
@@ -353,6 +375,7 @@ class Graph {
         isDeliveryBranch: false,
         isSearchResult,
         ckptPath: path,
+        hasEvalResult,
         ...others,
       });
       return _id;
@@ -394,7 +417,8 @@ class Graph {
   skipNodeNotInView(vertex: VertexDocument, viewType: "ckpt" | "config"): void {
     if (
       (isTrainConfig(vertex) && viewType == "ckpt") ||
-      (isCheckpoint(vertex) && viewType == "config")
+      (isCheckpoint(vertex) && viewType == "config") ||
+      isEvalResult(vertex)
     ) {
       this.removeNode(vertex._id);
     }
@@ -579,6 +603,8 @@ export class RoadmapService {
   private resumeCkptDTO: ResumeCkptDatasource;
   private trainConfigDTO: TrainConfigDatasource;
   private trainTaskDTO: TrainTaskDatasource;
+  private evalResultDTO: EvalResultDatasource;
+  private ckptEvalDTO: CkptEvalDatasource;
 
   constructor(
     @inject(CheckpointDatasource) ckptDTO: CheckpointDatasource,
@@ -586,12 +612,16 @@ export class RoadmapService {
     @inject(ResumeCkptDatasource) resumeCkptDTO: ResumeCkptDatasource,
     @inject(TrainConfigDatasource) trainConfigDTO: TrainConfigDatasource,
     @inject(TrainTaskDatasource) trainTaskDTO: TrainTaskDatasource,
+    @inject(EvalResultDatasource) evalResultDTO: EvalResultDatasource,
+    @inject(CkptEvalDatasource) ckptEvalDTO: CkptEvalDatasource,
   ) {
     this.ckptDTO = ckptDTO;
     this.ckptStepDTO = ckptStepDTO;
     this.resumeCkptDTO = resumeCkptDTO;
     this.trainConfigDTO = trainConfigDTO;
     this.trainTaskDTO = trainTaskDTO;
+    this.evalResultDTO = evalResultDTO;
+    this.ckptEvalDTO = ckptEvalDTO;
   }
 
   async fetchGraph(): Promise<Graph> {
@@ -610,6 +640,12 @@ export class RoadmapService {
 
     const resume_ckpt_list = await this.resumeCkptDTO.findAll();
     resume_ckpt_list.forEach((resume_ckpt) => graph.addEdge(resume_ckpt));
+
+    const eval_result_list = await this.evalResultDTO.findAll();
+    eval_result_list.forEach((eval_result) => graph.addVertex(eval_result));
+
+    const ckpt_eval_list = await this.ckptEvalDTO.findAll();
+    ckpt_eval_list.forEach((ckpt_eval) => graph.addEdge(ckpt_eval));
 
     return graph;
   }
