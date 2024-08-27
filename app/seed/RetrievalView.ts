@@ -1,4 +1,5 @@
 import { Database } from "arangojs";
+import { Analyzer } from "arangojs/analyzer";
 import { CreateArangoSearchViewOptions } from "arangojs/view";
 
 const options: CreateArangoSearchViewOptions = {
@@ -6,6 +7,10 @@ const options: CreateArangoSearchViewOptions = {
   primarySort: [
     {
       field: "TrainTask.name",
+      asc: true,
+    },
+    {
+      field: "TrainTask.desc",
       asc: true,
     },
     {
@@ -44,15 +49,15 @@ const options: CreateArangoSearchViewOptions = {
     TrainTask: {
       includeAllFields: false,
       fields: {
-        name: { analyzers: ["text_en"] },
+        name: { analyzers: ["tokenizer"] },
         type: { analyzers: ["identity"] },
-        desc: { analyzers: ["text_en"] },
+        desc: { analyzers: ["tokenizer"] },
       },
     },
     TrainConfig: {
       includeAllFields: false,
       fields: {
-        configContent: { analyzers: ["text_en"] },
+        configContent: { analyzers: ["tokenizer"] },
         startStep: { analyzers: ["identity"] },
         modelConfig: { analyzers: ["text_en"] },
         dataConfig: { analyzers: ["text_en"] },
@@ -92,6 +97,24 @@ const options: CreateArangoSearchViewOptions = {
 
 export async function seed(db: Database) {
   try {
+    const analyzer = new Analyzer(db, "tokenizer");
+    await analyzer.create({
+      type: "pipeline",
+      properties: {
+        pipeline: [
+          { type: "delimiter", properties: { delimiter: "-" } },
+          { type: "delimiter", properties: { delimiter: "_" } },
+          { type: "delimiter", properties: { delimiter: "." } },
+          {
+            type: "text",
+            properties: {
+              locale: "en",
+              stemming: true,
+            },
+          },
+        ],
+      },
+    });
     const view = await db.createView("RetrievalView", options);
     console.log(`view properties: ${view.properties}`);
   } catch (err) {

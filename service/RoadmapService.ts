@@ -356,29 +356,35 @@ class Graph {
       return _id;
     }
 
-    if (isCheckpoint(vertex) && viewType === "ckpt") {
-      const { _id, _key, _rev, path, ...others } = vertex;
-      const outEdges = <DBEdgeDocument[]>this.adjacencyList.get(_id)!;
-      let hasEvalResult = false;
-      for (const outEdge of outEdges) {
-        const child = this.vertices.get(outEdge._to)!;
-        if (isEvalResult(child) && child.isValid) {
-          hasEvalResult = true;
-          break;
+    if (isCheckpoint(vertex)) {
+      if (vertex.isDelivery && viewType === "config") {
+        const config = this.nodes.get(vertex.config)!;
+        config.isDelivery = true;
+        this.nodes.set(vertex.config, config);
+      } else if (viewType === "ckpt") {
+        const { _id, _key, _rev, path, ...others } = vertex;
+        const outEdges = <DBEdgeDocument[]>this.adjacencyList.get(_id)!;
+        let hasEvalResult = false;
+        for (const outEdge of outEdges) {
+          const child = this.vertices.get(outEdge._to)!;
+          if (isEvalResult(child) && child.isValid) {
+            hasEvalResult = true;
+            break;
+          }
         }
+        this.nodes.set(_id, {
+          id: _id,
+          key: _key,
+          revision: _rev,
+          type: "ckpt",
+          isDeliveryBranch: false,
+          isSearchResult,
+          ckptPath: path,
+          hasEvalResult,
+          ...others,
+        });
+        return _id;
       }
-      this.nodes.set(_id, {
-        id: _id,
-        key: _key,
-        revision: _rev,
-        type: "ckpt",
-        isDeliveryBranch: false,
-        isSearchResult,
-        ckptPath: path,
-        hasEvalResult,
-        ...others,
-      });
-      return _id;
     }
   }
 
@@ -519,11 +525,7 @@ class Graph {
     };
 
     this.nodes.forEach((startNode, id) => {
-      if (
-        startNode.type === "ckpt" &&
-        startNode.isDelivery &&
-        !visited.has(id)
-      ) {
+      if (startNode.isDelivery && !visited.has(id)) {
         dfs(id);
       }
     });

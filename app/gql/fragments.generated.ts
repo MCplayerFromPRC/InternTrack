@@ -60,6 +60,36 @@ export type ResumeCkptFragment = {
   to: string;
 };
 
+export type EvalScoreFragment = {
+  __typename?: "EvalResultScore";
+  datasetMd5: string;
+  datasetName: string;
+  subsetName: string;
+  metric: string;
+  mode: string;
+  score: number;
+};
+
+export type EvalResultFragment = {
+  __typename?: "EvalResult";
+  id: string;
+  key: string;
+  revision: string;
+  ckpt: string;
+  finishTime: Date;
+  logFolder?: string | null;
+  isValid: boolean;
+  scores: Array<{
+    __typename?: "EvalResultScore";
+    datasetMd5: string;
+    datasetName: string;
+    subsetName: string;
+    metric: string;
+    mode: string;
+    score: number;
+  }>;
+};
+
 export type NodeFragment = {
   __typename?: "RoadmapNode";
   id: string;
@@ -141,7 +171,59 @@ export type RoadmapFragment = {
   }> | null;
 };
 
-export type RoadmapQueryVariables = Types.Exact<{ [key: string]: never }>;
+export type TrainConfigQueryVariables = Types.Exact<{
+  id?: Types.InputMaybe<Types.Scalars["String"]>;
+}>;
+
+export type TrainConfigQuery = {
+  __typename?: "Query";
+  trainConfig?: {
+    __typename?: "TrainConfig";
+    id: string;
+    key: string;
+    revision: string;
+    task: string;
+    configContent: string;
+    startStep: number;
+    modelConfig: Record<string, any>;
+    dataConfig: Record<string, any>;
+    optimizerConfig: Record<string, any>;
+    parallelConfig: Record<string, any>;
+  } | null;
+};
+
+export type EvalResultQueryVariables = Types.Exact<{
+  ckptId?: Types.InputMaybe<Types.Scalars["String"]>;
+}>;
+
+export type EvalResultQuery = {
+  __typename?: "Query";
+  evalResult?: {
+    __typename?: "EvalResult";
+    id: string;
+    key: string;
+    revision: string;
+    ckpt: string;
+    finishTime: Date;
+    logFolder?: string | null;
+    isValid: boolean;
+    scores: Array<{
+      __typename?: "EvalResultScore";
+      datasetMd5: string;
+      datasetName: string;
+      subsetName: string;
+      metric: string;
+      mode: string;
+      score: number;
+    }>;
+  } | null;
+};
+
+export type RoadmapQueryVariables = Types.Exact<{
+  keyword?: Types.InputMaybe<Types.Scalars["String"]>;
+  viewType?: Types.InputMaybe<Types.Scalars["String"]>;
+  limit?: Types.InputMaybe<Types.Scalars["Int"]>;
+}>;
 
 export type RoadmapQuery = {
   __typename?: "Query";
@@ -265,9 +347,72 @@ export const TrainTaskFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<TrainTaskFragment, unknown>;
-export const TrainConfigFragmentDoc = {
+export const ResumeCkptFragmentDoc = {
   kind: "Document",
   definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "resumeCkpt" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ResumeCkpt" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "key" } },
+          { kind: "Field", name: { kind: "Name", value: "revision" } },
+          { kind: "Field", name: { kind: "Name", value: "from" } },
+          { kind: "Field", name: { kind: "Name", value: "to" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ResumeCkptFragment, unknown>;
+export const TrainConfigDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TrainConfig" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "trainConfig" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "trainConfig" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
     {
       kind: "FragmentDefinition",
       name: { kind: "Name", value: "trainConfig" },
@@ -292,16 +437,78 @@ export const TrainConfigFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<TrainConfigFragment, unknown>;
-export const ResumeCkptFragmentDoc = {
+} as unknown as DocumentNode<TrainConfigQuery, TrainConfigQueryVariables>;
+export const EvalResultDocument = {
   kind: "Document",
   definitions: [
     {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "EvalResult" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "ckptId" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "evalResult" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "ckptId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "ckptId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "evalResult" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "resumeCkpt" },
+      name: { kind: "Name", value: "evalScore" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "ResumeCkpt" },
+        name: { kind: "Name", value: "EvalResultScore" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "datasetMd5" } },
+          { kind: "Field", name: { kind: "Name", value: "datasetName" } },
+          { kind: "Field", name: { kind: "Name", value: "subsetName" } },
+          { kind: "Field", name: { kind: "Name", value: "metric" } },
+          { kind: "Field", name: { kind: "Name", value: "mode" } },
+          { kind: "Field", name: { kind: "Name", value: "score" } },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "evalResult" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "EvalResult" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -309,13 +516,28 @@ export const ResumeCkptFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "key" } },
           { kind: "Field", name: { kind: "Name", value: "revision" } },
-          { kind: "Field", name: { kind: "Name", value: "from" } },
-          { kind: "Field", name: { kind: "Name", value: "to" } },
+          { kind: "Field", name: { kind: "Name", value: "ckpt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "scores" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "evalScore" },
+                },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "finishTime" } },
+          { kind: "Field", name: { kind: "Name", value: "logFolder" } },
+          { kind: "Field", name: { kind: "Name", value: "isValid" } },
         ],
       },
     },
   ],
-} as unknown as DocumentNode<ResumeCkptFragment, unknown>;
+} as unknown as DocumentNode<EvalResultQuery, EvalResultQueryVariables>;
 export const RoadmapDocument = {
   kind: "Document",
   definitions: [
@@ -323,12 +545,64 @@ export const RoadmapDocument = {
       kind: "OperationDefinition",
       operation: "query",
       name: { kind: "Name", value: "Roadmap" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "keyword" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "viewType" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "limit" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+      ],
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
             name: { kind: "Name", value: "roadmap" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "keyword" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "keyword" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "viewType" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "viewType" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "limit" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "limit" },
+                },
+              },
+            ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [

@@ -12,14 +12,14 @@ builder.mutationField("deleteEvalResult", (t) => {
     },
     nullable: false,
     resolve: (root, args, context) => {
-      return createEvalResultMutation(args, context);
+      return deleteEvalResultMutation(args, context);
     },
   });
 });
 
 // We separate out the resolver function so we can write unit tests against it
 // without having to call GQL directly
-export async function createEvalResultMutation(args: any, context: GQLContext) {
+export async function deleteEvalResultMutation(args: any, context: GQLContext) {
   if (args.id) {
     return context.dataSources?.result.updateOne(
       { _id: args.id, isValid: false },
