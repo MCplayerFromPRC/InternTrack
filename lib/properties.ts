@@ -54,6 +54,8 @@ export interface GQLContext extends BaseContext {
     resumeCkpt: dto.ResumeCkptDatasource;
     task: dto.TrainTaskDatasource;
     config: dto.TrainConfigDatasource;
+    result: dto.EvalResultDatasource;
+    ckptEval: dto.CkptEvalDatasource;
     search: dto.RetrievalViewDatasource;
     roadmap: service.RoadmapService;
   };

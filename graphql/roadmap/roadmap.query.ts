@@ -8,11 +8,17 @@ builder.queryField("roadmap", (t) => {
     args: {
       viewType: t.arg.string(),
       keyword: t.arg.string({ required: false }),
+      limit: t.arg.int({ required: false }),
     },
     description: "Saved Checkpoint",
     nullable: true,
     resolve: async (parent, args, context: GQLContext) => {
-      return postQuery(context, args.viewType || "ckpt", args.keyword);
+      return postQuery(
+        context,
+        args.viewType || "ckpt",
+        args.keyword,
+        args.limit || 5,
+      );
     },
   });
 });
@@ -21,14 +27,16 @@ export async function postQuery(
   context: GQLContext,
   viewType: string,
   keyword: string | null | undefined,
+  limit: number = 5,
 ) {
-  const nodes: string[] = [];
+  let nodes: string[] | null = null;
   if (keyword) {
-    const data = await context.dataSources?.search.bm25(keyword, 5);
+    nodes = [];
+    const data = await context.dataSources?.search.bm25(keyword, limit);
     if (data) {
       data.forEach((node) => {
         if (node._id) {
-          nodes.push(node._id);
+          nodes!.push(node._id);
         }
       });
     }

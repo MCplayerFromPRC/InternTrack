@@ -1,8 +1,8 @@
 import { Database } from "arangojs";
 import { CollectionType } from "arangojs/collection";
 
-const collections: string[] = ["TrainLog", "TrainProc", "EvalResult"];
-const edgeCollections: string[] = ["CkptEval"];
+const collections: string[] = ["TrainLog", "TrainProc"];
+const edgeCollections: string[] = [];
 
 export async function seed(db: Database) {
   for (const name of collections) {

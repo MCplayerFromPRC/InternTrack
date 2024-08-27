@@ -6,6 +6,7 @@ export class Node {
   revision: string;
   type: "task" | "config" | "ckpt";
   isDeliveryBranch: boolean;
+  isSearchResult: boolean;
 
   taskName: string;
   taskDesc: string;
@@ -18,6 +19,7 @@ export class Node {
   isRewardModel: boolean;
   ckptPath: string;
   saveTime: Date;
+  hasEvalResult: boolean;
 
   startStep: number;
   stopStep: number;
@@ -28,6 +30,7 @@ export class Node {
     revision: string,
     type: "task" | "config" | "ckpt",
     isDeliveryBranch: boolean,
+    isSearchResult: boolean,
     taskName: string,
     taskDesc: string,
     md5: string,
@@ -37,6 +40,7 @@ export class Node {
     isRewardModel: boolean,
     ckptPath: string,
     saveTime: Date,
+    hasEvalResult: boolean,
     step: number,
     startStep: number,
     stopStep: number,
@@ -46,6 +50,7 @@ export class Node {
     this.revision = revision;
     this.type = type;
     this.isDeliveryBranch = isDeliveryBranch;
+    this.isSearchResult = isSearchResult;
     this.taskName = taskName;
     this.taskDesc = taskDesc;
     this.md5 = md5;
@@ -55,6 +60,7 @@ export class Node {
     this.isRewardModel = isRewardModel;
     this.ckptPath = ckptPath;
     this.saveTime = saveTime;
+    this.hasEvalResult = hasEvalResult;
     this.step = step;
     this.startStep = startStep;
     this.stopStep = stopStep;

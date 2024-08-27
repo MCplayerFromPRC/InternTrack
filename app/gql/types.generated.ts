@@ -18,6 +18,7 @@ export type Scalars = {
   Boolean: boolean;
   /** The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. */
   Int: number;
+  /** The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
   Float: number;
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: Date;
@@ -101,6 +102,30 @@ export type CkptStepInput = {
   tokens: Scalars["Int"];
 };
 
+/** Checkpoint's EvalResult */
+export type EvalResult = {
+  __typename?: "EvalResult";
+  ckpt: Scalars["String"];
+  finishTime: Scalars["DateTime"];
+  id: Scalars["String"];
+  isValid: Scalars["Boolean"];
+  key: Scalars["String"];
+  logFolder?: Maybe<Scalars["String"]>;
+  revision: Scalars["String"];
+  scores: Array<EvalResultScore>;
+};
+
+/** Checkpoint's EvalResult score */
+export type EvalResultScore = {
+  __typename?: "EvalResultScore";
+  datasetMd5: Scalars["String"];
+  datasetName: Scalars["String"];
+  metric: Scalars["String"];
+  mode: Scalars["String"];
+  score: Scalars["Int"];
+  subsetName: Scalars["String"];
+};
+
 export type IBaseCkptEvent = {
   /** Event type */
   eventType: CkptEventType;
@@ -110,9 +135,11 @@ export type Mutation = {
   __typename?: "Mutation";
   createCheckpoint: Checkpoint;
   createCkptStep: CkptStep;
+  createEvalResult: EvalResult;
   createResumeCkpt: ResumeCkpt;
   createTrainConfig: TrainConfig;
   createTrainTask: TrainTask;
+  deleteEvalResult: EvalResult;
 };
 
 export type MutationCreateCheckpointArgs = {
@@ -121,6 +148,10 @@ export type MutationCreateCheckpointArgs = {
 
 export type MutationCreateCkptStepArgs = {
   input: CkptStepInput;
+};
+
+export type MutationCreateEvalResultArgs = {
+  result: ResultInput;
 };
 
 export type MutationCreateResumeCkptArgs = {
@@ -133,6 +164,11 @@ export type MutationCreateTrainConfigArgs = {
 
 export type MutationCreateTrainTaskArgs = {
   input: TrainTaskInput;
+};
+
+export type MutationDeleteEvalResultArgs = {
+  ckptId?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["String"]>;
 };
 
 /** When a new post is created */
@@ -149,6 +185,8 @@ export type Query = {
   allCheckpoints?: Maybe<Array<Checkpoint>>;
   /** Query the step by id */
   allCkptSteps?: Maybe<Array<CkptStep>>;
+  /** All the EvalResults */
+  allEvalResults?: Maybe<Array<EvalResult>>;
   /** Query the relationships all the configs and the checkpoints they resumed from */
   allResumeCkpts?: Maybe<Array<ResumeCkpt>>;
   /** TrainConfig */
@@ -159,6 +197,8 @@ export type Query = {
   checkpoint?: Maybe<Checkpoint>;
   /** Query the step by id */
   ckptStep?: Maybe<CkptStep>;
+  /** Saved Checkpoint */
+  evalResult?: Maybe<EvalResult>;
   /** Query the step by id */
   resumeCkpt?: Maybe<ResumeCkpt>;
   /** Saved Checkpoint */
@@ -181,12 +221,18 @@ export type QueryCkptStepArgs = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
+export type QueryEvalResultArgs = {
+  ckptId?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["String"]>;
+};
+
 export type QueryResumeCkptArgs = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryRoadmapArgs = {
   keyword?: InputMaybe<Scalars["String"]>;
+  limit?: InputMaybe<Scalars["Int"]>;
   viewType?: InputMaybe<Scalars["String"]>;
 };
 
@@ -197,6 +243,14 @@ export type QueryTrainConfigArgs = {
 export type QueryTrainTaskArgs = {
   id?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
+};
+
+export type ResultInput = {
+  ckpt: Scalars["String"];
+  finishTime: Scalars["DateTime"];
+  isValid: Scalars["Boolean"];
+  logFolder: Scalars["String"];
+  scores: Array<ScoreInput>;
 };
 
 /** Continue training config from checkpoints */
@@ -241,10 +295,12 @@ export type RoadmapNode = {
   __typename?: "RoadmapNode";
   ckptPath?: Maybe<Scalars["String"]>;
   config?: Maybe<Scalars["String"]>;
+  hasEvalResult?: Maybe<Scalars["Boolean"]>;
   id: Scalars["String"];
   isDelivery?: Maybe<Scalars["Boolean"]>;
   isDeliveryBranch: Scalars["Boolean"];
   isRewardModel?: Maybe<Scalars["Boolean"]>;
+  isSearchResult?: Maybe<Scalars["Boolean"]>;
   isSnapshot?: Maybe<Scalars["Boolean"]>;
   key: Scalars["String"];
   md5?: Maybe<Scalars["String"]>;
@@ -263,6 +319,15 @@ export type RoadmapWarning = {
   __typename?: "RoadmapWarning";
   id: Scalars["String"];
   message: Scalars["String"];
+};
+
+export type ScoreInput = {
+  datasetMd5: Scalars["String"];
+  datasetName: Scalars["String"];
+  metric: Scalars["String"];
+  mode: Scalars["String"];
+  score: Scalars["Float"];
+  subsetName: Scalars["String"];
 };
 
 export type Subscription = {

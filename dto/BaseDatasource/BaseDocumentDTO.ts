@@ -107,7 +107,7 @@ export class BaseCollectionDatasource<TData extends NodeDocument>
   }
 
   async updateOne(
-    updDoc: TData,
+    updDoc: Partial<TData> & { _id: string },
     { ttl }: KeyValueCacheSetOptions,
     keepNull = false,
     mergeObjects = false,

@@ -72,6 +72,34 @@ export const resumeCkpt = gql`
   }
 `;
 
+export const evalScore = gql`
+  fragment evalScore on EvalResultScore {
+    datasetMd5
+    datasetName
+    subsetName
+    metric
+    mode
+    score
+  }
+`;
+
+export const evalResult = gql`
+  fragment evalResult on EvalResult {
+    id
+    key
+    revision
+    ckpt
+    scores {
+      ...evalScore
+    }
+    finishTime
+    logFolder
+    isValid
+  }
+
+  ${evalScore}
+`;
+
 export const node = gql`
   fragment node on RoadmapNode {
     id
@@ -134,9 +162,29 @@ export const roadmap = gql`
   ${warning}
 `;
 
+export const getTrainConfig = gql`
+  query TrainConfig($id: String) {
+    trainConfig(id: $id) {
+      ...trainConfig
+    }
+  }
+
+  ${trainConfig}
+`;
+
+export const getEvalResult = gql`
+  query EvalResult($ckptId: String) {
+    evalResult(ckptId: $ckptId) {
+      ...evalResult
+    }
+  }
+
+  ${evalResult}
+`;
+
 export const getRoadmap = gql`
-  query Roadmap {
-    roadmap {
+  query Roadmap($keyword: String, $viewType: String, $limit: Int) {
+    roadmap(keyword: $keyword, viewType: $viewType, limit: $limit) {
       ...roadmap
     }
   }
