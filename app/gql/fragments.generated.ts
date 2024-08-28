@@ -76,7 +76,7 @@ export type EvalResultFragment = {
   key: string;
   revision: string;
   ckpt: string;
-  finishTime: Date;
+  finishTime?: Date | null;
   logFolder?: string | null;
   isValid: boolean;
   scores: Array<{
@@ -97,6 +97,7 @@ export type NodeFragment = {
   revision: string;
   type: string;
   isDeliveryBranch: boolean;
+  isSearchResult?: boolean | null;
   taskName?: string | null;
   taskDesc?: string | null;
   md5?: string | null;
@@ -105,8 +106,9 @@ export type NodeFragment = {
   isSnapshot?: boolean | null;
   isDelivery?: boolean | null;
   isRewardModel?: boolean | null;
-  saveTime?: Date | null;
   ckptPath?: string | null;
+  saveTime?: Date | null;
+  hasEvalResult?: boolean | null;
   startStep?: number | null;
   stopStep?: number | null;
 };
@@ -139,6 +141,7 @@ export type RoadmapFragment = {
     revision: string;
     type: string;
     isDeliveryBranch: boolean;
+    isSearchResult?: boolean | null;
     taskName?: string | null;
     taskDesc?: string | null;
     md5?: string | null;
@@ -147,8 +150,9 @@ export type RoadmapFragment = {
     isSnapshot?: boolean | null;
     isDelivery?: boolean | null;
     isRewardModel?: boolean | null;
-    saveTime?: Date | null;
     ckptPath?: string | null;
+    saveTime?: Date | null;
+    hasEvalResult?: boolean | null;
     startStep?: number | null;
     stopStep?: number | null;
   }>;
@@ -204,7 +208,7 @@ export type EvalResultQuery = {
     key: string;
     revision: string;
     ckpt: string;
-    finishTime: Date;
+    finishTime?: Date | null;
     logFolder?: string | null;
     isValid: boolean;
     scores: Array<{
@@ -236,6 +240,7 @@ export type RoadmapQuery = {
       revision: string;
       type: string;
       isDeliveryBranch: boolean;
+      isSearchResult?: boolean | null;
       taskName?: string | null;
       taskDesc?: string | null;
       md5?: string | null;
@@ -244,8 +249,9 @@ export type RoadmapQuery = {
       isSnapshot?: boolean | null;
       isDelivery?: boolean | null;
       isRewardModel?: boolean | null;
-      saveTime?: Date | null;
       ckptPath?: string | null;
+      saveTime?: Date | null;
+      hasEvalResult?: boolean | null;
       startStep?: number | null;
       stopStep?: number | null;
     }>;
@@ -631,6 +637,7 @@ export const RoadmapDocument = {
           { kind: "Field", name: { kind: "Name", value: "revision" } },
           { kind: "Field", name: { kind: "Name", value: "type" } },
           { kind: "Field", name: { kind: "Name", value: "isDeliveryBranch" } },
+          { kind: "Field", name: { kind: "Name", value: "isSearchResult" } },
           { kind: "Field", name: { kind: "Name", value: "taskName" } },
           { kind: "Field", name: { kind: "Name", value: "taskDesc" } },
           { kind: "Field", name: { kind: "Name", value: "md5" } },
@@ -639,9 +646,9 @@ export const RoadmapDocument = {
           { kind: "Field", name: { kind: "Name", value: "isSnapshot" } },
           { kind: "Field", name: { kind: "Name", value: "isDelivery" } },
           { kind: "Field", name: { kind: "Name", value: "isRewardModel" } },
-          { kind: "Field", name: { kind: "Name", value: "saveTime" } },
           { kind: "Field", name: { kind: "Name", value: "ckptPath" } },
           { kind: "Field", name: { kind: "Name", value: "saveTime" } },
+          { kind: "Field", name: { kind: "Name", value: "hasEvalResult" } },
           { kind: "Field", name: { kind: "Name", value: "startStep" } },
           { kind: "Field", name: { kind: "Name", value: "stopStep" } },
         ],

@@ -107,6 +107,7 @@ export const node = gql`
     revision
     type
     isDeliveryBranch
+    isSearchResult
     taskName
     taskDesc
     md5
@@ -115,9 +116,9 @@ export const node = gql`
     isSnapshot
     isDelivery
     isRewardModel
-    saveTime
     ckptPath
     saveTime
+    hasEvalResult
     startStep
     stopStep
   }

@@ -91,7 +91,7 @@ export type DeleteEvalResultMutation = {
     key: string;
     revision: string;
     ckpt: string;
-    finishTime: Date;
+    finishTime?: Date | null;
     logFolder?: string | null;
     isValid: boolean;
     scores: Array<{
