@@ -106,7 +106,7 @@ export type CkptStepInput = {
 export type EvalResult = {
   __typename?: "EvalResult";
   ckpt: Scalars["String"];
-  finishTime: Scalars["DateTime"];
+  finishTime?: Maybe<Scalars["DateTime"]>;
   id: Scalars["String"];
   isValid: Scalars["Boolean"];
   key: Scalars["String"];
@@ -122,7 +122,7 @@ export type EvalResultScore = {
   datasetName: Scalars["String"];
   metric: Scalars["String"];
   mode: Scalars["String"];
-  score: Scalars["Int"];
+  score: Scalars["Float"];
   subsetName: Scalars["String"];
 };
 

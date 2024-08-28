@@ -87,7 +87,7 @@ Checkpoint's EvalResult
 """
 type EvalResult {
   ckpt: String!
-  finishTime: DateTime!
+  finishTime: DateTime
   id: String!
   isValid: Boolean!
   key: String!
@@ -104,7 +104,7 @@ type EvalResultScore {
   datasetName: String!
   metric: String!
   mode: String!
-  score: Int!
+  score: Float!
   subsetName: String!
 }
 

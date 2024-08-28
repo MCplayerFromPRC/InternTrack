@@ -14,7 +14,7 @@ export const EvalScoreType: ObjectRef<EvalScore> = builder.objectType(
       subsetName: t.exposeString("subsetName"),
       metric: t.exposeString("metric"),
       mode: t.exposeString("mode"),
-      score: t.exposeInt("score"),
+      score: t.exposeFloat("score"),
     }),
   },
 );
@@ -33,7 +33,7 @@ export const EvalResultType: ObjectRef<EvalResult> = builder.objectType(
       revision: t.exposeString("_rev"),
       ckpt: t.exposeString("ckpt"),
       scores: t.expose("scores", { type: [EvalScoreType] }),
-      finishTime: t.expose("finishTime", { type: "DateTime" }),
+      finishTime: t.expose("finishTime", { type: "DateTime", nullable: true }),
       logFolder: t.exposeString("logFolder", { nullable: true }),
       isValid: t.exposeBoolean("isValid"),
     }),

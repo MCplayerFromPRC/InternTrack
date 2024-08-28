@@ -21,7 +21,7 @@ export class EvalResultDatasource extends BaseCollectionDatasource<EvalResult> {
   async findValidOneByCkpt(ckpt_id: string): Promise<EvalResult | undefined> {
     return (
       await this.findManyByKeys(
-        { config: ckpt_id, isValid: true },
+        { ckpt: ckpt_id, isValid: true },
         "finishTime",
         1,
       )

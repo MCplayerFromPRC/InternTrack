@@ -33,7 +33,7 @@ export class EvalResult extends NodeDocument {
   scores: EvalScore[];
   finishTime: Date;
   isValid: boolean;
-  logFolder?: string;
+  logFolder: string | null;
 
   constructor(
     _key: string,
@@ -43,7 +43,7 @@ export class EvalResult extends NodeDocument {
     scores: EvalScore[],
     finishTime: Date,
     isValid: boolean,
-    logFolder?: string,
+    logFolder: string | null = null,
   ) {
     super(_key, _id, _rev);
     this.ckpt = ckpt;
