@@ -82,6 +82,32 @@ Matches moment.js, Luxon and DateFns implementations
 """
 scalar Duration
 
+"""
+Checkpoint's EvalResult
+"""
+type EvalResult {
+  ckpt: String!
+  finishTime: DateTime!
+  id: String!
+  isValid: Boolean!
+  key: String!
+  logFolder: String
+  revision: String!
+  scores: [EvalResultScore!]!
+}
+
+"""
+Checkpoint's EvalResult score
+"""
+type EvalResultScore {
+  datasetMd5: String!
+  datasetName: String!
+  metric: String!
+  mode: String!
+  score: Int!
+  subsetName: String!
+}
+
 interface IBaseCkptEvent {
   """
   Event type
@@ -97,9 +123,11 @@ scalar JSON
 type Mutation {
   createCheckpoint(input: CkptInput!): Checkpoint!
   createCkptStep(input: CkptStepInput!): CkptStep!
+  createEvalResult(result: ResultInput!): EvalResult!
   createResumeCkpt(input: ResumeCkptInput!): ResumeCkpt!
   createTrainConfig(input: TrainConfigInput!): TrainConfig!
   createTrainTask(input: TrainTaskInput!): TrainTask!
+  deleteEvalResult(ckptId: String, id: String): EvalResult!
 }
 
 """
@@ -133,6 +161,10 @@ type Query {
   """
   allCkptSteps: [CkptStep!]
   """
+  All the EvalResults
+  """
+  allEvalResults: [EvalResult!]
+  """
   Query the relationships all the configs and the checkpoints they resumed from
   """
   allResumeCkpts(id: String): [ResumeCkpt!]
@@ -153,13 +185,17 @@ type Query {
   """
   ckptStep(id: String): CkptStep
   """
+  Saved Checkpoint
+  """
+  evalResult(ckptId: String, id: String): EvalResult
+  """
   Query the step by id
   """
   resumeCkpt(id: String): ResumeCkpt
   """
   Saved Checkpoint
   """
-  roadmap(keyword: String, viewType: String): Roadmap
+  roadmap(keyword: String, limit: Int, viewType: String): Roadmap
   """
   TrainConfig
   """
@@ -168,6 +204,14 @@ type Query {
   TrainTask
   """
   trainTask(id: String, name: String): TrainTask
+}
+
+input ResultInput {
+  ckpt: String!
+  finishTime: DateTime!
+  isValid: Boolean!
+  logFolder: String!
+  scores: [ScoreInput!]!
 }
 
 """
@@ -216,10 +260,12 @@ InternLM Roadmap Node
 type RoadmapNode {
   ckptPath: String
   config: String
+  hasEvalResult: Boolean
   id: String!
   isDelivery: Boolean
   isDeliveryBranch: Boolean!
   isRewardModel: Boolean
+  isSearchResult: Boolean
   isSnapshot: Boolean
   key: String!
   md5: String
@@ -239,6 +285,15 @@ InternLM Roadmap Warning
 type RoadmapWarning {
   id: String!
   message: String!
+}
+
+input ScoreInput {
+  datasetMd5: String!
+  datasetName: String!
+  metric: String!
+  mode: String!
+  score: Float!
+  subsetName: String!
 }
 
 type Subscription {

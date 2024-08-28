@@ -20,7 +20,7 @@ export class BaseViewDatasource<
   TData extends Partial<NodeDocument>,
 > extends BaseDatasource {
   view: View;
-  fields: string[] = ["TrainTask.name", "TrainConfig.configContent"];
+  fields: string[] = ["name", "configContent"];
 
   constructor(db: Database, view: View, options = {}) {
     super(db, options);
@@ -44,7 +44,7 @@ export class BaseViewDatasource<
     const allFieldsMatching = this.fields
       .map(
         (field) =>
-          `ANALYZER(TOKENS("${searchKey}", "text_en") AT LEAST (${matchNum}) == doc.${field}, "text_en")`,
+          `ANALYZER(TOKENS("${searchKey}", "tokenizer") AT LEAST (${matchNum}) == doc.${field}, "tokenizer")`,
       )
       .join(" OR ");
     const query = `FOR doc IN ${this.view.name} SEARCH ${allFieldsMatching} RETURN doc`;
@@ -53,12 +53,9 @@ export class BaseViewDatasource<
 
   async bm25(searchKey: string, limit: number = 10) {
     const allFieldsMatching = this.fields
-      .map(
-        (field) =>
-          `ANALYZER(doc.${field} IN TOKENS("${searchKey}", "text_en"), "text_en")`,
-      )
+      .map((field) => `doc.${field} IN TOKENS("${searchKey}", "tokenizer")`)
       .join(" OR ");
-    const query = `FOR doc IN ${this.view.name} SEARCH ${allFieldsMatching} SORT BM25(doc) DESC LIMIT ${limit} RETURN doc`;
+    const query = `FOR doc IN ${this.view.name} SEARCH ANALYZER(${allFieldsMatching}, "tokenizer") SORT BM25(doc) DESC LIMIT ${limit} RETURN doc`;
     return this.executeQuery<TData>(query);
   }
 }

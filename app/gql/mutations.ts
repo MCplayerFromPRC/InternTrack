@@ -1,5 +1,11 @@
 import gql from "graphql-tag";
-import { checkpoint, ckptStep, resumeCkpt, trainConfig } from "./fragments";
+import {
+  checkpoint,
+  ckptStep,
+  resumeCkpt,
+  trainConfig,
+  evalResult,
+} from "./fragments";
 
 export const createCheckpoint = gql`
   mutation createCheckpoint($input: CkptInput!) {
@@ -39,4 +45,14 @@ export const createTrainConfig = gql`
   }
 
   ${trainConfig}
+`;
+
+export const deleteEvalResult = gql`
+  mutation deleteEvalResult($id: String, $ckptId: String) {
+    deleteEvalResult(id: $id, ckptId: $ckptId) {
+      ...evalResult
+    }
+  }
+
+  ${evalResult}
 `;
