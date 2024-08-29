@@ -37,24 +37,22 @@ export default function DetailCard({ onclickFuncs, queue, tableRes, cardType }: 
       className="rnd-container"
       default={{
         x: 100,
-        y: 250
+        y: 150
       }}
       resizeHandleComponent={{
         topLeft: (queue[0] || tableRes.length) ? (<Button className="transform -translate-x-1/4 -translate-y-1/4" onClick={() => onclickFuncs(0)}><XCircleIcon className="h-10 w-10" /></Button>) : undefined,
         topRight: queue[1] ? (<Button className="transform -translate-x-1/4 -translate-y-1/4" onClick={() => onclickFuncs(1)}><XCircleIcon className="h-10 w-10" /></Button>) : undefined,
       }}
-    // onResize={(ref: any) => {
-    //   setSize({
-    //     width: ref.style.width,
-    //     height: ref.style.height,
-    //   });
-    // }}
     >
       {
-        cardType === 'config' && <Display queue={queue} width={size.width} height={size.height} />
+        cardType === 'config' && <div className="limitHeightCon">
+          <Display queue={queue} width={size.width} height={size.height} />
+        </div>
       }
       {
-        cardType === 'result' && <Table dataSource={tableRes} columns={columns} pagination={false} />
+        cardType === 'result' && <div className="limitHeightCon">
+          <Table dataSource={tableRes} columns={columns} pagination={false} />
+        </div>
       }
     </Rnd>
   );

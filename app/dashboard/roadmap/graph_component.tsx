@@ -91,40 +91,24 @@ export const RoadmapGraph = () => {
   };
 
   const queryConfig = async (nodeId: string) => {
-    // TODO: 根据id请求config信息
-    const config = `${nodeId}--------
-    parallel = dict(
-      zero1=dict(size=-1),
-      tensor=dict(size=16, mode="fsp"),
-      pipeline=dict(size=1, interleaved_overlap=True),
-      weight=dict(size=1, overlap=True, memory_pool=True)
-    )
-    DATASET_WEIGHTS = {
-      "github_go": 9.155192239672025e-05,
-      "github_javascript": 0.0003424044244706788,
-      "starcoder_cpp": 0.0003331215920434134,
-      "starcoder_python": 0.00041252998315727664,
-      "github_python": 0.00019326974814897545,
-    }
-    data = dict(
-      type=DATASET_TYPE,
-      tokenizer_wrapper=TOKENIZER_WRAPPER_TYPE,
-      train_folder=TRAIN_FOLDER,
-      valid_folder=VALID_FOLDER,
-      num_worker=4,
-      gradient_accumulation=GRADIENT_ACCUMULATION,
-      text_field="content",
-      drop_last=True,
-      tokenizer_chunk_num=512,
-    )`;
+    // 根据id请求config信息
     const configInfo = await getConfigInfo({ variables: { id: nodeId } });
     console.log('configInfo-----', configInfo);
+    const config = `
+      ${nodeId}
+      -------------
+      ${configInfo?.data?.trainConfig?.configContent}
+    `;
     setShowDiscard(true);
     enqueue(nodeId, config);
   };
 
   const queryTableRes = async (nodeId: string) => {
     const tableData = await getEvalRes({ variables: { ckptId: nodeId } });
+    if (!tableData?.data?.evalResult?.scores?.length) {
+      message.warning('该节点没有评测结果！');
+      return;
+    }
     queue.forEach((item, idx) => {
       dequeue(idx);
     })
@@ -133,7 +117,7 @@ export const RoadmapGraph = () => {
   };
 
   const handleInfoBar = (nodeId: string, type: string = 'config') => {
-    console.log(nodeId);
+    console.log('handleInfoBar------', nodeId, type);
     setCardType(type);
     // 代码框渲染相关
     if (type === 'config') {
@@ -152,7 +136,7 @@ export const RoadmapGraph = () => {
       setWarning(warnings);
     }
     const temp: any = {};
-    temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step, hasEvalResult }: any) => {
+    temp.nodes = nodes.map(({ id, type, isDeliveryBranch, taskName, step, hasEvalResult, config = "" }: any) => {
       return {
         id,
         type,
@@ -162,7 +146,8 @@ export const RoadmapGraph = () => {
         borderColor: isDeliveryBranch ? '#f90' : '',
         data: {
           hasEvalResult,
-          isDeliveryBranch
+          isDeliveryBranch,
+          config
         }
       }
     });

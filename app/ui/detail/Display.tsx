@@ -28,7 +28,6 @@ export const Display = (props: IProps) => {
 
   return (
     <div style={{ width: width, height: height }}>
-      {/* <div>{nodeInfo.name}</div> */}
       {
         queue[0] && queue[1] &&
         <Compare nodeInfo1={queue[0]} nodeInfo2={queue[1]} width={width} height={height} />
@@ -36,9 +35,6 @@ export const Display = (props: IProps) => {
       {
         queue[0] && !queue[1] && <CodeMirror value={nodeInfo?.config} extensions={[langs.python()]} />
       }
-      {/* {
-        type === 'result' && <Table dataSource={dataSource} columns={columns} pagination={false} />
-      } */}
     </div>
   );
 };

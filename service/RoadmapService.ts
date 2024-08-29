@@ -357,10 +357,12 @@ class Graph {
     }
 
     if (isCheckpoint(vertex)) {
-      if (vertex.isDelivery && viewType === "config") {
-        const config = this.nodes.get(vertex.config)!;
-        config.isDelivery = true;
-        this.nodes.set(vertex.config, config);
+      if (viewType === "config") {
+        if (vertex.isDelivery) {
+          const config = this.nodes.get(vertex.config)!;
+          config.isDelivery = true;
+          this.nodes.set(vertex.config, config);
+        }
       } else if (viewType === "ckpt") {
         const { _id, _key, _rev, path, ...others } = vertex;
         const outEdges = <DBEdgeDocument[]>this.adjacencyList.get(_id)!;

@@ -90,9 +90,9 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     };
 
     const doAction = (actionName: string) => {
-      console.log('action name-----', actionName);
+      console.log('action name-----', actionName, currentNode);
       if (actionName === 'config') {
-        onNodeClickFn(currentNode?.id, 'config');
+        onNodeClickFn(currentNode?.data?.config, 'config');
       }
       if (actionName === 'result') {
         onNodeClickFn(currentNode?.id, 'result');
@@ -102,18 +102,26 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
         setIsShowUploadPanel(true);
       }
       if (actionName === 'delete') {
+        if (!currentNode?.data?.hasEvalResult) {
+          message.warning('该节点没有评测结果！');
+          return;
+        }
         delRes(currentNode?.id || '');
       }
       setIsShowNodeMenuPanel(false);
     };
 
+    const handleUploadSuccess = () => {
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    };
+
     const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
-      // console.log("NodeSlot:");
       if (node.type === "task") {
         return (
           <div className={classNames(
             "commonNode taskNode",
-            // node?.data?.isDeliveryBranch ? "isDelivery" : "",
           )}>
             <p className="bold">task</p>
             <span className="text">{node.text}</span>
@@ -125,8 +133,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
         <div className={classNames("commonNode",
           node.type === 'ckpt' ? "weightNode" : "",
           node.type === 'config' ? "configNode" : "",
-          // node?.data?.isDeliveryBranch ? "isDelivery" : "",
-          !node?.data?.hasEvalResult ? "weightNode noResult" : ""
+          node.type === 'ckpt' && !node?.data?.hasEvalResult ? "noResult" : ""
         )}
           onClick={(event) => showNodeMenus(node, event)}
           onContextMenu={(event) => showNodeMenus(node, event)}
@@ -187,7 +194,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
         )}
         {/* 上传panel */}
         {
-          isShowUploadPanel && <Upload nodeInfo={currentNode} closePop={() => { setIsShowUploadPanel(false) }} />
+          isShowUploadPanel && <Upload nodeInfo={currentNode} closePop={() => { setIsShowUploadPanel(false) }} succCallback={handleUploadSuccess} />
         }
       </div >
     );

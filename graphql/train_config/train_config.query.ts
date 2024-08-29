@@ -20,5 +20,5 @@ builder.queryField("trainConfig", (t) => {
 });
 
 export function postQuery(id: string, context: GQLContext) {
-  return context.dataSources?.config.findOneById(id);
+  return context.dataSources?.config.collection.document(id);
 }

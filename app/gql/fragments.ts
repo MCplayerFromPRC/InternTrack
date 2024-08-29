@@ -107,6 +107,7 @@ export const node = gql`
     revision
     type
     isDeliveryBranch
+    isSearchResult
     taskName
     taskDesc
     md5
@@ -115,9 +116,9 @@ export const node = gql`
     isSnapshot
     isDelivery
     isRewardModel
-    saveTime
     ckptPath
     saveTime
+    hasEvalResult
     startStep
     stopStep
   }
@@ -183,13 +184,8 @@ export const getEvalResult = gql`
 `;
 
 export const getRoadmap = gql`
-<<<<<<< HEAD
-  query Roadmap($keyword: String, $viewType: String) {
-    roadmap(keyword: $keyword, viewType: $viewType) {
-=======
   query Roadmap($keyword: String, $viewType: String, $limit: Int) {
     roadmap(keyword: $keyword, viewType: $viewType, limit: $limit) {
->>>>>>> main
       ...roadmap
     }
   }

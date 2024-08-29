@@ -5,8 +5,11 @@ import { message } from 'antd';
 import { RGNode } from "relation-graph-react";
 import axios from 'axios';
 
-const Upload = ({ closePop, nodeInfo }: { closePop: () => void, nodeInfo: RGNode | null }) => {
+const Upload = ({ closePop, nodeInfo, succCallback }: { succCallback: (nodeId: string) => void, closePop: () => void, nodeInfo: RGNode | null }) => {
   const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      'text/csv': ['.csv']
+    },
     onDropAccepted: (files: any) => {
       console.log('drop accepted-------', files);
       uploadCsv(files);
@@ -14,20 +17,20 @@ const Upload = ({ closePop, nodeInfo }: { closePop: () => void, nodeInfo: RGNode
   });
   // 上传评测文件
   const uploadCsv = async (files: any) => {
-    console.log(files, files[0]);
-
+    console.log(files[0]);
     const formData = new FormData();
     formData.append('file', files[0]);
     formData.append('ckptId', nodeInfo?.id || '');
     formData.append('finishTime', files[0].lastModified);
-    const res = await axios.post('/api/upload', formData);
-    console.log(res);
-    // if (res.data.code === 0) {
-    message.success('上传成功！');
-    // } else {
-    //   message.error('上传失败，请重试！');
-    // }
     closePop();
+    const res = await axios.post('/api/upload', formData);
+    console.log('upload res-----', res);
+    if (res.data.code === 0) {
+      message.success('上传成功！');
+      succCallback(nodeInfo?.id || '');
+    } else {
+      message.error('上传失败，请重试！');
+    }
   };
 
   return (

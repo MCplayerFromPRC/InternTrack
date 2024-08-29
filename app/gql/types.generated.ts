@@ -120,6 +120,30 @@ export type EvalResultScore = {
   subsetName: Scalars["String"];
 };
 
+/** Checkpoint's EvalResult */
+export type EvalResult = {
+  __typename?: "EvalResult";
+  ckpt: Scalars["String"];
+  finishTime?: Maybe<Scalars["DateTime"]>;
+  id: Scalars["String"];
+  isValid: Scalars["Boolean"];
+  key: Scalars["String"];
+  logFolder?: Maybe<Scalars["String"]>;
+  revision: Scalars["String"];
+  scores: Array<EvalResultScore>;
+};
+
+/** Checkpoint's EvalResult score */
+export type EvalResultScore = {
+  __typename?: "EvalResultScore";
+  datasetMd5: Scalars["String"];
+  datasetName: Scalars["String"];
+  metric: Scalars["String"];
+  mode: Scalars["String"];
+  score: Scalars["Float"];
+  subsetName: Scalars["String"];
+};
+
 export type IBaseCkptEvent = {
   /** Event type */
   eventType: CkptEventType;
@@ -227,6 +251,11 @@ export type QueryEvalResultArgs = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
+export type QueryEvalResultArgs = {
+  ckptId?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["String"]>;
+};
+
 export type QueryResumeCkptArgs = {
   id?: InputMaybe<Scalars['String']>;
 };
@@ -247,6 +276,14 @@ export type QueryTrainConfigArgs = {
 export type QueryTrainTaskArgs = {
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
+};
+
+export type ResultInput = {
+  ckpt: Scalars["String"];
+  finishTime: Scalars["DateTime"];
+  isValid: Scalars["Boolean"];
+  logFolder: Scalars["String"];
+  scores: Array<ScoreInput>;
 };
 
 export type ResultInput = {
@@ -323,6 +360,15 @@ export type RoadmapWarning = {
   __typename?: 'RoadmapWarning';
   id: Scalars['String'];
   message: Scalars['String'];
+};
+
+export type ScoreInput = {
+  datasetMd5: Scalars["String"];
+  datasetName: Scalars["String"];
+  metric: Scalars["String"];
+  mode: Scalars["String"];
+  score: Scalars["Float"];
+  subsetName: Scalars["String"];
 };
 
 export type ScoreInput = {

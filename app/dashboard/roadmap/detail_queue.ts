@@ -1,6 +1,6 @@
 import { INodeInfo } from "@/app/ui/detail/Display";
 import { useEffect, useState } from "react";
-import { message } from 'antd';
+// import { message } from 'antd';
 type SpecialQueue<T> = {
   enqueue: (nodeId: string, item: string) => void;
   dequeue: (idx: number) => void;
@@ -18,26 +18,36 @@ function useSpecialQueue<T>(): SpecialQueue<T> {
       name: nodeId,
       config: item
     }
-    const tempArr = [...queue];
-    const len = tempArr.length;
     // 处理queue
     // 如果nodeId，且nodeid已经存在列表里了，直接return
-    const existingItem = queue.find(item => item.name === nodeId);
-    if (existingItem) {
-      message.warning(`${nodeId} already exists in queue.`);
-      return;
-    }
-    // queue为空，或者length<2且前面一项的type相同，直接push
-    if (!tempArr.length || (tempArr.length < 2)) {
-      tempArr.push(nodeInfo);
-      setQueue(tempArr);
-      return;
-    }
-    // 如果已有两项，替换后面那一项
-    if (tempArr.length === 2 && nodeId !== queue?.[len - 1]?.name) {
-      tempArr.splice(len - 1, 1, nodeInfo);
-      setQueue(tempArr);
-    }
+    // const existingItem = queue.find(item => item.name === nodeId);
+    // if (existingItem) {
+    //   message.warning(`${nodeId} already exists in queue.`);
+    //   return;
+    // }
+    console.log('enqueue------', nodeId);
+    setQueue((prev) => {
+      // queue为空，或者length<2且前面一项的type相同，直接concat
+      if (prev.length < 2) {
+        return prev.concat(nodeInfo);
+      }
+      if (prev.length === 2) {
+        return [prev[1], nodeInfo];
+      }
+      return prev;
+    });
+    // // queue为空，或者length<2且前面一项的type相同，直接push
+    // if (Number(queue?.length) < 2) {
+    //   setQueue((prev) => {
+    //     return prev.concat(nodeInfo);
+    //   });
+    //   return;
+    // }
+    // // 如果已有两项，替换后面那一项
+    // if (queue.length === 2 && nodeId !== queue?.[queue.length - 1]?.name) {
+    //   setQueue((prev) => {
+    //   });
+    // }
   };
 
   const dequeue = (idx: number) => {

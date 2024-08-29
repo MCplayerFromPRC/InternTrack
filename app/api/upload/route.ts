@@ -1,27 +1,35 @@
 import { NextResponse } from "next/server";
 import { container } from "@/lib/properties";
-import { handleFile, EvalResultDatasource } from "@/dto/EvalResultDTO";
+import { handleFile, EvalResultDatasource, CkptEvalDatasource } from "@/dto";
 
 export async function POST(request: Request) {
-  const evalDTO = container.get<EvalResultDatasource>(EvalResultDatasource);
+  const resultDTO = container.get<EvalResultDatasource>(EvalResultDatasource);
+  const evalDTO = container.get<CkptEvalDatasource>(CkptEvalDatasource);
   const formData = await request.formData();
-  console.log('form data---', formData);
   const file = formData.get("file") as File;
-  const fileBuffer = await file.arrayBuffer();
   const ckptId = formData.get("ckptId") as string;
-  const finishTime = new Date(formData.get("finishTime") as string);
+  const finishTime = formData.get("finishTime") as string;
+  const fileBuffer = await file.arrayBuffer();
   const evalResult = await handleFile(Buffer.from(fileBuffer));
   if (ckptId === undefined) {
-    return new NextResponse(
-      `Failed to save evaluation. Please choose a checkpoint.`,
+    return NextResponse.json(
+      {
+        code: 1,
+        data: {},
+        msg: `Failed to save evaluation. Please choose a checkpoint.`,
+      },
       { status: 200 },
     );
   }
   evalResult.ckpt = ckptId;
   if (finishTime) {
-    evalResult.finishTime = finishTime;
+    evalResult.finishTime = new Date(finishTime);
   }
-  const savedResult = await evalDTO.createOne(evalResult.saveDocument);
+  const savedResult = await resultDTO.createOne(evalResult.saveDocument);
+  await evalDTO.createOne({ _from: ckptId, _to: savedResult._id });
 
-  return new NextResponse(`${savedResult._id} created`, { status: 200 });
+  return NextResponse.json(
+    { code: 0, data: savedResult, msg: `${savedResult._id} created` },
+    { status: 200 },
+  );
 }
