@@ -1,5 +1,4 @@
 "use client";
-
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Button } from "@headlessui/react";
 import * as React from "react";
@@ -7,7 +6,7 @@ import { PropsWithChildren, useState } from "react";
 import AlertMessage from "./Alert";
 import SearchBox from "./SearchBox";
 import "./style.scss";
-
+import { IWarningInfo } from "../../../dashboard/roadmap/graph_component";
 declare module "react" {
   interface CSSProperties {
     "--my-panel-width"?: string;
@@ -23,6 +22,8 @@ const Panel: React.FC<
     right?: string;
     top?: string;
     bottom?: string;
+    warningList?: IWarningInfo[];
+    graphRef?: any;
   }> & { onSearchClick: CallableFunction }
 > = ({
   width = "400px",
@@ -31,6 +32,8 @@ const Panel: React.FC<
   top = "10px",
   bottom = "10px",
   onSearchClick,
+  warningList = [],
+  graphRef,
 }) => {
   const [closed, setClosed] = useState(false);
   const togglePanel = () => {
@@ -52,17 +55,18 @@ const Panel: React.FC<
       }}
     >
       <div className="my-footer">
-        <SearchBox
-          className={searchBoxClasses}
-          onClick={onSearchClick}
-        ></SearchBox>
+        <SearchBox className={searchBoxClasses} onClick={onSearchClick} />
         <Button className={`${iconClasses}`} onClick={togglePanel}>
           {closed ? <ChevronDownIcon /> : <ChevronUpIcon />}
         </Button>
       </div>
-      <div className="my-body" style={{ "--my-body-top": bottom }}>
-        <AlertMessage></AlertMessage>
-      </div>
+      {warningList.length > 0 && (
+        <div className="my-body" style={{ "--my-body-top": bottom }}>
+          {warningList.map((item) => (
+            <AlertMessage info={item} key={item.id} graphRef={graphRef} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

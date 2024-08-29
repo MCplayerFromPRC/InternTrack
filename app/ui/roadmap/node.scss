@@ -1,0 +1,88 @@
+.commonNode {
+  font-size: 18px;
+  color: #121314;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .bold {
+    font-weight: bold;
+  }
+}
+
+.isDelivery {
+  // border: 5px solid rgb(249, 100, 7);
+}
+
+.noResult {
+  background-color: rgb(185 160 157);
+}
+
+.taskNode {
+  width: 300px;
+  // max-width: 300px;
+  overflow: hidden;
+  white-space: wrap;
+  word-break: break-all;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: rgb(244, 240, 250);
+
+  span.text {
+    text-align: left;
+  }
+}
+
+.weightNode {
+  aspect-ratio: 1;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: rgb(254, 227, 224);
+}
+
+.configNode {
+  // min-width: 100px;
+  aspect-ratio: 1;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: rgb(252, 193, 125);
+}
+
+// .c-my-rg-node {
+//   height: 80px;
+//   line-height: 80px;
+//   border-radius: 50%;
+//   cursor: pointer;
+//   display: flex;
+//   place-items: center;
+//   justify-content: center;
+// }
+.c-nodes-menu-panel {
+  position: absolute;
+  padding: 10px;
+  z-index: 999;
+  border-radius: 10px;
+  box-shadow: 0px 0px 8px #cccccc;
+  border: #eee solid 1px;
+  background-color: #fff;
+}
+
+.c-node-menu-item-name {
+  font-size: 12px;
+  padding-bottom: 8px;
+}
+
+.c-node-menu-item {
+  line-height: 30px;
+  padding-left: 10px;
+  cursor: pointer;
+  color: #444444;
+  font-size: 14px;
+  border-top: #efefef solid 1px;
+  border-radius: 4px;
+}
+
+.c-node-menu-item:hover {
+  background-color: rgba(157, 207, 157, 0.2);
+}

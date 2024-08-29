@@ -2,19 +2,50 @@
 
 import CodeMirror from "@uiw/react-codemirror";
 import { langs } from "@uiw/codemirror-extensions-langs";
+import { Compare } from "./Compare";
+import { useEffect, useState } from "react";
+export interface INodeInfo {
+  name: string;
+  config: string;
+  type?: string;
+}
+interface IProps {
+  width: string;
+  height: string;
+  nodeInfo?: INodeInfo;
+  queue: INodeInfo[];
+}
 
-export const Display = ({
-  doc,
-  width,
-  height,
-}: {
-  doc: string;
-  width: number | string;
-  height: number | string;
-}) => {
+export const Display = (props: IProps) => {
+  const { queue, width, height } = props;
+  const [nodeInfo, setNodeInfo] = useState<INodeInfo>({
+    name: "",
+    config: "",
+    type: "",
+  });
+
+  useEffect(() => {
+    console.log("queue info-----", queue.length, queue);
+    setNodeInfo(queue?.[0]);
+  }, [queue]);
+
   return (
     <div style={{ width: width, height: height }}>
-      <CodeMirror value={doc} extensions={[langs.python()]} />
+      {/* <div>{nodeInfo.name}</div> */}
+      {queue[0] && queue[1] && (
+        <Compare
+          nodeInfo1={queue[0]}
+          nodeInfo2={queue[1]}
+          width={width}
+          height={height}
+        />
+      )}
+      {queue[0] && !queue[1] && (
+        <CodeMirror value={nodeInfo?.config} extensions={[langs.python()]} />
+      )}
+      {/* {
+        type === 'result' && <Table dataSource={dataSource} columns={columns} pagination={false} />
+      } */}
     </div>
   );
 };

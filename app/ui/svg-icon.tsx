@@ -1,22 +1,20 @@
-import React, { LegacyRef } from "react";
+import React from "react";
 
-const CallSplitIcon = React.forwardRef(
-  (props, ref: LegacyRef<SVGSVGElement>) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      height="24"
-      viewBox="0 0 24 24"
-      width="24"
-      ref={ref}
-      {...props}
-    >
-      <path d="M0 0h24v24H0z" fill="none" />
-      <path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z" />
-    </svg>
-  ),
-);
+const CallSplitIcon = React.forwardRef((props: any, ref) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    ref={ref}
+    {...props}
+  >
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z" />
+  </svg>
+));
 
-const WarningIcon = React.forwardRef((props, ref: LegacyRef<SVGSVGElement>) => (
+const WarningIcon = React.forwardRef((props: any, ref) => (
   <svg
     className="flex-shrink-0 inline w-4 h-4 me-3"
     aria-hidden="true"
@@ -30,7 +28,7 @@ const WarningIcon = React.forwardRef((props, ref: LegacyRef<SVGSVGElement>) => (
   </svg>
 ));
 
-const SearchIcon = React.forwardRef((props, ref: LegacyRef<SVGSVGElement>) => (
+const SearchIcon = React.forwardRef((props: any, ref) => (
   <svg
     className="w-4 h-4 text-gray-500 dark:text-gray-400"
     aria-hidden="true"
