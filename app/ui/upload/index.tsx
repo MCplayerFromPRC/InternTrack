@@ -2,7 +2,10 @@ import React from 'react';
 import { useDropzone } from "react-dropzone";
 import './index.scss';
 import { message } from 'antd';
-const Upload = ({ closePop }: { closePop: () => void }) => {
+import { RGNode } from "relation-graph-react";
+import axios from 'axios';
+
+const Upload = ({ closePop, nodeInfo }: { closePop: () => void, nodeInfo: RGNode | null }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: (files: any) => {
       console.log('drop accepted-------', files);
@@ -10,9 +13,20 @@ const Upload = ({ closePop }: { closePop: () => void }) => {
     }
   });
   // 上传评测文件
-  const uploadCsv = (files: any) => {
-    console.log(files);
+  const uploadCsv = async (files: any) => {
+    console.log(files, files[0]);
+
+    const formData = new FormData();
+    formData.append('file', files[0]);
+    formData.append('ckptId', nodeInfo?.id || '');
+    formData.append('finishTime', files[0].lastModified);
+    const res = await axios.post('/api/upload', formData);
+    console.log(res);
+    // if (res.data.code === 0) {
     message.success('上传成功！');
+    // } else {
+    //   message.error('上传失败，请重试！');
+    // }
     closePop();
   };
 

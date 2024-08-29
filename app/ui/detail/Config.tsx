@@ -11,18 +11,18 @@ import { Table } from 'antd';
 export const columns = [
   {
     title: '数据集',
-    dataIndex: 'dataset',
-    key: 'dataset',
+    dataIndex: 'datasetName',
+    key: 'datasetName',
   },
   {
     title: '数据集子集',
-    dataIndex: 'subDataset',
-    key: 'subDataset',
+    dataIndex: 'subsetName',
+    key: 'subsetName',
   },
   {
     title: '评分',
-    dataIndex: 'rate',
-    key: 'rate',
+    dataIndex: 'score',
+    key: 'score',
   },
 ];
 export default function DetailCard({ onclickFuncs, queue, tableRes, cardType }: {

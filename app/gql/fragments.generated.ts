@@ -1,15 +1,64 @@
-import * as Types from './types.generated';
+import * as Types from "./types.generated";
 
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type CheckpointFragment = { __typename?: 'Checkpoint', id: string, key: string, revision: string, md5: string, config: string, step: number, path: string, isSnapshot: boolean, isDelivery: boolean, isRewardModel: boolean, saveTime: Date };
+import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
+export type CheckpointFragment = {
+  __typename?: "Checkpoint";
+  id: string;
+  key: string;
+  revision: string;
+  md5: string;
+  config: string;
+  step: number;
+  path: string;
+  isSnapshot: boolean;
+  isDelivery: boolean;
+  isRewardModel: boolean;
+  saveTime: Date;
+};
 
-export type StepFragment = { __typename?: 'CkptStep', id: string, key: string, from: string, to: string, steps: number, tokens: number, duration: string };
+export type StepFragment = {
+  __typename?: "CkptStep";
+  id: string;
+  key: string;
+  from: string;
+  to: string;
+  steps: number;
+  tokens: number;
+  duration: string;
+};
 
-export type TrainTaskFragment = { __typename?: 'TrainTask', id: string, key: string, revision: string, name: string, type: string, desc: string };
+export type TrainTaskFragment = {
+  __typename?: "TrainTask";
+  id: string;
+  key: string;
+  revision: string;
+  name: string;
+  type: string;
+  desc: string;
+};
 
-export type TrainConfigFragment = { __typename?: 'TrainConfig', id: string, key: string, revision: string, task: string, configContent: string, startStep: number, modelConfig: Record, dataConfig: Record, optimizerConfig: Record, parallelConfig: Record };
+export type TrainConfigFragment = {
+  __typename?: "TrainConfig";
+  id: string;
+  key: string;
+  revision: string;
+  task: string;
+  configContent: string;
+  startStep: number;
+  modelConfig: Record<string, any>;
+  dataConfig: Record<string, any>;
+  optimizerConfig: Record<string, any>;
+  parallelConfig: Record<string, any>;
+};
 
-export type ResumeCkptFragment = { __typename?: 'ResumeCkpt', id: string, key: string, revision: string, from: string, to: string };
+export type ResumeCkptFragment = {
+  __typename?: "ResumeCkpt";
+  id: string;
+  key: string;
+  revision: string;
+  from: string;
+  to: string;
+};
 
 export type EvalScoreFragment = {
   __typename?: "EvalResultScore";
@@ -62,11 +111,65 @@ export type NodeFragment = {
   stopStep?: number | null;
 };
 
-export type LineFragment = { __typename?: 'RoadmapLine', id?: string | null, key?: string | null, revision?: string | null, type: string, from: string, to: string, steps?: number | null, tokens?: number | null, duration?: string | null };
+export type LineFragment = {
+  __typename?: "RoadmapLine";
+  id?: string | null;
+  key?: string | null;
+  revision?: string | null;
+  type: string;
+  from: string;
+  to: string;
+  steps?: number | null;
+  tokens?: number | null;
+  duration?: string | null;
+};
 
-export type WarningFragment = { __typename?: 'RoadmapWarning', id: string, message: string };
+export type WarningFragment = {
+  __typename?: "RoadmapWarning";
+  id: string;
+  message: string;
+};
 
-export type RoadmapFragment = { __typename?: 'Roadmap', nodes: Array<{ __typename?: 'RoadmapNode', id: string, key: string, revision: string, type: string, isDeliveryBranch: boolean, taskName?: string | null, taskDesc?: string | null, md5?: string | null, config?: string | null, step?: number | null, isSnapshot?: boolean | null, isDelivery?: boolean | null, isRewardModel?: boolean | null, saveTime?: Date | null, ckptPath?: string | null, startStep?: number | null, stopStep?: number | null }>, lines: Array<{ __typename?: 'RoadmapLine', id?: string | null, key?: string | null, revision?: string | null, type: string, from: string, to: string, steps?: number | null, tokens?: number | null, duration?: string | null }>, warnings?: Array<{ __typename?: 'RoadmapWarning', id: string, message: string }> | null };
+export type RoadmapFragment = {
+  __typename?: "Roadmap";
+  nodes: Array<{
+    __typename?: "RoadmapNode";
+    id: string;
+    key: string;
+    revision: string;
+    type: string;
+    isDeliveryBranch: boolean;
+    taskName?: string | null;
+    taskDesc?: string | null;
+    md5?: string | null;
+    config?: string | null;
+    step?: number | null;
+    isSnapshot?: boolean | null;
+    isDelivery?: boolean | null;
+    isRewardModel?: boolean | null;
+    saveTime?: Date | null;
+    ckptPath?: string | null;
+    startStep?: number | null;
+    stopStep?: number | null;
+  }>;
+  lines: Array<{
+    __typename?: "RoadmapLine";
+    id?: string | null;
+    key?: string | null;
+    revision?: string | null;
+    type: string;
+    from: string;
+    to: string;
+    steps?: number | null;
+    tokens?: number | null;
+    duration?: string | null;
+  }>;
+  warnings?: Array<{
+    __typename?: "RoadmapWarning";
+    id: string;
+    message: string;
+  }> | null;
+};
 
 export type TrainConfigQueryVariables = Types.Exact<{
   id?: Types.InputMaybe<Types.Scalars["String"]>;
@@ -122,6 +225,49 @@ export type RoadmapQueryVariables = Types.Exact<{
   limit?: Types.InputMaybe<Types.Scalars["Int"]>;
 }>;
 
+export type RoadmapQuery = {
+  __typename?: "Query";
+  roadmap?: {
+    __typename?: "Roadmap";
+    nodes: Array<{
+      __typename?: "RoadmapNode";
+      id: string;
+      key: string;
+      revision: string;
+      type: string;
+      isDeliveryBranch: boolean;
+      taskName?: string | null;
+      taskDesc?: string | null;
+      md5?: string | null;
+      config?: string | null;
+      step?: number | null;
+      isSnapshot?: boolean | null;
+      isDelivery?: boolean | null;
+      isRewardModel?: boolean | null;
+      saveTime?: Date | null;
+      ckptPath?: string | null;
+      startStep?: number | null;
+      stopStep?: number | null;
+    }>;
+    lines: Array<{
+      __typename?: "RoadmapLine";
+      id?: string | null;
+      key?: string | null;
+      revision?: string | null;
+      type: string;
+      from: string;
+      to: string;
+      steps?: number | null;
+      tokens?: number | null;
+      duration?: string | null;
+    }>;
+    warnings?: Array<{
+      __typename?: "RoadmapWarning";
+      id: string;
+      message: string;
+    }> | null;
+  } | null;
+};
 
 export const CheckpointFragmentDoc = {
   kind: "Document",

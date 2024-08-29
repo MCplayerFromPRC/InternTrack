@@ -16,7 +16,13 @@ import './node.scss';
 import Upload from '../upload';
 import { IWarningInfo } from '../../dashboard/roadmap/graph_component';
 import { message } from 'antd';
+import { useMutation } from "@apollo/client";
 import classNames from 'classnames';
+import {
+  DeleteEvalResultMutation,
+  DeleteEvalResultMutationVariables,
+  DeleteEvalResultDocument
+} from "@/app/gql/mutations.generated";
 /* eslint-enable @typescript-eslint/no-unused-vars */
 const options: Partial<RGOptionsFull> = {
   debug: false,
@@ -56,9 +62,12 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     const [currentNode, setCurrentNode] = useState<RGNode | null>(null);
     const [nodeMenuPanelPosition, setNodeMenuPanelPosition] = useState({ x: 0, y: 0 });
     const [isShowUploadPanel, setIsShowUploadPanel] = useState(false);
+    const [deleteEvalRes] = useMutation<DeleteEvalResultMutation, DeleteEvalResultMutationVariables>(DeleteEvalResultDocument);
+
     // 删除评测结果
-    const delRes = (nodeId: string) => {
+    const delRes = async (nodeId: string) => {
       console.log('del res----', nodeId);
+      deleteEvalRes({ variables: { ckptId: nodeId } });
       message.success('删除成功');
     };
 
@@ -117,7 +126,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
           node.type === 'ckpt' ? "weightNode" : "",
           node.type === 'config' ? "configNode" : "",
           // node?.data?.isDeliveryBranch ? "isDelivery" : "",
-          // !node?.data?.hasEvalResult ? "weightNode noResult" : ""
+          !node?.data?.hasEvalResult ? "weightNode noResult" : ""
         )}
           onClick={(event) => showNodeMenus(node, event)}
           onContextMenu={(event) => showNodeMenus(node, event)}
@@ -178,7 +187,7 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
         )}
         {/* 上传panel */}
         {
-          isShowUploadPanel && <Upload closePop={() => { setIsShowUploadPanel(false) }} />
+          isShowUploadPanel && <Upload nodeInfo={currentNode} closePop={() => { setIsShowUploadPanel(false) }} />
         }
       </div >
     );

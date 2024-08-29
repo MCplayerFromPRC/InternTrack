@@ -5,6 +5,7 @@ import { langs } from '@uiw/codemirror-extensions-langs';
 import { Compare } from "./Compare"
 import { useEffect, useState } from 'react';
 export interface INodeInfo {
+  id?: string;
   name: string;
   config: string;
   type?: string;

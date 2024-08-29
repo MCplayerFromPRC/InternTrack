@@ -14,7 +14,17 @@ import { useLazyQuery } from "@apollo/client";
 import { RGJsonData, RelationGraphComponent } from "relation-graph-react";
 import { SimpleGraph } from "@/app/ui/roadmap/SimpleGraph";
 import Loading from "@/app/dashboard/(overview)/loading"
-import { RoadmapQuery, RoadmapDocument, RoadmapQueryVariables } from "@/app/gql/fragments.generated"
+import {
+  RoadmapQuery,
+  RoadmapDocument,
+  RoadmapQueryVariables,
+  EvalResultQuery,
+  EvalResultQueryVariables,
+  EvalResultDocument,
+  TrainConfigDocument,
+  TrainConfigQuery,
+  TrainConfigQueryVariables
+} from "@/app/gql/fragments.generated";
 import useSpecialQueue from "./detail_queue"
 import DetailCard from "@/app/ui/detail/Config";
 import { message } from 'antd';
@@ -38,6 +48,8 @@ export const RoadmapGraph = () => {
   const [keyword, setKeyWord] = useState('');
   const [viewType, setViewType] = useState('ckpt');
   const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(RoadmapDocument, { variables: { keyword, viewType } }); // fetchData是留给search的
+  const [getEvalRes] = useLazyQuery<EvalResultQuery, EvalResultQueryVariables>(EvalResultDocument);
+  const [getConfigInfo] = useLazyQuery<TrainConfigQuery, TrainConfigQueryVariables>(TrainConfigDocument);
   const closePopMask = (idx: number) => {
     if (cardType === 'result') {
       setTableRes([]);
@@ -48,21 +60,20 @@ export const RoadmapGraph = () => {
   };
 
   const handleSearch = (newSearchKey: string) => {
+    // 搜索框里search的点击
     if (!newSearchKey) {
       message.warning('请输入搜索词！');
       return;
     }
     console.log('keyword----', newSearchKey);
     setKeyWord(newSearchKey);
-    // 搜索框里search的点击
-    // setGraphViewData(layout(result.data as RoadmapQuery));
+
   };
 
   const fetchNewData = async () => {
     // type类型ckpt或者config
     const result = await fetchData();
     console.log('search or viewtype changed, res is------', result?.data?.roadmap);
-    // setGraphViewData(result?.data?.roadmap);
     setRoadMapData(result?.data?.roadmap);
   };
 
@@ -79,7 +90,7 @@ export const RoadmapGraph = () => {
     }
   };
 
-  const queryConfig = (nodeId: string) => {
+  const queryConfig = async (nodeId: string) => {
     // TODO: 根据id请求config信息
     const config = `${nodeId}--------
     parallel = dict(
@@ -106,38 +117,19 @@ export const RoadmapGraph = () => {
       drop_last=True,
       tokenizer_chunk_num=512,
     )`;
+    const configInfo = await getConfigInfo({ variables: { id: nodeId } });
+    console.log('configInfo-----', configInfo);
     setShowDiscard(true);
     enqueue(nodeId, config);
   };
 
-  const queryTableRes = () => {
+  const queryTableRes = async (nodeId: string) => {
+    const tableData = await getEvalRes({ variables: { ckptId: nodeId } });
     queue.forEach((item, idx) => {
       dequeue(idx);
     })
     setShowDiscard(true);
-    setTableRes([
-      {
-        id: '1',
-        key: '1',
-        dataset: '数据集1',
-        subDataset: '10 Downing Street',
-        rate: 54.5
-      },
-      {
-        id: '2',
-        key: '2',
-        dataset: '数据集22',
-        subDataset: '2323234 Downing Street',
-        rate: 90
-      },
-      {
-        id: '3',
-        key: '23',
-        dataset: '数据集333',
-        subDataset: '2333323234',
-        rate: 90
-      },
-    ]);
+    setTableRes(tableData?.data?.evalResult?.scores || []);
   };
 
   const handleInfoBar = (nodeId: string, type: string = 'config') => {
@@ -149,7 +141,7 @@ export const RoadmapGraph = () => {
     }
 
     if (type === 'result') {
-      queryTableRes();
+      queryTableRes(nodeId);
     }
   };
 

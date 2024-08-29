@@ -1,31 +1,82 @@
-import * as Types from './types.generated';
+import * as Types from "./types.generated";
 
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 export type CreateCheckpointMutationVariables = Types.Exact<{
   input: Types.CkptInput;
 }>;
 
-
-export type CreateCheckpointMutation = { __typename?: 'Mutation', createCheckpoint: { __typename?: 'Checkpoint', id: string, key: string, revision: string, md5: string, config: string, step: number, path: string, isSnapshot: boolean, isDelivery: boolean, isRewardModel: boolean, saveTime: Date } };
+export type CreateCheckpointMutation = {
+  __typename?: "Mutation";
+  createCheckpoint: {
+    __typename?: "Checkpoint";
+    id: string;
+    key: string;
+    revision: string;
+    md5: string;
+    config: string;
+    step: number;
+    path: string;
+    isSnapshot: boolean;
+    isDelivery: boolean;
+    isRewardModel: boolean;
+    saveTime: Date;
+  };
+};
 
 export type CreateCkptStepMutationVariables = Types.Exact<{
   input: Types.CkptStepInput;
 }>;
 
-
-export type CreateCkptStepMutation = { __typename?: 'Mutation', createCkptStep: { __typename?: 'CkptStep', id: string, key: string, from: string, to: string, steps: number, tokens: number, duration: string } };
+export type CreateCkptStepMutation = {
+  __typename?: "Mutation";
+  createCkptStep: {
+    __typename?: "CkptStep";
+    id: string;
+    key: string;
+    from: string;
+    to: string;
+    steps: number;
+    tokens: number;
+    duration: string;
+  };
+};
 
 export type CreateResumeCkptMutationVariables = Types.Exact<{
   input: Types.ResumeCkptInput;
 }>;
 
-
-export type CreateResumeCkptMutation = { __typename?: 'Mutation', createResumeCkpt: { __typename?: 'ResumeCkpt', id: string, key: string, revision: string, from: string, to: string } };
+export type CreateResumeCkptMutation = {
+  __typename?: "Mutation";
+  createResumeCkpt: {
+    __typename?: "ResumeCkpt";
+    id: string;
+    key: string;
+    revision: string;
+    from: string;
+    to: string;
+  };
+};
 
 export type CreateTrainConfigMutationVariables = Types.Exact<{
   input: Types.TrainConfigInput;
 }>;
 
+export type CreateTrainConfigMutation = {
+  __typename?: "Mutation";
+  createTrainConfig: {
+    __typename?: "TrainConfig";
+    id: string;
+    key: string;
+    revision: string;
+    task: string;
+    configContent: string;
+    startStep: number;
+    modelConfig: Record<string, any>;
+    dataConfig: Record<string, any>;
+    optimizerConfig: Record<string, any>;
+    parallelConfig: Record<string, any>;
+  };
+};
 
 export type DeleteEvalResultMutationVariables = Types.Exact<{
   id?: Types.InputMaybe<Types.Scalars["String"]>;
