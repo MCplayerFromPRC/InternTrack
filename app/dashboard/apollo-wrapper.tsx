@@ -1,6 +1,6 @@
 "use client";
 
-import { ApolloLink, HttpLink } from "@apollo/client";
+import { ApolloLink, HttpLink, DefaultOptions } from "@apollo/client";
 import {
   ApolloClient,
   ApolloNextAppProvider,
@@ -18,7 +18,16 @@ function makeClient() {
   const httpLink = new HttpLink({
     uri: "/api/graphql",
   });
-
+  const defaultOptions: DefaultOptions = {
+    watchQuery: {
+      fetchPolicy: "no-cache",
+      errorPolicy: "ignore",
+    },
+    query: {
+      fetchPolicy: "no-cache",
+      errorPolicy: "all",
+    },
+  };
   return new ApolloClient({
     cache: new InMemoryCache(),
     link:
@@ -33,6 +42,7 @@ function makeClient() {
             httpLink,
           ])
         : httpLink,
+    defaultOptions,
   });
 }
 

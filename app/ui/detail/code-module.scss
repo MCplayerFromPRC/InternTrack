@@ -1,0 +1,15 @@
+.rnd-container {
+  border: solid 1px #ddd;
+  background: #f0f0f0;
+  z-index: 9999;
+  min-width: 100px;
+  position: relative;
+  // width: auto;
+  // max-height: 800px;
+  // overflow-y: auto;
+}
+
+.limitHeightCon {
+  max-height: 60vh;
+  overflow-y: auto;
+}
