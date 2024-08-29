@@ -1,1 +1,1 @@
-declare module 'react-rnd';
+declare module "react-rnd";

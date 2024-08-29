@@ -40,9 +40,8 @@ export class EvalResultDatasource extends BaseCollectionDatasource<EvalResult> {
   }
 
   async setInvalidByCkpt(ckpt_id: string) {
-    const query = `FOR doc IN ${this.collection.name} FILTER doc.ckpt == "${ckpt_id}" UPDATE doc WITH { isValid: false }`;
-    // const query = `UPDATE {ckpt: "${ckpt_id}"} WITH { isValid: false } IN ${this.collection.name}`;
-    console.log(query);
+    const query = `FOR doc IN ${this.collection.name} FILTER doc.ckpt == "${ckpt_id}" UPDATE { _key: doc._key, isValid: false } IN ${this.collection.name} RETURN NEW`;
+    // const query = `UPDATE PARSE_IDENTIFIER("${ckpt_id}").key WITH { isValid: false } IN ${this.collection}`;
     return this.executeQuery(query);
   }
 }

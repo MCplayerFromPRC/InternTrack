@@ -1,12 +1,18 @@
-'use client'
-import React from 'react';
+"use client";
+import React from "react";
 import { WarningIcon } from "@/app/ui/svg-icon";
-import { Button } from '@headlessui/react'
-import { IWarningInfo } from '../../../dashboard/roadmap/graph_component';
+import { Button } from "@headlessui/react";
+import { IWarningInfo } from "../../../dashboard/roadmap/graph_component";
 
-const AlertMessage = ({ info, graphRef }: { info: IWarningInfo, graphRef: any }) => {
+const AlertMessage = ({
+  info,
+  graphRef,
+}: {
+  info: IWarningInfo;
+  graphRef: any;
+}) => {
   const locateNode = async () => {
-    console.log('locate node -----', info.id);
+    console.log("locate node -----", info.id);
     const graphInstance = graphRef.current!.getInstance();
     await graphInstance.focusNodeById(info.id);
     await graphInstance.toggleAutoLayout();
@@ -30,7 +36,9 @@ const AlertMessage = ({ info, graphRef }: { info: IWarningInfo, graphRef: any })
             className="rounded bg-amber-100 py-2 px-4 text-sm data-[hover]:bg-amber-200 data-[active]:bg-amber-300"
             onClick={locateNode}
           >
-            <span className="flex text-yellow-800 hover:text-white active:text-amber-500">定位</span>
+            <span className="flex text-yellow-800 hover:text-white active:text-amber-500">
+              定位
+            </span>
           </Button>
         </div>
       </div>

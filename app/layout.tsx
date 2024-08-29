@@ -5,8 +5,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Intern Track',
+    template: "%s | Acme Dashboard",
+    default: "Intern Track",
   },
   description: "The official Next.js Learn Dashboard built with App Router.",
   metadataBase: new URL("https://next-learn-dashboard.vercel.sh"),
@@ -18,9 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        {children}
-      </body>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }
