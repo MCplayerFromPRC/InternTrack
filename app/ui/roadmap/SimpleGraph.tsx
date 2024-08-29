@@ -16,7 +16,13 @@ import "./node.scss";
 import Upload from "../upload";
 import { IWarningInfo } from "../../dashboard/roadmap/graph_component";
 import { message } from "antd";
+import { useMutation } from "@apollo/client";
 import classNames from "classnames";
+import {
+  DeleteEvalResultMutation,
+  DeleteEvalResultMutationVariables,
+  DeleteEvalResultDocument,
+} from "@/app/gql/mutations.generated";
 
 const options: Partial<RGOptionsFull> = {
   debug: false,
@@ -61,9 +67,15 @@ export const SimpleGraph: React.FC<
     y: 0,
   });
   const [isShowUploadPanel, setIsShowUploadPanel] = useState(false);
+  const [deleteEvalRes] = useMutation<
+    DeleteEvalResultMutation,
+    DeleteEvalResultMutationVariables
+  >(DeleteEvalResultDocument);
+
   // 删除评测结果
-  const delRes = (nodeId: string) => {
+  const delRes = async (nodeId: string) => {
     console.log("del res----", nodeId);
+    deleteEvalRes({ variables: { ckptId: nodeId } });
     message.success("删除成功");
   };
 
@@ -89,9 +101,9 @@ export const SimpleGraph: React.FC<
   };
 
   const doAction = (actionName: string) => {
-    console.log("action name-----", actionName);
+    console.log("action name-----", actionName, currentNode);
     if (actionName === "config") {
-      onNodeClickFn(currentNode?.id, "config");
+      onNodeClickFn(currentNode?.data?.config, "config");
     }
     if (actionName === "result") {
       onNodeClickFn(currentNode?.id, "result");
@@ -101,21 +113,25 @@ export const SimpleGraph: React.FC<
       setIsShowUploadPanel(true);
     }
     if (actionName === "delete") {
+      if (!currentNode?.data?.hasEvalResult) {
+        message.warning("该节点没有评测结果！");
+        return;
+      }
       delRes(currentNode?.id || "");
     }
     setIsShowNodeMenuPanel(false);
   };
 
+  const handleUploadSuccess = () => {
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  };
+
   const NodeSlot: React.FC<RGNodeSlotProps> = ({ node }) => {
-    // console.log("NodeSlot:");
     if (node.type === "task") {
       return (
-        <div
-          className={classNames(
-            "commonNode taskNode",
-            // node?.data?.isDeliveryBranch ? "isDelivery" : "",
-          )}
-        >
+        <div className={classNames("commonNode taskNode")}>
           <p className="bold">task</p>
           <span className="text">{node.text}</span>
         </div>
@@ -128,8 +144,7 @@ export const SimpleGraph: React.FC<
           "commonNode",
           node.type === "ckpt" ? "weightNode" : "",
           node.type === "config" ? "configNode" : "",
-          // node?.data?.isDeliveryBranch ? "isDelivery" : "",
-          // !node?.data?.hasEvalResult ? "weightNode noResult" : ""
+          node.type === "ckpt" && !node?.data?.hasEvalResult ? "noResult" : "",
         )}
         onClick={(event) => showNodeMenus(node, event)}
         onContextMenu={(event) => showNodeMenus(node, event)}
@@ -195,9 +210,11 @@ export const SimpleGraph: React.FC<
       {/* 上传panel */}
       {isShowUploadPanel && (
         <Upload
+          nodeInfo={currentNode}
           closePop={() => {
             setIsShowUploadPanel(false);
           }}
+          succCallback={handleUploadSuccess}
         />
       )}
     </div>

@@ -11,18 +11,18 @@ import { Table } from "antd";
 export const columns = [
   {
     title: "数据集",
-    dataIndex: "dataset",
-    key: "dataset",
+    dataIndex: "datasetName",
+    key: "datasetName",
   },
   {
     title: "数据集子集",
-    dataIndex: "subDataset",
-    key: "subDataset",
+    dataIndex: "subsetName",
+    key: "subsetName",
   },
   {
     title: "评分",
-    dataIndex: "rate",
-    key: "rate",
+    dataIndex: "score",
+    key: "score",
   },
 ];
 export default function DetailCard({
@@ -42,7 +42,7 @@ export default function DetailCard({
       className="rnd-container"
       default={{
         x: 100,
-        y: 250,
+        y: 150,
       }}
       resizeHandleComponent={{
         topLeft:
@@ -63,18 +63,16 @@ export default function DetailCard({
           </Button>
         ) : undefined,
       }}
-      // onResize={(ref: any) => {
-      //   setSize({
-      //     width: ref.style.width,
-      //     height: ref.style.height,
-      //   });
-      // }}
     >
       {cardType === "config" && (
-        <Display queue={queue} width={size.width} height={size.height} />
+        <div className="limitHeightCon">
+          <Display queue={queue} width={size.width} height={size.height} />
+        </div>
       )}
       {cardType === "result" && (
-        <Table dataSource={tableRes} columns={columns} pagination={false} />
+        <div className="limitHeightCon">
+          <Table dataSource={tableRes} columns={columns} pagination={false} />
+        </div>
       )}
     </Rnd>
   );

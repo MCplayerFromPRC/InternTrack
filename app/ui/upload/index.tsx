@@ -2,18 +2,43 @@ import React from "react";
 import { useDropzone } from "react-dropzone";
 import "./index.scss";
 import { message } from "antd";
-const Upload = ({ closePop }: { closePop: () => void }) => {
+import { RGNode } from "relation-graph-react";
+import axios from "axios";
+
+const Upload = ({
+  closePop,
+  nodeInfo,
+  succCallback,
+}: {
+  succCallback: (nodeId: string) => void;
+  closePop: () => void;
+  nodeInfo: RGNode | null;
+}) => {
   const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "text/csv": [".csv"],
+    },
     onDropAccepted: (files: any) => {
       console.log("drop accepted-------", files);
       uploadCsv(files);
     },
   });
   // 上传评测文件
-  const uploadCsv = (files: any) => {
-    console.log(files);
-    message.success("上传成功！");
+  const uploadCsv = async (files: any) => {
+    console.log(files[0]);
+    const formData = new FormData();
+    formData.append("file", files[0]);
+    formData.append("ckptId", nodeInfo?.id || "");
+    formData.append("finishTime", files[0].lastModified);
     closePop();
+    const res = await axios.post("/api/upload", formData);
+    console.log("upload res-----", res);
+    if (res.data.code === 0) {
+      message.success("上传成功！");
+      succCallback(nodeInfo?.id || "");
+    } else {
+      message.error("上传失败，请重试！");
+    }
   };
 
   return (

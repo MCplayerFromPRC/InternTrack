@@ -5,6 +5,7 @@ import { langs } from "@uiw/codemirror-extensions-langs";
 import { Compare } from "./Compare";
 import { useEffect, useState } from "react";
 export interface INodeInfo {
+  id?: string;
   name: string;
   config: string;
   type?: string;
@@ -31,7 +32,6 @@ export const Display = (props: IProps) => {
 
   return (
     <div style={{ width: width, height: height }}>
-      {/* <div>{nodeInfo.name}</div> */}
       {queue[0] && queue[1] && (
         <Compare
           nodeInfo1={queue[0]}
@@ -43,9 +43,6 @@ export const Display = (props: IProps) => {
       {queue[0] && !queue[1] && (
         <CodeMirror value={nodeInfo?.config} extensions={[langs.python()]} />
       )}
-      {/* {
-        type === 'result' && <Table dataSource={dataSource} columns={columns} pagination={false} />
-      } */}
     </div>
   );
 };

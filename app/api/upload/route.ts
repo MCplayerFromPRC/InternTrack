@@ -25,6 +25,7 @@ export async function POST(request: Request) {
   if (finishTime) {
     evalResult.finishTime = new Date(finishTime);
   }
+  await resultDTO.setInvalidByCkpt(ckptId);
   const savedResult = await resultDTO.createOne(evalResult.saveDocument);
   await evalDTO.createOne({ _from: ckptId, _to: savedResult._id });
 
