@@ -102,14 +102,18 @@ export const RoadmapGraph = () => {
 
   const generateTableData = (arrA: any[], arrB: any[]) => {
     const tempArr = [...arrA];
-    // 创建一个集合来存储数组a中所有项的datasetMd5  
-    const datasetMd5Set = new Set(tempArr.map(item => item.datasetMd5));
-
     // 遍历数组b，检查每个项的datasetMd5是否不在集合中  
-    arrB.forEach(item => {
-      if (!datasetMd5Set.has(item.datasetMd5)) {
-        // 如果不在，添加到数组a中  
-        tempArr.push(item);
+    arrB.forEach(itemB => {
+      // 检查itemB的datasetMd5是否存在于数组a中  
+      const exists = arrA.some(itemA => itemA.datasetMd5 === itemB.datasetMd5);
+      if (!exists) {
+        // 如果不存在，将itemB添加到数组a中，并添加新的score属性用于比对  
+        const newItem = { ...itemB, scoreCompare: itemB.score }; // 简单的比对逻辑，实际应用可能需要调整  
+        tempArr.push(newItem);
+      } else {
+        // 如果存在，也可以进行score的比对或其他操作  
+        const itemA = tempArr.find(item => item.datasetMd5 === itemB.datasetMd5);
+        itemA.scoreCompare = itemB.score; // 比对score，实际应用可能需要调整  
       }
     });
     console.log('tempArr-----', tempArr);
