@@ -44,6 +44,7 @@ export const RoadmapGraph = () => {
   const [warningList, setWarning] = useState<IWarningInfo[]>([]);
   const [cardType, setCardType] = useState('');
   const [tableRes, setTableRes] = useState<any[]>([]);
+  const [stashedTableRes, setStashedTableRes] = useState<any[]>([]);
   const [showDiscard, setShowDiscard] = useState(false);
   const [keyword, setKeyWord] = useState('');
   const [viewType, setViewType] = useState('ckpt');
@@ -53,6 +54,7 @@ export const RoadmapGraph = () => {
   const closePopMask = (idx: number) => {
     if (cardType === 'result') {
       setTableRes([]);
+      setStashedTableRes([]);
       setShowDiscard(false);
     } else {
       dequeue(idx);
@@ -65,7 +67,6 @@ export const RoadmapGraph = () => {
       message.warning('请输入搜索词！');
       return;
     }
-    console.log('keyword----', newSearchKey);
     setKeyWord(newSearchKey);
 
   };
@@ -94,26 +95,41 @@ export const RoadmapGraph = () => {
     // 根据id请求config信息
     const configInfo = await getConfigInfo({ variables: { id: nodeId } });
     console.log('configInfo-----', configInfo);
-    const config = `
-      ${nodeId}
-      -------------
-      ${configInfo?.data?.trainConfig?.configContent}
-    `;
+    const config = configInfo?.data?.trainConfig?.configContent || '';
     setShowDiscard(true);
     enqueue(nodeId, config);
+  };
+
+  const generateTableData = (arrA: any[], arrB: any[]) => {
+    const tempArr = [...arrA];
+    // 创建一个集合来存储数组a中所有项的datasetMd5  
+    const datasetMd5Set = new Set(tempArr.map(item => item.datasetMd5));
+
+    // 遍历数组b，检查每个项的datasetMd5是否不在集合中  
+    arrB.forEach(item => {
+      if (!datasetMd5Set.has(item.datasetMd5)) {
+        // 如果不在，添加到数组a中  
+        tempArr.push(item);
+      }
+    });
+    console.log('tempArr-----', tempArr);
+    return tempArr;
   };
 
   const queryTableRes = async (nodeId: string) => {
     const tableData = await getEvalRes({ variables: { ckptId: nodeId } });
     if (!tableData?.data?.evalResult?.scores?.length) {
-      message.warning('该节点没有评测结果！');
+      message.warning('获取该节点的评测结果失败！');
       return;
     }
     queue.forEach((item, idx) => {
       dequeue(idx);
     })
+    // 最后一次请求的表格数据
+    const finalData = generateTableData(stashedTableRes, tableData?.data?.evalResult?.scores);
+    setTableRes(finalData);
+    setStashedTableRes(tableData?.data?.evalResult?.scores || []);
     setShowDiscard(true);
-    setTableRes(tableData?.data?.evalResult?.scores || []);
   };
 
   const handleInfoBar = (nodeId: string, type: string = 'config') => {

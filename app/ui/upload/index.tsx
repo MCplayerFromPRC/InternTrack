@@ -23,12 +23,17 @@ const Upload = ({ closePop, nodeInfo, succCallback }: { succCallback: (nodeId: s
     formData.append('ckptId', nodeInfo?.id || '');
     formData.append('finishTime', files[0].lastModified);
     closePop();
-    const res = await axios.post('/api/upload', formData);
-    console.log('upload res-----', res);
-    if (res.data.code === 0) {
-      message.success('上传成功！');
-      succCallback(nodeInfo?.id || '');
-    } else {
+    try {
+      const res = await axios.post('/api/upload', formData);
+      console.log('upload res-----', res);
+      if (res.data.code === 0) {
+        message.success('上传成功！');
+        succCallback(nodeInfo?.id || '');
+      } else {
+        message.error('上传失败，请重试！');
+      }
+    } catch (err) {
+      console.log(err);
       message.error('上传失败，请重试！');
     }
   };

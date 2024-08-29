@@ -67,8 +67,13 @@ export const SimpleGraph: React.FC<PropsWithChildren<{
     // 删除评测结果
     const delRes = async (nodeId: string) => {
       console.log('del res----', nodeId);
-      deleteEvalRes({ variables: { ckptId: nodeId } });
-      message.success('删除成功');
+      try {
+        deleteEvalRes({ variables: { ckptId: nodeId } });
+        message.success('删除成功');
+      } catch (error) {
+        console.log(error);
+        message.error('删除失败');
+      }
     };
 
     const onNodeClick = (node: RGNode) => {
