@@ -18,11 +18,12 @@ import { IWarningInfo } from "../../dashboard/roadmap/graph_component";
 import { message } from "antd";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
-import {
-  DeleteEvalResultMutation,
-  DeleteEvalResultMutationVariables,
-  DeleteEvalResultDocument,
-} from "@/app/gql/mutations.generated";
+// import {
+//   DeleteEvalResultMutation,
+//   DeleteEvalResultMutationVariables,
+//   DeleteEvalResultDocument
+// } from "@/app/gql/mutations.generated";
+import { deleteEvalResult } from "@/app/gql/mutations";
 
 const options: Partial<RGOptionsFull> = {
   debug: false,
@@ -67,16 +68,13 @@ export const SimpleGraph: React.FC<
     y: 0,
   });
   const [isShowUploadPanel, setIsShowUploadPanel] = useState(false);
-  const [deleteEvalRes] = useMutation<
-    DeleteEvalResultMutation,
-    DeleteEvalResultMutationVariables
-  >(DeleteEvalResultDocument);
+  const [handleDelEvalRes] = useMutation(deleteEvalResult);
 
   // 删除评测结果
   const delRes = async (nodeId: string) => {
     console.log("del res----", nodeId);
     try {
-      deleteEvalRes({ variables: { ckptId: nodeId } });
+      await handleDelEvalRes({ variables: { ckptId: nodeId } });
       message.success("删除成功");
     } catch (error) {
       console.log(error);

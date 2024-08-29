@@ -5,7 +5,7 @@ import { EvalResultType } from "./eval_result.type";
 builder.mutationField("deleteEvalResult", (t) => {
   return t.field({
     // We feed in the Post model, which pothos will map to the Post type we created in post.type.ts
-    type: EvalResultType,
+    type: [EvalResultType],
     args: {
       id: t.arg.string({ required: false }),
       ckptId: t.arg.string({ required: false }),

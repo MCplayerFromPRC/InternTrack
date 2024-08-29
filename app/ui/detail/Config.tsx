@@ -20,9 +20,14 @@ export const columns = [
     key: "subsetName",
   },
   {
-    title: "评分",
+    title: "评分1",
     dataIndex: "score",
     key: "score",
+  },
+  {
+    title: "评分2",
+    dataIndex: "scoreCompare",
+    key: "scoreCompare",
   },
 ];
 export default function DetailCard({
