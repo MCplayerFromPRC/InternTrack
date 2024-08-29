@@ -1,9 +1,9 @@
 .dropzone {
-  width: 50%;
-  height: 30vh;
+  width: 30%;
+  height: 20vh;
   position: fixed;
-  top: 30%;
-  left: 25%;
+  top: 40%;
+  left: 35%;
   background-color: #fafafa;
   border: 2px dashed #ddd;
   z-index: 99;
@@ -21,7 +21,7 @@
     cursor: pointer;
   }
 
-  > div {
+  >div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,4 +33,11 @@
       padding-top: 10px;
     }
   }
+}
+
+.displayCenter {
+  position: fixed;
+  top: 46%;
+  left: 46%;
+  z-index: 99;
 }

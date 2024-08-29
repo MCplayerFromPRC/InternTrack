@@ -50,7 +50,6 @@ export const RoadmapGraph = () => {
   const [viewType, setViewType] = useState("ckpt");
   const [fetchData] = useLazyQuery<RoadmapQuery, RoadmapQueryVariables>(
     RoadmapDocument,
-    { variables: { keyword, viewType } },
   ); // fetchData是留给search的
   const [getEvalRes] = useLazyQuery<EvalResultQuery, EvalResultQueryVariables>(
     EvalResultDocument,
@@ -80,11 +79,8 @@ export const RoadmapGraph = () => {
 
   const fetchNewData = async () => {
     // type类型ckpt或者config
-    const result = await fetchData();
-    console.log(
-      "search or viewtype changed, res is------",
-      result?.data?.roadmap,
-    );
+    const result = await fetchData({ variables: { keyword, viewType } });
+    console.log('search or viewtype changed, res is------', result?.data?.roadmap);
     setRoadMapData(result?.data?.roadmap);
   };
 
@@ -116,21 +112,19 @@ export const RoadmapGraph = () => {
     arrB.forEach((itemB) => {
       // 检查itemB的datasetMd5是否存在于数组a中
       const exists = arrA.some(
-        (itemA) => itemA.datasetMd5 === itemB.datasetMd5,
+        (itemA) => (itemA.datasetMd5 === itemB.datasetMd5 && itemA.subsetName === itemB.subsetName),
       );
       if (!exists) {
-        // 如果不存在，将itemB添加到数组a中，并添加新的score属性用于比对
-        const newItem = { ...itemB, scoreCompare: itemB.score }; // 简单的比对逻辑，实际应用可能需要调整
+        // 如果不存在，将itemB添加到数组a中，并添加新的scoreCompare属性用于比对
+        const newItem = { ...itemB, score: '', scoreCompare: itemB.score }; // 简单的比对逻辑，实际应用可能需要调整
         tempArr.push(newItem);
       } else {
-        // 如果存在，也可以进行score的比对或其他操作
-        const itemA = tempArr.find(
-          (item) => item.datasetMd5 === itemB.datasetMd5,
-        );
-        itemA.scoreCompare = itemB.score; // 比对score，实际应用可能需要调整
+        // 如果存在，新增comparescore
+        const itemIndex = tempArr.findIndex(item => (item.datasetMd5 === itemB.datasetMd5 && item.subsetName === itemB.subsetName));
+        console.log('find index----', itemIndex);
+        tempArr[itemIndex].scoreCompare = itemB.score;
       }
     });
-    console.log("tempArr-----", tempArr);
     return tempArr;
   };
 
@@ -144,10 +138,7 @@ export const RoadmapGraph = () => {
       dequeue(idx);
     });
     // 最后一次请求的表格数据
-    const finalData = generateTableData(
-      stashedTableRes,
-      tableData?.data?.evalResult?.scores,
-    );
+    const finalData = stashedTableRes.length ? generateTableData(stashedTableRes, tableData?.data?.evalResult?.scores) : tableData?.data?.evalResult?.scores;
     setTableRes(finalData);
     setStashedTableRes(tableData?.data?.evalResult?.scores || []);
     setShowDiscard(true);
@@ -245,6 +236,7 @@ export const RoadmapGraph = () => {
         changeViewType={(val: string) => {
           setViewType(val);
         }}
+        upDateViewData={fetchNewData}
         warningList={warningList}
         graphRef={graphRef}
         onPanelClick={handleSearch}
