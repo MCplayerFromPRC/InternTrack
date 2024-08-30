@@ -41,7 +41,6 @@ const Upload = ({
       } else {
         message.error("上传失败，请重试！");
       }
-
     } catch (err) {
       console.log(err);
       message.error("上传失败，请重试！");
@@ -52,7 +51,7 @@ const Upload = ({
 
   const contentStyle: React.CSSProperties = {
     padding: 50,
-    background: 'rgba(0, 0, 0, 0.05)',
+    background: "rgba(0, 0, 0, 0.05)",
     borderRadius: 4,
   };
 
@@ -101,7 +100,11 @@ const Upload = ({
           <p>Drag and drop a file here, or click to select files</p>
         </div>
       </div>
-      {uploading && <div className="displayCenter"><Spin tip="Loading">{content}</Spin></div>}
+      {uploading && (
+        <div className="displayCenter">
+          <Spin tip="Loading">{content}</Spin>
+        </div>
+      )}
     </>
   );
 };

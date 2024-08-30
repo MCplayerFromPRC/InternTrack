@@ -80,7 +80,10 @@ export const RoadmapGraph = () => {
   const fetchNewData = async () => {
     // type类型ckpt或者config
     const result = await fetchData({ variables: { keyword, viewType } });
-    console.log('search or viewtype changed, res is------', result?.data?.roadmap);
+    console.log(
+      "search or viewtype changed, res is------",
+      result?.data?.roadmap,
+    );
     setRoadMapData(result?.data?.roadmap);
   };
 
@@ -112,16 +115,22 @@ export const RoadmapGraph = () => {
     arrB.forEach((itemB) => {
       // 检查itemB的datasetMd5是否存在于数组a中
       const exists = arrA.some(
-        (itemA) => (itemA.datasetMd5 === itemB.datasetMd5 && itemA.subsetName === itemB.subsetName),
+        (itemA) =>
+          itemA.datasetMd5 === itemB.datasetMd5 &&
+          itemA.subsetName === itemB.subsetName,
       );
       if (!exists) {
         // 如果不存在，将itemB添加到数组a中，并添加新的scoreCompare属性用于比对
-        const newItem = { ...itemB, score: '', scoreCompare: itemB.score }; // 简单的比对逻辑，实际应用可能需要调整
+        const newItem = { ...itemB, score: "", scoreCompare: itemB.score }; // 简单的比对逻辑，实际应用可能需要调整
         tempArr.push(newItem);
       } else {
         // 如果存在，新增comparescore
-        const itemIndex = tempArr.findIndex(item => (item.datasetMd5 === itemB.datasetMd5 && item.subsetName === itemB.subsetName));
-        console.log('find index----', itemIndex);
+        const itemIndex = tempArr.findIndex(
+          (item) =>
+            item.datasetMd5 === itemB.datasetMd5 &&
+            item.subsetName === itemB.subsetName,
+        );
+        console.log("find index----", itemIndex);
         tempArr[itemIndex].scoreCompare = itemB.score;
       }
     });
@@ -138,7 +147,9 @@ export const RoadmapGraph = () => {
       dequeue(idx);
     });
     // 最后一次请求的表格数据
-    const finalData = stashedTableRes.length ? generateTableData(stashedTableRes, tableData?.data?.evalResult?.scores) : tableData?.data?.evalResult?.scores;
+    const finalData = stashedTableRes.length
+      ? generateTableData(stashedTableRes, tableData?.data?.evalResult?.scores)
+      : tableData?.data?.evalResult?.scores;
     setTableRes(finalData);
     setStashedTableRes(tableData?.data?.evalResult?.scores || []);
     setShowDiscard(true);
@@ -224,14 +235,6 @@ export const RoadmapGraph = () => {
 
   return (
     <div>
-      {showDiscard && (queue.length > 0 || tableRes.length > 0) && (
-        <DetailCard
-          onclickFuncs={closePopMask}
-          queue={queue}
-          tableRes={tableRes}
-          cardType={cardType}
-        />
-      )}
       <SimpleGraph
         changeViewType={(val: string) => {
           setViewType(val);
@@ -241,7 +244,16 @@ export const RoadmapGraph = () => {
         graphRef={graphRef}
         onPanelClick={handleSearch}
         onNodeClickFn={handleInfoBar}
-      />
+      >
+        {showDiscard && (queue.length > 0 || tableRes.length > 0) && (
+          <DetailCard
+            onclickFuncs={closePopMask}
+            queue={queue}
+            tableRes={tableRes}
+            cardType={cardType}
+          />
+        )}
+      </SimpleGraph>
     </div>
   );
 };
