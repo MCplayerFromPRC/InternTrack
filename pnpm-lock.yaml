@@ -162,11 +162,11 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       relation-graph:
-        specifier: ^2.2.2
-        version: 2.2.2
+        specifier: ^2.2.3
+        version: 2.2.3
       relation-graph-react:
-        specifier: ^2.2.2
-        version: 2.2.2
+        specifier: ^2.2.3
+        version: 2.2.3
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.4
@@ -4248,11 +4248,11 @@ packages:
       react:
         optional: true
 
-  relation-graph-react@2.2.2:
-    resolution: {integrity: sha512-ycuo8MW1ArUJmFHidc8jDL7plcmd9pM7xO7C/Mrx7zDaikQU3UZsn9WttisFcFFmsG7Jf6EB7rQeKRtpWQ6y7g==}
+  relation-graph-react@2.2.3:
+    resolution: {integrity: sha512-ovH2A6kxoWv4v78KZf+GY4PC+oqNlVshZrBojp33NoGDsZ/vhjgHkjxBXrgFuTv/YFSLk786V8OfRLyFkRk0/Q==}
 
-  relation-graph@2.2.2:
-    resolution: {integrity: sha512-gEgtf69RZwkvUcwfeqXH97N6zSnSvPkcAAhsEHzc3jkZ+l/1hk0eqFv1VnKb+/JhZzKM2wCIO+xZDExrrcF06g==}
+  relation-graph@2.2.3:
+    resolution: {integrity: sha512-SU4aHUgZ0N4Zb1PprPers1r5khhkUnZasm75OTslB43NjeYcXzbsf+++lw05kQ06yRTiBMi8lHPSCc2wikpHeQ==}
 
   relay-runtime@12.0.0:
     resolution: {integrity: sha512-QU6JKr1tMsry22DXNy9Whsq5rmvwr3LSZiiWV/9+DFpuTWvp+WFhobWMc8TC4OjKFfNhEZy7mOiqUAn5atQtug==}
@@ -10076,12 +10076,12 @@ snapshots:
       '@types/react': 18.3.3
       react: 18.3.1
 
-  relation-graph-react@2.2.2:
+  relation-graph-react@2.2.3:
     dependencies:
       html2canvas: 1.4.1
       screenfull: 5.2.0
 
-  relation-graph@2.2.2:
+  relation-graph@2.2.3:
     dependencies:
       html2canvas: 1.4.1
       screenfull: 5.2.0
