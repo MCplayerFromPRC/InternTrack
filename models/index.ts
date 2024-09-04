@@ -10,5 +10,5 @@ export * from "./Document";
 export * from "./EvalResult";
 export * from "./TrainLog";
 export * from "./TrainProc";
-export * from "./users";
-export * from "./workspace";
+export * from "./User";
+export * from "./Group";

@@ -111,7 +111,11 @@ export const SimpleGraph: React.FC<
   const doAction = (actionName: string) => {
     console.log("action name-----", actionName, currentNode);
     if (actionName === "config") {
-      onNodeClickFn(currentNode?.data?.config, "config");
+      if (currentNode?.type === "ckpt") {
+        onNodeClickFn(currentNode?.data?.config, "config");
+      } else if (currentNode?.type === "config") {
+        onNodeClickFn(currentNode?.id, "config");
+      }
     }
     if (actionName === "result") {
       onNodeClickFn(currentNode?.id, "result");
@@ -212,12 +216,14 @@ export const SimpleGraph: React.FC<
                     评测结果
                   </div>
                 )}
-                <div
-                  className="c-node-menu-item"
-                  onClick={() => doAction("upload")}
-                >
-                  上传csv
-                </div>
+                {currentNode?.type === "ckpt" && (
+                  <div
+                    className="c-node-menu-item"
+                    onClick={() => doAction("upload")}
+                  >
+                    上传csv
+                  </div>
+                )}
                 {currentNode?.data?.hasEvalResult && (
                   <div
                     className="c-node-menu-item"

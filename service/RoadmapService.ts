@@ -1,4 +1,6 @@
 import { injectable, inject } from "inversify";
+import { Database } from "arangojs";
+import { Transaction } from "arangojs/transaction";
 import moment from "moment";
 
 import {
@@ -9,6 +11,7 @@ import {
   TrainTask,
   EvalResult,
   CkptEval,
+  TrainLog,
   Node,
   Line,
   Warning,
@@ -23,9 +26,12 @@ import {
   TrainTaskDatasource,
   CkptEvalDatasource,
   EvalResultDatasource,
+  TrainLogDatasource,
+  TrainProcDatasource,
 } from "@/dto";
 
-import { isTypeOf } from "@/lib/utils";
+import { TYPES } from "@/lib/properties";
+import { isTypeOf, splitObject } from "@/lib/utils";
 
 type VertexDocument = Checkpoint | TrainConfig | TrainTask | EvalResult;
 type DBEdgeDocument = CkptStep | ResumeCkpt | CkptEval;
@@ -602,6 +608,7 @@ class Graph {
 
 @injectable()
 export class RoadmapService {
+  private db: Database;
   private ckptDTO: CheckpointDatasource;
   private ckptStepDTO: CkptStepDatasource;
   private resumeCkptDTO: ResumeCkptDatasource;
@@ -609,8 +616,11 @@ export class RoadmapService {
   private trainTaskDTO: TrainTaskDatasource;
   private evalResultDTO: EvalResultDatasource;
   private ckptEvalDTO: CkptEvalDatasource;
+  private logDTO: TrainLogDatasource;
+  private procDTO: TrainProcDatasource;
 
   constructor(
+    @inject(TYPES.Database) db: Database,
     @inject(CheckpointDatasource) ckptDTO: CheckpointDatasource,
     @inject(CkptStepDatasource) ckptStepDTO: CkptStepDatasource,
     @inject(ResumeCkptDatasource) resumeCkptDTO: ResumeCkptDatasource,
@@ -618,7 +628,10 @@ export class RoadmapService {
     @inject(TrainTaskDatasource) trainTaskDTO: TrainTaskDatasource,
     @inject(EvalResultDatasource) evalResultDTO: EvalResultDatasource,
     @inject(CkptEvalDatasource) ckptEvalDTO: CkptEvalDatasource,
+    @inject(TrainLogDatasource) logDTO: TrainLogDatasource,
+    @inject(TrainProcDatasource) procDTO: TrainProcDatasource,
   ) {
+    this.db = db;
     this.ckptDTO = ckptDTO;
     this.ckptStepDTO = ckptStepDTO;
     this.resumeCkptDTO = resumeCkptDTO;
@@ -626,6 +639,8 @@ export class RoadmapService {
     this.trainTaskDTO = trainTaskDTO;
     this.evalResultDTO = evalResultDTO;
     this.ckptEvalDTO = ckptEvalDTO;
+    this.logDTO = logDTO;
+    this.procDTO = procDTO;
   }
 
   async fetchGraph(): Promise<Graph> {
@@ -665,5 +680,401 @@ export class RoadmapService {
     graph.topologicalSort(viewType);
     graph.isDeliveryBranchNodes();
     return graph.returnGraph();
+  }
+
+  async saveRoadmapOffline(graph: any, trx: Transaction | null = null) {
+    if (!trx) {
+      trx = await this.db.beginTransaction([
+        this.trainTaskDTO.collection,
+        this.trainConfigDTO.collection,
+        this.ckptDTO.collection,
+        this.ckptStepDTO.collection,
+        this.resumeCkptDTO.collection,
+        this.logDTO.collection,
+      ]);
+    }
+    const taskMap = new Map<string, string[]>();
+    let allCkptMap = new Map<string, string>();
+    for (const { loadCkpt, configs, ...task } of graph) {
+      const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
+      if (loadCkpt) {
+        await this.createResumeCkptByResume(
+          savedTask,
+          loadCkpt,
+          allCkptMap,
+          taskMap,
+          trx,
+        );
+      }
+      const configMap = new Map<string, string[]>();
+      const ckptMap = new Map<string, string>();
+      const configIter = this.createTrainConfigs(configs, savedTask, trx);
+      for await (const config of configIter) {
+        if ("loadCkpt" in config && config.loadCkpt) {
+          const configLoadCkpt = config.loadCkpt;
+          if (configLoadCkpt) {
+            if (allCkptMap.has(configLoadCkpt)) {
+              throw new Error(
+                `${config.configPath} should not be resumed from checkpoint ${configLoadCkpt}, but a checkpoint under task ${savedTask.name}.`,
+              );
+            }
+            await this.createResumeCkptByResume(
+              config,
+              configLoadCkpt,
+              ckptMap,
+              configMap,
+              trx,
+            );
+          }
+        } else {
+          await trx.step(() =>
+            this.resumeCkptDTO.createOne({
+              _from: savedTask._id,
+              _to: config._id,
+            }),
+          );
+        }
+
+        const ckptStep = {
+          _from: config._id,
+          _to: undefined,
+          steps: config.ckpts[0].step - (config.startStep || 0),
+          tokens:
+            config.ckpts[0].tokens !== undefined
+              ? config.ckpts[0].tokens - (config.startToken || 0)
+              : undefined,
+          saveTime: config.startTime || new Date(),
+        };
+
+        const savedCkpts = await this.createCheckpoints(
+          config.ckpts,
+          ckptStep,
+          trx,
+        );
+
+        for (const savedCkpt of savedCkpts) {
+          await this.createResumeCkptByCkpt(
+            savedCkpt,
+            ckptMap,
+            taskMap,
+            configMap,
+            trx,
+          );
+        }
+      }
+      if (configMap.size > 0) {
+        throw new Error(
+          `No Checkpoints ${Array.from(configMap.keys())} for Configs to resume.`,
+        );
+      }
+      allCkptMap = new Map<string, string>([...allCkptMap, ...ckptMap]);
+    }
+    if (taskMap.size > 0) {
+      for (const [key, value] of taskMap) {
+        await this.saveResumeCkpt(key, value, trx);
+      }
+    }
+    await trx.commit();
+  }
+
+  async saveNewProcOnline(
+    procInfo: any,
+    procMd5: string,
+    ckptMd5: string | null = null,
+  ) {
+    const trx = await this.db.beginTransaction([
+      this.trainTaskDTO.collection,
+      this.trainConfigDTO.collection,
+      this.ckptDTO.collection,
+      this.ckptStepDTO.collection,
+      this.resumeCkptDTO.collection,
+      this.procDTO.collection,
+      this.logDTO.collection,
+    ]);
+    const [task, taskLeft] = splitObject<TrainTask>(procInfo);
+    const [config, configLeft] = splitObject<TrainConfig>(
+      taskLeft as Required<TrainConfig>,
+    );
+    const [log, proc] = splitObject<TrainLog>(configLeft as Required<TrainLog>);
+    if (task) {
+      const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
+      if (ckptMd5) {
+        await this.saveResumeCkpt(ckptMd5, [savedTask._id], trx);
+      }
+      const configIter = this.createTrainConfigs(
+        [{ ...config, ...log }],
+        savedTask,
+        trx,
+      );
+      for await (const config of configIter) {
+        trx.step(() =>
+          this.resumeCkptDTO.createOne({
+            _from: savedTask._id,
+            _to: config._id,
+          }),
+        );
+        trx.step(() =>
+          this.procDTO.createOne({ md5: procMd5, config: config._id, ...proc }),
+        );
+      }
+    } else {
+      if (!ckptMd5) {
+        throw new Error(
+          `Must input resume checkpoint MD5 if no task name is specified.`,
+        );
+      } else {
+        const ckpt = await this.ckptDTO.findOnlyOneByMd5(ckptMd5);
+        const lastConfig = await this.trainConfigDTO.findOneById(ckpt.config);
+        const task = await this.trainTaskDTO.findOneById(lastConfig!.task);
+        const configIter = this.createTrainConfigs(
+          [{ ...config, ...log }],
+          task!,
+          trx,
+        );
+        for await (const config of configIter) {
+          trx.step(() =>
+            this.resumeCkptDTO.createOne({
+              _from: task!._id,
+              _to: config._id,
+            }),
+          );
+          trx.step(() =>
+            this.procDTO.createOne({
+              md5: procMd5,
+              config: config._id,
+              ...proc,
+            }),
+          );
+        }
+      }
+    }
+  }
+
+  async saveNewCkptOnline(procMd5: string, ckptInfo: any) {
+    const trx = await this.db.beginTransaction([
+      this.trainTaskDTO.collection,
+      this.trainConfigDTO.collection,
+      this.ckptDTO.collection,
+      this.ckptStepDTO.collection,
+      this.resumeCkptDTO.collection,
+      this.procDTO.collection,
+      this.logDTO.collection,
+    ]);
+    const proc = await this.procDTO.findOnlyOneByMd5(procMd5);
+    const ckpt = await trx.step(() => this.ckptDTO.createOne(ckptInfo));
+    if (proc.ckpt) {
+      const lastCkpt = await this.ckptDTO.findOneById(proc.ckpt);
+      const ckptStep = {
+        _from: lastCkpt!._id,
+        _to: ckpt._id,
+        steps: ckpt.step - lastCkpt!.step,
+        // tokens: ckptInfo.tokens !== undefined && tokens !== undefined ? nextCkpt.tokens - tokens : undefined,
+        duration: moment.duration(
+          moment(ckpt.saveTime).diff(moment(lastCkpt!.saveTime)),
+        ),
+      };
+      await this.ckptStepDTO.createOne(ckptStep);
+    } else {
+      const config = await this.trainConfigDTO.findOneById(proc.config);
+      const ckptStep = {
+        _from: proc.config,
+        _to: ckpt._id,
+        steps: ckpt.step - config!.startStep,
+        // tokens: ckptInfo.tokens !== undefined && tokens !== undefined ? nextCkpt.tokens - tokens : undefined,
+        duration: moment.duration(
+          moment(ckpt.saveTime).diff(moment(proc.startTime)),
+        ),
+      };
+      await this.ckptStepDTO.createOne(ckptStep);
+    }
+  }
+
+  async saveResumeCkpt(
+    ckptMd5: string,
+    outEdges: string[],
+    trx: Transaction | null = null,
+  ) {
+    const ckpt = await this.ckptDTO.findOnlyOneByMd5(ckptMd5);
+    for (const outEdge of outEdges) {
+      const resume = {
+        _from: ckpt._id,
+        _to: outEdge,
+      };
+      if (trx) {
+        await trx.step(() => this.resumeCkptDTO.createOne(resume));
+      } else {
+        await this.resumeCkptDTO.createOne(resume);
+      }
+    }
+  }
+
+  async saveCheckpoint(
+    ckpt: Partial<Checkpoint>,
+    ckptStep: Partial<CkptStep>,
+    trx: Transaction | null = null,
+  ) {
+    if (trx) {
+      const savedCkpt = await trx.step(() => this.ckptDTO.createOne(ckpt));
+      ckptStep._to = savedCkpt._id;
+      await trx.step(() => this.ckptStepDTO.createOne(ckptStep));
+      return savedCkpt;
+    } else {
+      const savedCkpt = await this.ckptDTO.createOne(ckpt);
+      ckptStep._to = savedCkpt._id;
+      await this.ckptStepDTO.createOne(ckptStep);
+      return savedCkpt;
+    }
+  }
+
+  async createCheckpoints(
+    ckpts: Partial<Checkpoint & { tokens: number }>[],
+    ckptStep: Partial<CkptStep>,
+    trx: Transaction | null = null,
+  ) {
+    const config = ckptStep._from;
+    const savedCkpts = [];
+    ckpts.sort((a, b) => a.step! - b.step!);
+    for (let i = 0; i < ckpts.length; i++) {
+      const { tokens, ...ckpt } = ckpts[i];
+      ckpt.config = config;
+      const savedCkpt = await this.saveCheckpoint(ckpt, ckptStep, trx);
+      if (savedCkpt) {
+        savedCkpts.push(savedCkpt);
+        ckptStep._from = savedCkpt._id;
+      }
+      if (i < ckpts.length - 1) {
+        const nextCkpt = ckpts[i + 1];
+        if (savedCkpt) {
+          ckptStep.steps = nextCkpt.step! - ckpt.step!;
+          ckptStep.tokens =
+            nextCkpt.tokens !== undefined && tokens !== undefined
+              ? nextCkpt.tokens - tokens
+              : undefined;
+          ckptStep.duration = moment.duration(
+            moment(nextCkpt.saveTime).diff(moment(ckpt.saveTime)),
+          );
+        } else {
+          ckptStep.steps = nextCkpt.step! - ckpt.step! + (ckptStep.steps || 0);
+          ckptStep.tokens =
+            nextCkpt.tokens && tokens
+              ? nextCkpt.tokens - tokens + (ckptStep.tokens || 0)
+              : undefined;
+          ckptStep.duration = moment
+            .duration(moment(nextCkpt.saveTime).diff(moment(ckpt.saveTime)))
+            .add(ckptStep.duration);
+        }
+      }
+    }
+    return savedCkpts;
+  }
+
+  async *createTrainConfigs(
+    configs: any,
+    savedTask: TrainTask,
+    trx: Transaction | null = null,
+  ) {
+    for (const {
+      ckpts,
+      loadCkpt,
+      configPath,
+      tbFolder,
+      logFolder,
+      ...config
+    } of configs) {
+      config.task = savedTask._id;
+      let savedConfig;
+      if (trx) {
+        savedConfig = await trx.step(() =>
+          this.trainConfigDTO.createOne(config),
+        );
+      } else {
+        savedConfig = await this.trainConfigDTO.createOne(config);
+      }
+      if (configPath || tbFolder || logFolder) {
+        const log = {
+          config: savedConfig._id,
+          configPath,
+          tbFolder,
+          logFolder,
+        };
+        if (trx) {
+          await trx.step(() => this.logDTO.createOne(log));
+        } else {
+          await this.logDTO.createOne(log);
+        }
+      }
+      yield {
+        ckpts,
+        loadCkpt,
+        configPath,
+        tbFolder,
+        logFolder,
+        ...savedConfig,
+      };
+    }
+  }
+
+  async createResumeCkptByCkpt(
+    node: Checkpoint,
+    md5CkptMap: Map<string, string>,
+    taskMap: Map<string, string[]>,
+    configMap: Map<string, string[]>,
+    trx: Transaction | null = null,
+  ) {
+    md5CkptMap.set(node.md5, node._id);
+    if (taskMap.has(node.md5)) {
+      for (const taskId in taskMap.get(node.md5)) {
+        const resume = {
+          _from: node._id,
+          _to: taskId,
+        };
+        if (trx) {
+          await trx.step(() => this.resumeCkptDTO.createOne(resume));
+        } else {
+          await this.resumeCkptDTO.createOne(resume);
+        }
+      }
+      taskMap.delete(node.md5);
+    }
+    if (configMap.has(node.md5)) {
+      for (const configId in configMap.get(node.md5)) {
+        const resume = {
+          _from: node._id,
+          _to: configId,
+        };
+        if (trx) {
+          await trx.step(() => this.resumeCkptDTO.createOne(resume));
+        } else {
+          await this.resumeCkptDTO.createOne(resume);
+        }
+      }
+      configMap.delete(node.md5);
+    }
+  }
+
+  async createResumeCkptByResume(
+    node: TrainConfig | TrainTask,
+    ckptMd5: string,
+    md5CkptMap: Map<string, string>,
+    resumeMap: Map<string, string[]>,
+    trx: Transaction | null = null,
+  ) {
+    if (md5CkptMap.has(ckptMd5)) {
+      const resume = {
+        _from: md5CkptMap.get(ckptMd5)!,
+        _to: node._id,
+      };
+      if (trx) {
+        await trx.step(() => this.resumeCkptDTO.createOne(resume));
+      } else {
+        await this.resumeCkptDTO.createOne(resume);
+      }
+    } else if (resumeMap.has(ckptMd5)) {
+      const resumes = resumeMap.get(ckptMd5)!;
+      resumes.push(node._id);
+      resumeMap.set(ckptMd5, resumes);
+    } else {
+      resumeMap.set(ckptMd5, [node._id]);
+    }
   }
 }

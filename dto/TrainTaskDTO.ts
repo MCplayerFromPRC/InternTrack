@@ -6,6 +6,7 @@ import { TrainTask } from "@/models";
 import { BaseCollectionDatasource } from "./BaseDatasource/BaseDocumentDTO";
 import type { DataSourceOptions } from "./BaseDatasource/BaseDTO";
 import { TYPES } from "@/lib/properties";
+import { validateEnum } from "@/lib/utils";
 
 @injectable()
 export class TrainTaskDatasource extends BaseCollectionDatasource<TrainTask> {
@@ -34,5 +35,22 @@ export class TrainTaskDatasource extends BaseCollectionDatasource<TrainTask> {
       );
     }
     return {} as TrainTask;
+  }
+
+  ModelTypeEnum: { [K in TrainTask["type"] | "default"]: TrainTask["type"] } = {
+    pretrain: "pretrain",
+    sft: "sft",
+    rlhf_rm: "rlhf_rm",
+    rlhf_ppo: "rlhf_ppo",
+    default: "pretrain",
+  };
+
+  createOne(newDoc: any) {
+    const savingTask = {
+      name: newDoc.name,
+      type: validateEnum(newDoc.type, this.ModelTypeEnum),
+      desc: newDoc.desc,
+    };
+    return super.createOne(savingTask);
   }
 }

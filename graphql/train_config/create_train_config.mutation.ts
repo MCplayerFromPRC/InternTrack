@@ -10,6 +10,7 @@ export const TrainConfigInput = builder.inputType("TrainConfigInput", {
     task: t.string({ required: false }),
     configContent: t.string({ required: true }),
     startStep: t.int({ required: false }),
+    startToken: t.int({ required: false }),
     modelConfig: t.field({ type: "JSON", required: false }),
     dataConfig: t.field({ type: "JSON", required: false }),
     optimizerConfig: t.field({ type: "JSON", required: false }),

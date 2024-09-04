@@ -56,6 +56,8 @@ export interface GQLContext extends BaseContext {
     config: dto.TrainConfigDatasource;
     result: dto.EvalResultDatasource;
     ckptEval: dto.CkptEvalDatasource;
+    log: dto.TrainLogDatasource;
+    proc: dto.TrainProcDatasource;
     search: dto.RetrievalViewDatasource;
     roadmap: service.RoadmapService;
   };
