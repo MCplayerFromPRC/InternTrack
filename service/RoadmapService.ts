@@ -682,21 +682,21 @@ export class RoadmapService {
     return graph.returnGraph();
   }
 
-  async saveRoadmapOffline(graph: any, trx: Transaction | null = null) {
-    if (!trx) {
-      trx = await this.db.beginTransaction([
-        this.trainTaskDTO.collection,
-        this.trainConfigDTO.collection,
-        this.ckptDTO.collection,
-        this.ckptStepDTO.collection,
-        this.resumeCkptDTO.collection,
-        this.logDTO.collection,
-      ]);
-    }
+  async saveRoadmapOffline(graph: any) {
+    const trx = await this.db.beginTransaction([
+      this.trainTaskDTO.collection,
+      this.trainConfigDTO.collection,
+      this.ckptDTO.collection,
+      this.ckptStepDTO.collection,
+      this.resumeCkptDTO.collection,
+      this.logDTO.collection,
+    ]);
+    const taskList = [];
     const taskMap = new Map<string, string[]>();
     let allCkptMap = new Map<string, string>();
     for (const { loadCkpt, configs, ...task } of graph) {
       const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
+      taskList.push(savedTask);
       if (loadCkpt) {
         await this.createResumeCkptByResume(
           savedTask,
@@ -743,7 +743,14 @@ export class RoadmapService {
             config.ckpts[0].tokens !== undefined
               ? config.ckpts[0].tokens - (config.startToken || 0)
               : undefined,
-          saveTime: config.startTime || new Date(),
+          duration:
+            config.startTime && config.ckpts[0].saveTime
+              ? moment.duration(
+                  moment(config.ckpts[0].saveTime).diff(
+                    moment(new Date(config.startTime)),
+                  ),
+                )
+              : undefined,
         };
 
         const savedCkpts = await this.createCheckpoints(
@@ -775,6 +782,7 @@ export class RoadmapService {
       }
     }
     await trx.commit();
+    return taskList;
   }
 
   async saveNewProcOnline(
@@ -782,6 +790,7 @@ export class RoadmapService {
     procMd5: string,
     ckptMd5: string | null = null,
   ) {
+    let savedConfig;
     const trx = await this.db.beginTransaction([
       this.trainTaskDTO.collection,
       this.trainConfigDTO.collection,
@@ -816,6 +825,7 @@ export class RoadmapService {
         trx.step(() =>
           this.procDTO.createOne({ md5: procMd5, config: config._id, ...proc }),
         );
+        savedConfig = config;
       }
     } else {
       if (!ckptMd5) {
@@ -832,61 +842,38 @@ export class RoadmapService {
           trx,
         );
         for await (const config of configIter) {
-          trx.step(() =>
+          await trx.step(() =>
             this.resumeCkptDTO.createOne({
               _from: task!._id,
               _to: config._id,
             }),
           );
-          trx.step(() =>
+          await trx.step(() =>
             this.procDTO.createOne({
               md5: procMd5,
               config: config._id,
               ...proc,
             }),
           );
+          savedConfig = config;
         }
       }
     }
+    trx.commit();
+    return savedConfig;
   }
 
-  async saveNewCkptOnline(procMd5: string, ckptInfo: any) {
+  async saveNewCkptOnline(ckptInfo: any, procMd5: string) {
     const trx = await this.db.beginTransaction([
-      this.trainTaskDTO.collection,
-      this.trainConfigDTO.collection,
       this.ckptDTO.collection,
       this.ckptStepDTO.collection,
-      this.resumeCkptDTO.collection,
-      this.procDTO.collection,
-      this.logDTO.collection,
     ]);
     const proc = await this.procDTO.findOnlyOneByMd5(procMd5);
+    const lastCkpt = await this.findLastCkptByConfig(proc.config);
     const ckpt = await trx.step(() => this.ckptDTO.createOne(ckptInfo));
-    if (proc.ckpt) {
-      const lastCkpt = await this.ckptDTO.findOneById(proc.ckpt);
-      const ckptStep = {
-        _from: lastCkpt!._id,
-        _to: ckpt._id,
-        steps: ckpt.step - lastCkpt!.step,
-        // tokens: ckptInfo.tokens !== undefined && tokens !== undefined ? nextCkpt.tokens - tokens : undefined,
-        duration: moment.duration(
-          moment(ckpt.saveTime).diff(moment(lastCkpt!.saveTime)),
-        ),
-      };
-      await this.ckptStepDTO.createOne(ckptStep);
-    } else {
-      const config = await this.trainConfigDTO.findOneById(proc.config);
-      const ckptStep = {
-        _from: proc.config,
-        _to: ckpt._id,
-        steps: ckpt.step - config!.startStep,
-        // tokens: ckptInfo.tokens !== undefined && tokens !== undefined ? nextCkpt.tokens - tokens : undefined,
-        duration: moment.duration(
-          moment(ckpt.saveTime).diff(moment(proc.startTime)),
-        ),
-      };
-      await this.ckptStepDTO.createOne(ckptStep);
-    }
+    await trx.step(() => this.ckptStepDTO.createStepByCkpts(lastCkpt, ckpt));
+    await trx.commit();
+    return ckpt;
   }
 
   async saveResumeCkpt(
@@ -935,33 +922,33 @@ export class RoadmapService {
     const savedCkpts = [];
     ckpts.sort((a, b) => a.step! - b.step!);
     for (let i = 0; i < ckpts.length; i++) {
-      const { tokens, ...ckpt } = ckpts[i];
+      const ckpt = ckpts[i];
       ckpt.config = config;
       const savedCkpt = await this.saveCheckpoint(ckpt, ckptStep, trx);
       if (savedCkpt) {
         savedCkpts.push(savedCkpt);
-        ckptStep._from = savedCkpt._id;
+        ckpt._id = savedCkpt._id;
       }
       if (i < ckpts.length - 1) {
         const nextCkpt = ckpts[i + 1];
+        const step = await this.ckptStepDTO.createStepByCkpts(
+          ckpt,
+          nextCkpt,
+          false,
+        );
         if (savedCkpt) {
-          ckptStep.steps = nextCkpt.step! - ckpt.step!;
-          ckptStep.tokens =
-            nextCkpt.tokens !== undefined && tokens !== undefined
-              ? nextCkpt.tokens - tokens
-              : undefined;
-          ckptStep.duration = moment.duration(
-            moment(nextCkpt.saveTime).diff(moment(ckpt.saveTime)),
-          );
+          ckptStep = step;
         } else {
-          ckptStep.steps = nextCkpt.step! - ckpt.step! + (ckptStep.steps || 0);
-          ckptStep.tokens =
-            nextCkpt.tokens && tokens
-              ? nextCkpt.tokens - tokens + (ckptStep.tokens || 0)
+          ckptStep.steps = step.steps
+            ? step.steps + (ckptStep.steps || 0)
+            : undefined;
+          ckptStep.tokens = step.tokens
+            ? step.tokens + (ckptStep.tokens || 0)
+            : undefined;
+          ckptStep.duration =
+            step.duration && ckptStep.duration
+              ? step.duration.add(ckptStep.duration)
               : undefined;
-          ckptStep.duration = moment
-            .duration(moment(nextCkpt.saveTime).diff(moment(ckpt.saveTime)))
-            .add(ckptStep.duration);
         }
       }
     }
@@ -1076,5 +1063,43 @@ export class RoadmapService {
     } else {
       resumeMap.set(ckptMd5, [node._id]);
     }
+  }
+
+  async findLastCkptByConfig(configId: string) {
+    const config = await this.trainConfigDTO.findOneById(configId);
+    if (!config) {
+      throw new Error(`Config ${configId} not found.`);
+    }
+    const ckpts = await this.ckptDTO.findManyByConfig(configId);
+    const proc = await this.procDTO.findOnlyOneByConfig(configId);
+    ckpts.sort((a, b) => a.step - b.step);
+    let lastCkpt: any = {
+      _id: config._id,
+      step: config.startStep || 0,
+      tokens: config.startToken || 0,
+      saveTime: proc.startTime || undefined,
+    };
+    for (const ckpt of ckpts) {
+      const step = await this.ckptStepDTO.findManyByKeys({
+        _from: lastCkpt._id,
+        _to: ckpt._id,
+      });
+      if (step.length === 0) {
+        throw new Error(`No edge found from ${lastCkpt._id} to ${ckpt._id}`);
+      } else if (step.length > 1) {
+        throw new Error(`No edge found from ${lastCkpt._id} to ${ckpt._id}`);
+      } else {
+        const tokens = lastCkpt.tokens + (step[0].tokens || 0);
+        lastCkpt = ckpt;
+        lastCkpt.tokens = tokens;
+      }
+    }
+    if (
+      lastCkpt._id !== config._id &&
+      lastCkpt.tokens === (config.startToken || 0)
+    ) {
+      delete lastCkpt.tokens;
+    }
+    return lastCkpt;
   }
 }

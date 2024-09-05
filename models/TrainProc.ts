@@ -6,9 +6,8 @@ import { NodeDocument } from "./Document";
 export class TrainProc extends NodeDocument {
   md5!: string;
   config!: string;
-  ckpt: string;
   cluster: string;
-  envVar: object;
+  envVar: Record<string, any>;
   gpuNum: number;
   startTime: Date;
   endtime: Date;
@@ -22,9 +21,8 @@ export class TrainProc extends NodeDocument {
     _rev: string,
     md5: string,
     config: string,
-    ckpt: string,
     cluster: string,
-    envVar: object,
+    envVar: Record<string, any>,
     gpuNum: number,
     startTime: Date,
     endtime: Date,
@@ -35,7 +33,6 @@ export class TrainProc extends NodeDocument {
     super(_key, _id, _rev);
     this.md5 = md5;
     this.config = config;
-    this.ckpt = ckpt;
     this.cluster = cluster;
     this.envVar = envVar;
     this.gpuNum = gpuNum;

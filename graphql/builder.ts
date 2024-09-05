@@ -2,7 +2,7 @@
 ## quote:
 1. https://docs.arangodb.com/3.11/aql/graphs/traversals/
 */
-import SchemaBuilder, { ObjectFieldBuilder } from "@pothos/core";
+import SchemaBuilder, { ObjectFieldBuilder, ObjectRef } from "@pothos/core";
 import DirectivePlugin from "@pothos/plugin-directives";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import {
@@ -50,6 +50,25 @@ type UserSchemaType = {
   };
 };
 
+export class Message {
+  code: number;
+  data?: Record<string, any>;
+  msg?: string;
+  err?: string;
+
+  constructor(
+    code: number,
+    data?: Record<string, any>,
+    msg?: string,
+    err?: string,
+  ) {
+    this.code = code;
+    this.data = data;
+    this.msg = msg;
+    this.err = err;
+  }
+}
+
 export const builder = new SchemaBuilder<UserSchemaType>({
   plugins: [DirectivePlugin, SimpleObjectsPlugin],
 });
@@ -72,3 +91,14 @@ builder.addScalarType("Duration", DurationResolver, {});
 builder.addScalarType("JSON", JSONResolver, {});
 builder.addScalarType("NonNegativeInt", NonNegativeIntResolver, {});
 builder.addScalarType("PositiveInt", PositiveIntResolver, {});
+
+export const MessageType: ObjectRef<Message> = builder.objectType(Message, {
+  name: "message",
+  description: "Roadmap message",
+  fields: (t) => ({
+    code: t.exposeInt("code"),
+    data: t.expose("data", { type: "JSON", nullable: true }),
+    msg: t.exposeString("msg", { nullable: true }),
+    err: t.exposeString("err", { nullable: true }),
+  }),
+});

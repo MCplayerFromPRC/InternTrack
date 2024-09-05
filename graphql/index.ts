@@ -22,6 +22,12 @@ import "./train_config/create_train_config.mutation";
 import "./train_config/train_config.query";
 import "./train_config/train_config.type";
 
+import "./train_log/train_log.input";
+import "./train_log/train_log.type";
+
+import "./train_proc/train_proc.input";
+import "./train_proc/train_proc.type";
+
 import "./train_task/all_train_task.query";
 import "./train_task/create_train_task.mutation";
 import "./train_task/train_task.query";
@@ -43,5 +49,6 @@ import "./resume_ckpt/create_resume_ckpt.mutation";
 import "./resume_ckpt/resume_ckpt.query";
 import "./resume_ckpt/resume_ckpt.type";
 
+import "./roadmap/create_roadmap.mutation";
 import "./roadmap/roadmap.query";
 import "./roadmap/roadmap.type";

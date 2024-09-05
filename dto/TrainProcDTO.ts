@@ -18,6 +18,18 @@ export class TrainProcDatasource extends BaseCollectionDatasource<TrainProc> {
     super(db, db.collection("TrainProc"), cache, options);
   }
 
+  async findOnlyOneByConfig(config: string) {
+    const proc = await this.findManyByKeys({ config });
+    if (proc.length == 0) {
+      throw new Error(`No Process ${config} found.`);
+    } else if (proc.length > 1) {
+      throw new Error(
+        `Conflict config ${config} for Processes ${proc.map((p) => p._id)}.`,
+      );
+    }
+    return proc[0];
+  }
+
   async findOnlyOneByMd5(md5: string) {
     const proc = await this.findManyByKeys({ md5 });
     if (proc.length == 0) {
