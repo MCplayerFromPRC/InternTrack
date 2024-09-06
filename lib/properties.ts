@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import pino from "pino";
 import { Database } from "arangojs";
 import { GraphQLSchema } from "graphql/type";
@@ -56,6 +57,8 @@ export interface GQLContext extends BaseContext {
     config: dto.TrainConfigDatasource;
     result: dto.EvalResultDatasource;
     ckptEval: dto.CkptEvalDatasource;
+    log: dto.TrainLogDatasource;
+    proc: dto.TrainProcDatasource;
     search: dto.RetrievalViewDatasource;
     roadmap: service.RoadmapService;
   };

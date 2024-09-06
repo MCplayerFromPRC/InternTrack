@@ -9,7 +9,7 @@ export async function GET() {
     await seedCollection(db);
     await seedGraph(db);
     await seedView(db);
-    await seedData(db);
+    await seedData();
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     return Response.json({ error }, { status: 500 });

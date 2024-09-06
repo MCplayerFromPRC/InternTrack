@@ -1,9 +1,13 @@
-import moment from "moment";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { readFile } from "fs/promises";
-import { Database } from "arangojs";
-import * as model from "@/models";
+import { container } from "@/lib/properties";
+import { RoadmapService } from "@/service";
+import * as dto from "@/dto";
+import { readContentAsync } from "@/lib/utils";
+
+function getAbsolutePath(relativePath: string) {
+  return join(fileURLToPath(dirname(import.meta.url)), relativePath);
+}
 
 const graph = [
   {
@@ -12,7 +16,9 @@ const graph = [
     desc: "4k ReRun",
     configs: [
       {
-        configContent: "config/official_InternLM2.5_20B_3.1.0_4kReRun.py",
+        configContent: await readContentAsync(
+          getAbsolutePath("config/official_InternLM2.5_20B_3.1.0_4kReRun.py"),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_3.1.0_4kReRun.py",
         startStep: 168000,
@@ -190,7 +196,9 @@ const graph = [
         ],
       },
       {
-        configContent: "config/official_InternLM2.5_20B_3.1.0_4kReRun.py",
+        configContent: await readContentAsync(
+          getAbsolutePath("config/official_InternLM2.5_20B_3.1.0_4kReRun.py"),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_3.1.0_4kReRun.py",
         loadCkpt:
@@ -309,7 +317,11 @@ const graph = [
       "625245930fa9f4f02d2ed4a328256d0c2ef436df9fe644aeb18e68d7070749c4",
     configs: [
       {
-        configContent: "config/official_InternLM2.5_20B_3.1.0_4kReRun_32k.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_3.1.0_4kReRun_32k.py",
+          ),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_3.1.0_4kReRun_32k.py",
         startStep: 222000,
@@ -346,8 +358,11 @@ const graph = [
       "7ecacb1a3eea10f91d70fcac05215c77a50de1c0d4bf0b88907a6fc216734058",
     configs: [
       {
-        configContent:
-          "config/official_InternLM2.5_20B_3.1.0_4k_ReRun_32k_256k.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_3.1.0_4k_ReRun_32k_256k.py",
+          ),
+        ),
         configPath:
           "/cpfs01/shared/alillm2/user/zhangshuo/codes/train/official_20240509_1M/configs/InternLM2.5/official_InternLM2.5_20B_3.1.0_4k_ReRun_32k_256k.py",
         startStep: 226000,
@@ -394,8 +409,11 @@ const graph = [
       "625245930fa9f4f02d2ed4a328256d0c2ef436df9fe644aeb18e68d7070749c4",
     configs: [
       {
-        configContent:
-          "config/official_InternLM2.5_20B_Enhance_11.0.0_32k_FixBBHLeak.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_Enhance_11.0.0_32k_FixBBHLeak.py",
+          ),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_Enhance_11.0.0_32k_FixBBHLeak.py",
         startStep: 0,
@@ -602,8 +620,11 @@ const graph = [
       "9f69a0677787ab96e4ae7953343981e72c23e34a2ac0e24fa63ecbd703c2c29b",
     configs: [
       {
-        configContent:
-          "config/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak.py",
+          ),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak.py",
         startStep: 0,
@@ -870,8 +891,11 @@ const graph = [
       "784b00272eab7ef08e9e51980bd97b163bed6e9284a31bc4d67d7705622cca3e",
     configs: [
       {
-        configContent:
-          "config/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak_wsd_from_50000_to_52500_5.0.0.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak_wsd_from_50000_to_52500_5.0.0.py",
+          ),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_Enhance_18.0.0_256k_FixBBHLeak_wsd_from_50000_to_52500_5.0.0.py",
         startStep: 50000,
@@ -906,7 +930,9 @@ const graph = [
     desc: "pretrain 2.0.0",
     configs: [
       {
-        configContent: "config/official_InternLM2.5_20B_2.0.0.py",
+        configContent: await readContentAsync(
+          getAbsolutePath("config/official_InternLM2.5_20B_2.0.0.py"),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_2.0.0.py",
         startStep: 79000,
@@ -963,7 +989,9 @@ const graph = [
       "faa8aa6f971b54666bfd1ee2c5a6f941c7888f51f859cc41f605fc113c661cd4",
     configs: [
       {
-        configContent: "config/official_InternLM2.5_20B_2.1.0.py",
+        configContent: await readContentAsync(
+          getAbsolutePath("config/official_InternLM2.5_20B_2.1.0.py"),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_2.1.0.py",
         startStep: 83000,
@@ -1000,7 +1028,9 @@ const graph = [
       "07d558df3e6d5affdb57f1dbc5dd8cd5a9b3eac54c3dff213e9eb96bfc23a0cb",
     configs: [
       {
-        configContent: "config/official_InternLM2.5_20B_2.2.0.py",
+        configContent: await readContentAsync(
+          getAbsolutePath("config/official_InternLM2.5_20B_2.2.0.py"),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_2.2.0.py",
         startStep: 85000,
@@ -1087,8 +1117,11 @@ const graph = [
       "07d558df3e6d5affdb57f1dbc5dd8cd5a9b3eac54c3dff213e9eb96bfc23a0cb",
     configs: [
       {
-        configContent:
-          "config/official_InternLM2.5_20B_2.2.0_with_layer_freeze.py",
+        configContent: await readContentAsync(
+          getAbsolutePath(
+            "config/official_InternLM2.5_20B_2.2.0_with_layer_freeze.py",
+          ),
+        ),
         configPath:
           "/ailab_internlm_data/share_data/zhangshuo/codes/train/official_20240513/configs/InternLM2.5/official_InternLM2.5_20B_2.2.0_with_layer_freeze.py",
         startStep: 85000,
@@ -1199,194 +1232,78 @@ const graph = [
   },
 ];
 
-async function readContentAsync(relativePath: string): Promise<string> {
-  try {
-    const absolutePath = join(
-      fileURLToPath(dirname(import.meta.url)),
-      relativePath,
-    );
-    const data = await readFile(absolutePath, "utf8");
-    return data;
-  } catch (error) {
-    console.error("读取文件出错:", error);
-    throw error;
-  }
-}
+const groups = [
+  {
+    name: "Admin",
+  },
+  {
+    name: "User",
+  },
+];
 
-export async function seed(db: Database) {
-  const taskCollection = db.collection("TrainTask");
-  const configCollection = db.collection("TrainConfig");
-  const ckptCollection = db.collection("Checkpoint");
-  const stepCollection = db.collection("CkptStep");
-  const resumeCollection = db.collection("ResumeCkpt");
+const users = [
+  {
+    name: "Admin",
+    email: "admin@nextmail.com",
+    password: "123456",
+    groups: ["Admin"],
+  },
+  {
+    name: "User",
+    email: "user@nextmail.com",
+    password: "123456",
+  },
+  {
+    name: "Evil Rabbit",
+    email: "evil@rabbit.com",
+    password: "evil-rabbit",
+  },
+  {
+    name: "Delba de Oliveira",
+    email: "delba@oliveira.com",
+    password: "delba-de-oliveira",
+  },
+  {
+    name: "Lee Robinson",
+    email: "lee@robinson.com",
+    password: "lee-robinson",
+  },
+  {
+    name: "Michael Novotny",
+    email: "michael@novotny.com",
+    password: "michael-novotny",
+  },
+  {
+    name: "Amy Burns",
+    email: "amy@burns.com",
+    password: "amy-burns",
+  },
+  {
+    name: "Balazs Orban",
+    email: "balazs@orban.com",
+    password: "balazs-orban",
+  },
+];
 
-  const trx = await db.beginTransaction([
-    taskCollection,
-    configCollection,
-    ckptCollection,
-    stepCollection,
-    resumeCollection,
-  ]);
+export async function seed() {
+  const userDTO = container.get<dto.UserDatasource>(dto.UserDatasource);
+  const groupDTO = container.get<dto.GroupDatasource>(dto.GroupDatasource);
+  const memberDTO = container.get<dto.MemberOfDatasource>(
+    dto.MemberOfDatasource,
+  );
+  const roadmapService = container.get<RoadmapService>(RoadmapService);
 
-  const resumeMap = new Map<string, string[]>();
-  let allCkptMap = new Map<string, string>();
-  let lastCkpt = {
-    _id: "",
-    step: 0,
-    tokens: 0,
-    saveTime: new Date(),
-  };
-  for (const { loadCkpt, configs, ...task } of graph) {
-    const savingTask = new model.TrainTask(
-      "_key",
-      "_id",
-      "_rev",
-      task.name,
-      task.type as "pretrain" | "sft" | "rlhf_rm" | "rlhf_ppo",
-      task.desc,
-    );
-    const savedTask = <model.TrainTask>(
-      await trx.step(() =>
-        taskCollection.save(savingTask.saveDocument, { returnNew: true }),
-      )
-    );
-    const configMap = new Map<string, string[]>();
-    const ckptMap = new Map<string, string>();
-    if (loadCkpt) {
-      if (allCkptMap.has(loadCkpt)) {
-        trx.step(() =>
-          resumeCollection.save({
-            _from: allCkptMap.get(loadCkpt)!,
-            _to: savedTask._id,
-          }),
-        );
-      } else if (resumeMap.has(loadCkpt)) {
-        const resumeTask = resumeMap.get(loadCkpt)!;
-        resumeTask.push(savedTask._id);
-        resumeMap.set(loadCkpt, resumeTask);
-      } else {
-        resumeMap.set(loadCkpt, [savedTask._id]);
+  await roadmapService.saveRoadmapOffline(graph);
+  const groupMap = await groupDTO.createMany(groups);
+  const userMap = await userDTO.createMany(users);
+  for (const [key, value] of userMap) {
+    if (groupMap.has(key)) {
+      for (const user of value) {
+        memberDTO.createOne({
+          _from: user,
+          _to: groupMap.get(key),
+        });
       }
     }
-    for (const { ckpts, ...config } of configs) {
-      const configContent = await readContentAsync(config.configContent);
-      let savedConfig = new model.TrainConfig(
-        "_key",
-        "_id",
-        "_rev",
-        savedTask._id,
-        configContent,
-        config.startStep,
-      );
-      if ("loadCkpt" in config) {
-        const configLoadCkpt = config.loadCkpt;
-        savedConfig = <model.TrainConfig>await trx.step(() =>
-          configCollection.save(savedConfig.saveDocument, {
-            returnNew: true,
-          }),
-        );
-        if (configLoadCkpt) {
-          if (allCkptMap.has(configLoadCkpt)) {
-            throw new Error(
-              `${config.configPath} should not be resumed from checkpoint ${configLoadCkpt}, but a checkpoint under task ${savedTask.name}.`,
-            );
-          } else if (ckptMap.has(configLoadCkpt)) {
-            trx.step(() =>
-              resumeCollection.save({
-                _from: ckptMap.get(configLoadCkpt)!,
-                _to: savedConfig._id,
-              }),
-            );
-          } else if (configMap.has(configLoadCkpt)) {
-            const resumeConfig = configMap.get(configLoadCkpt)!;
-            resumeConfig.push(savedConfig._id);
-            configMap.set(configLoadCkpt, resumeConfig);
-          } else {
-            configMap.set(configLoadCkpt, [savedConfig._id]);
-          }
-        }
-      } else {
-        savedConfig = <model.TrainConfig>await trx.step(() =>
-          configCollection.save(savedConfig.saveDocument, {
-            returnNew: true,
-          }),
-        );
-        trx.step(() =>
-          resumeCollection.save({
-            _from: savedTask._id,
-            _to: savedConfig._id,
-          }),
-        );
-      }
-
-      lastCkpt = {
-        _id: savedConfig._id,
-        step: savedConfig.startStep || 0,
-        tokens: 0,
-        saveTime: new Date(), // startTime from TrainProc
-      };
-
-      ckpts.sort((a, b) => a.step - b.step);
-      for (const { tokens, ...ckpt } of ckpts) {
-        const savingCkpt = new model.Checkpoint(
-          "_key",
-          "_id",
-          "_rev",
-          ckpt.md5,
-          savedConfig._id,
-          ckpt.step,
-          ckpt.path,
-          "saveTime" in ckpt ? ckpt.saveTime : new Date(),
-          "isSnapshot" in ckpt ? ckpt.isSnapshot : false,
-          "isDelivery" in ckpt ? ckpt.isDelivery : false,
-          "isRewardModel" in ckpt ? ckpt.isRewardModel : false,
-        );
-        const savedCkpt = <model.Checkpoint>(
-          await trx.step(() =>
-            ckptCollection.save(savingCkpt.saveDocument, { returnNew: true }),
-          )
-        );
-        trx.step(() =>
-          stepCollection.save({
-            _from: lastCkpt._id,
-            _to: savedCkpt._id,
-            steps: ckpt.step - lastCkpt.step,
-            tokens: tokens - lastCkpt.tokens,
-            duration: moment.duration(
-              moment(savingCkpt.saveTime).diff(moment(lastCkpt.saveTime)),
-            ),
-          }),
-        );
-        ckptMap.set(ckpt.md5, savedCkpt._id);
-        if (resumeMap.has(ckpt.md5)) {
-          for (const taskId in resumeMap.get(ckpt.md5)) {
-            trx.step(() =>
-              resumeCollection.save({
-                _from: savedCkpt._id,
-                _to: taskId,
-              }),
-            );
-          }
-        }
-        if (configMap.has(ckpt.md5)) {
-          for (const configId in configMap.get(ckpt.md5)) {
-            trx.step(() =>
-              resumeCollection.save({
-                _from: savedCkpt._id,
-                _to: configId,
-              }),
-            );
-          }
-        }
-        lastCkpt = {
-          _id: savedCkpt._id,
-          step: savingCkpt.step,
-          tokens: tokens,
-          saveTime: savingCkpt.saveTime,
-        };
-      }
-    }
-    allCkptMap = new Map<string, string>([...allCkptMap, ...ckptMap]);
   }
-  await trx.commit();
 }

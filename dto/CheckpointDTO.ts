@@ -22,4 +22,33 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
     // return this.executeQuery<Checkpoint>(query);
     return this.findManyByKeys({ config: config_id });
   }
+
+  createOne(newDoc: any) {
+    const savingCkpt = new Checkpoint(
+      "_key",
+      "_id",
+      "_rev",
+      newDoc.md5,
+      newDoc.config,
+      newDoc.step,
+      newDoc.path,
+      "saveTime" in newDoc ? newDoc.saveTime : new Date(),
+      "isSnapshot" in newDoc ? newDoc.isSnapshot : false,
+      "isDelivery" in newDoc ? newDoc.isDelivery : false,
+      "isRewardModel" in newDoc ? newDoc.isRewardModel : false,
+    );
+    return super.createOne(savingCkpt.saveDocument);
+  }
+
+  async findOnlyOneByMd5(md5: string) {
+    const ckpt = await this.findManyByKeys({ md5 });
+    if (ckpt.length == 0) {
+      throw new Error(`No Checkpoint ${md5} found.`);
+    } else if (ckpt.length > 1) {
+      throw new Error(
+        `Conflict MD5 ${md5} for Checkpoints ${ckpt.map((c) => c._id)}.`,
+      );
+    }
+    return ckpt[0];
+  }
 }

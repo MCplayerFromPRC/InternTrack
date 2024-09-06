@@ -15,8 +15,8 @@ export const CkptStepType: ObjectRef<CkptStep> = builder.objectType(CkptStep, {
     revision: t.exposeString("_rev"),
     from: t.exposeString("_from"),
     to: t.exposeString("_to"),
-    steps: t.expose("steps", { type: "PositiveInt" }),
-    tokens: t.expose("tokens", { type: "PositiveInt" }),
-    duration: t.expose("duration", { type: "Duration" }),
+    steps: t.expose("steps", { type: "PositiveInt", nullable: true }),
+    tokens: t.expose("tokens", { type: "PositiveInt", nullable: true }),
+    duration: t.expose("duration", { type: "Duration", nullable: true }),
   }),
 });

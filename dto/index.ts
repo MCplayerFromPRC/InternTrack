@@ -11,3 +11,6 @@ export * from "./TrainTaskDTO";
 export * from "./TrainConfigDTO";
 export * from "./TrainLogDTO";
 export * from "./TrainProcDTO";
+export * from "./Auth/UserDTO";
+export * from "./Auth/GroupDTO";
+export * from "./Auth/MemberOfDTO";

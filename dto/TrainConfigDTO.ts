@@ -40,4 +40,18 @@ export class TrainConfigDatasource extends BaseCollectionDatasource<TrainConfig>
     }
     return {} as TrainConfig;
   }
+
+  createOne(newDoc: any) {
+    const savingTask = {
+      task: newDoc.task,
+      configContent: newDoc.configContent,
+      startStep: newDoc.startStep || 0,
+      startToken: newDoc.startToken || 0,
+      modelConfig: newDoc.modelConfig,
+      dataConfig: newDoc.dataConfig,
+      optimizerConfig: newDoc.optimizerConfig,
+      parallelConfig: newDoc.parallelConfig,
+    };
+    return super.createOne(savingTask);
+  }
 }

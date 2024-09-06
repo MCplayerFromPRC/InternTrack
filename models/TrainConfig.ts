@@ -7,6 +7,7 @@ export class TrainConfig extends NodeDocument {
   task!: string;
   configContent: string;
   startStep: number;
+  startToken: number;
   modelConfig: Record<string, any>;
   dataConfig: Record<string, any>;
   optimizerConfig: Record<string, any>;
@@ -19,6 +20,7 @@ export class TrainConfig extends NodeDocument {
     task: string,
     configContent: string,
     startStep: number = 0,
+    startToken: number = 0,
     modelConfig: Record<string, any> = {},
     dataConfig: Record<string, any> = {},
     optimizerConfig: Record<string, any> = {},
@@ -28,6 +30,7 @@ export class TrainConfig extends NodeDocument {
     this.task = task;
     this.configContent = configContent;
     this.startStep = startStep;
+    this.startToken = startToken;
     this.modelConfig = modelConfig;
     this.dataConfig = dataConfig;
     this.optimizerConfig = optimizerConfig;
