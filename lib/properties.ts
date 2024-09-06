@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import pino from "pino";
 import { Database } from "arangojs";
 import { GraphQLSchema } from "graphql/type";

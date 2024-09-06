@@ -1,22 +1,30 @@
 # InternTrack
 
-## example app template
+## Docker启动
 
-`npx create-next-app@latest interntrack --eslint --src-dir --use-pnpm --example "https://github.com/vercel/next-learn/tree/main/dashboard/final-example"`
+#### 1. 拉取镜像
 
-## next-ws init
+`docker pull mcplayerfromprc/interntrack`
 
-`npx next-ws-cli@latest patch`
+#### 2. 创建镜像
 
-## kill port
+`docker run -itd --restart=always -e ARANGO_ROOT_PASSWORD=[your-password] -p 8529:8529 -p 3000:3000 mcplayerfromprc/interntrack`
 
-`npx kill-port 3000`
+#### 3. 进入容器
+
+`docker exec -it [container_id] bash`
+
+#### 4. 启动服务端
+
+`nohup pnpm dev &`
 
 ## Documents
 
 [InternTrack文档](https://aicarrier.feishu.cn/wiki/DNRuw3XVSizmVekml0gcnncnnzg?from=from_copylink)
 
-## Next.js App Router Course - Final
+![比较配置文件](./static/images/overview.png)
+
+## Scaffold - Next.js App Router Course - Final
 
 This is the final template for the Next.js App Router Course. It contains the final code for the dashboard application.
 
