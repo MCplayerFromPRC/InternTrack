@@ -691,31 +691,51 @@ export class RoadmapService {
       this.resumeCkptDTO.collection,
       this.logDTO.collection,
     ]);
+    let count = 0;
     const taskList = [];
     const taskMap = new Map<string, string[]>();
     let allCkptMap = new Map<string, string>();
     for (const { loadCkpt, configs, ...task } of graph) {
-      const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
-      taskList.push(savedTask);
-      if (loadCkpt) {
-        await this.createResumeCkptByResume(
-          savedTask,
-          loadCkpt,
-          allCkptMap,
-          taskMap,
-          trx,
+      count++;
+      if (configs.length === 0) {
+        throw new Error(`Nothing to save for the ${count}th data.`);
+      }
+      let savedTaskId;
+      if ("name" in task) {
+        const savedTask = await trx.step(() =>
+          this.trainTaskDTO.createOne(task),
         );
+        taskList.push(savedTask);
+        if (loadCkpt) {
+          await this.createResumeCkptByResume(
+            savedTask,
+            loadCkpt,
+            allCkptMap,
+            taskMap,
+            trx,
+          );
+        }
+        savedTaskId = savedTask._id;
+      } else {
+        if (!loadCkpt) {
+          throw new Error(
+            `Must have "loadCkpt" for no "name" data as the ${count}th one.`,
+          );
+        }
+        const ckpt = await this.ckptDTO.findOnlyOneByMd5(loadCkpt);
+        const lastConfig = await this.trainConfigDTO.findOneById(ckpt.config);
+        savedTaskId = lastConfig!.task;
       }
       const configMap = new Map<string, string[]>();
       const ckptMap = new Map<string, string>();
-      const configIter = this.createTrainConfigs(configs, savedTask, trx);
+      const configIter = this.createTrainConfigs(configs, savedTaskId, trx);
       for await (const config of configIter) {
         if ("loadCkpt" in config && config.loadCkpt) {
           const configLoadCkpt = config.loadCkpt;
           if (configLoadCkpt) {
             if (allCkptMap.has(configLoadCkpt)) {
               throw new Error(
-                `${config.configPath} should not be resumed from checkpoint ${configLoadCkpt}, but a checkpoint under task ${savedTask.name}.`,
+                `${config.configPath} should not be resumed from checkpoint ${configLoadCkpt}, but a checkpoint under ${count}th task.`,
               );
             }
             await this.createResumeCkptByResume(
@@ -729,7 +749,7 @@ export class RoadmapService {
         } else {
           await trx.step(() =>
             this.resumeCkptDTO.createOne({
-              _from: savedTask._id,
+              _from: savedTaskId,
               _to: config._id,
             }),
           );
@@ -801,18 +821,14 @@ export class RoadmapService {
       this.logDTO.collection,
     ]);
     const [task, taskLeft] = splitObject<TrainTask>(procInfo);
-    const [config, configLeft] = splitObject<TrainConfig>(
-      taskLeft as Required<TrainConfig>,
-    );
-    const [log, proc] = splitObject<TrainLog>(configLeft as Required<TrainLog>);
     if (task) {
       const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
       if (ckptMd5) {
         await this.saveResumeCkpt(ckptMd5, [savedTask._id], trx);
       }
       const configIter = this.createTrainConfigs(
-        [{ ...config, ...log }],
-        savedTask,
+        [taskLeft],
+        savedTask._id,
         trx,
       );
       for await (const config of configIter) {
@@ -823,7 +839,11 @@ export class RoadmapService {
           }),
         );
         trx.step(() =>
-          this.procDTO.createOne({ md5: procMd5, config: config._id, ...proc }),
+          this.procDTO.createOne({
+            md5: procMd5,
+            config: config._id,
+            ...config.proc,
+          }),
         );
         savedConfig = config;
       }
@@ -835,16 +855,15 @@ export class RoadmapService {
       } else {
         const ckpt = await this.ckptDTO.findOnlyOneByMd5(ckptMd5);
         const lastConfig = await this.trainConfigDTO.findOneById(ckpt.config);
-        const task = await this.trainTaskDTO.findOneById(lastConfig!.task);
         const configIter = this.createTrainConfigs(
-          [{ ...config, ...log }],
-          task!,
+          [taskLeft],
+          lastConfig!.task,
           trx,
         );
         for await (const config of configIter) {
           await trx.step(() =>
             this.resumeCkptDTO.createOne({
-              _from: task!._id,
+              _from: lastConfig!.task,
               _to: config._id,
             }),
           );
@@ -852,7 +871,7 @@ export class RoadmapService {
             this.procDTO.createOne({
               md5: procMd5,
               config: config._id,
-              ...proc,
+              ...config.proc,
             }),
           );
           savedConfig = config;
@@ -957,18 +976,17 @@ export class RoadmapService {
 
   async *createTrainConfigs(
     configs: any,
-    savedTask: TrainTask,
+    taskId: string,
     trx: Transaction | null = null,
   ) {
-    for (const {
-      ckpts,
-      loadCkpt,
-      configPath,
-      tbFolder,
-      logFolder,
-      ...config
-    } of configs) {
-      config.task = savedTask._id;
+    for (const { ckpts, loadCkpt, ...taskLeft } of configs) {
+      const [config, configLeft] = splitObject<TrainConfig>(
+        taskLeft as Required<TrainConfig>,
+      );
+      const [log, proc] = splitObject<TrainLog>(
+        configLeft as Required<TrainLog>,
+      );
+      config.task = taskId;
       let savedConfig;
       if (trx) {
         savedConfig = await trx.step(() =>
@@ -977,25 +995,18 @@ export class RoadmapService {
       } else {
         savedConfig = await this.trainConfigDTO.createOne(config);
       }
-      if (configPath || tbFolder || logFolder) {
-        const log = {
-          config: savedConfig._id,
-          configPath,
-          tbFolder,
-          logFolder,
-        };
-        if (trx) {
-          await trx.step(() => this.logDTO.createOne(log));
-        } else {
-          await this.logDTO.createOne(log);
-        }
+      log.config = savedConfig._id;
+      let savedLog;
+      if (trx) {
+        savedLog = await trx.step(() => this.logDTO.createOne(log));
+      } else {
+        savedLog = await this.logDTO.createOne(log);
       }
       yield {
         ckpts,
         loadCkpt,
-        configPath,
-        tbFolder,
-        logFolder,
+        proc,
+        log: savedLog,
         ...savedConfig,
       };
     }

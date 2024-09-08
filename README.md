@@ -4,11 +4,11 @@
 
 #### 1. 拉取镜像
 
-`docker pull mcplayerfromprc/interntrack`
+`docker pull mcplayerfromprc/interntrack:v0.1`
 
 #### 2. 创建镜像
 
-`docker run -itd --restart=always -e ARANGO_ROOT_PASSWORD=[your-password] -p 8529:8529 -p 3000:3000 mcplayerfromprc/interntrack`
+`docker run -itd --restart=always -e ARANGO_ROOT_PASSWORD=[your-password] -p 8529:8529 -p 3000:3000 mcplayerfromprc/interntrack:v0.1`
 
 #### 3. 进入容器
 

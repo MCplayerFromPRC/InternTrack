@@ -1,6 +1,12 @@
 # docker buildx build -f docker/Dockerfile -t interntrack:v0.1 .
 # docker run -itd --restart=always -e ARANGO_ROOT_PASSWORD=test123 -p 8529:8529 -p 3000:3000 interntrack:v0.1
 
+# aliyun & volc
+# cd /app && export ARANGO_ROOT_PASSWORD=PJlab@2024
+# ARANGODB_DEFAULT_ROOT_PASSWORD="$ARANGO_ROOT_PASSWORD" nohup arangod --config /etc/arangodb3/arangod.conf --server.endpoint tcp://127.0.0.1:8529 --server.authentication true --log.file /tmp/init-log --log.foreground-tty false &
+# arangosh --server.endpoint=tcp://127.0.0.1:8529 --server.authentication true --server.password=$ARANGO_ROOT_PASSWORD --javascript.execute-string "db._createDatabase(\"interntrack\");"
+# nohup pnpm dev &
+
 # frpc https://github.com/fatedier/frp/blob/dev/dockerfiles/Dockerfile-for-frpc
 FROM golang:1.22 AS building
 

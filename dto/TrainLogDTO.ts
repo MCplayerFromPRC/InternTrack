@@ -16,4 +16,21 @@ export class TrainLogDatasource extends BaseCollectionDatasource<TrainLog> {
   ) {
     super(db, db.collection("TrainLog"), cache, options);
   }
+
+  async createOne(newDoc: any) {
+    if (
+      "configPath" in newDoc ||
+      "tbFolder" in newDoc ||
+      "logFolder" in newDoc
+    ) {
+      const savingLog = {
+        config: newDoc.config,
+        configPath: newDoc.configPath,
+        tbFolder: newDoc.tbFolder,
+        logFolder: newDoc.logFolder,
+      };
+      return super.createOne(savingLog);
+    }
+    return {};
+  }
 }

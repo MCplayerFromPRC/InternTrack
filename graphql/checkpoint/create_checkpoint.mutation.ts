@@ -8,7 +8,7 @@ import { CheckpointType } from "./checkpoint.type";
 export const CkptInput = builder.inputType("CkptInput", {
   fields: (t) => ({
     md5: t.string({ required: true }),
-    config: t.string({ required: true }),
+    config: t.string({ required: false }),
     step: t.int({ required: true }),
     tokens: t.int({ required: false }),
     path: t.string({ required: true }),

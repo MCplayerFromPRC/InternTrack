@@ -106,8 +106,10 @@ export function validateEnum<T extends string>(
   }
 }
 
-export function splitObject<T>(obj: Required<T>) {
+export function splitObject<T>(
+  obj: Required<T>,
+): [Partial<T>, Omit<T, keyof T>] {
   const included = obj as Pick<T, keyof T>;
   const excluded = obj as Omit<T, keyof T>;
-  return [included, excluded];
+  return [included as T, excluded];
 }

@@ -23,7 +23,7 @@ export const TrainConfigInput = builder.inputType("TrainConfigInput", {
   }),
 });
 
-const CombinedInputType = builder.inputType("CombinedInputType", {
+export const CombinedInputType = builder.inputType("CombinedInputType", {
   fields: (t) => {
     const fieldsMap: any = {};
     builder.configStore
