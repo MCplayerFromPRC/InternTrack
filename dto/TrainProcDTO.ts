@@ -18,6 +18,31 @@ export class TrainProcDatasource extends BaseCollectionDatasource<TrainProc> {
     super(db, db.collection("TrainProc"), cache, options);
   }
 
+  async createOne(newDoc: any) {
+    const proc = await this.findManyByKeys({ md5: newDoc.md5 });
+    if (proc.length > 0) {
+      throw new Error(
+        `MD5 ${newDoc.md5} for Process already exist ${proc.map((p) => p._id)}.`,
+      );
+    }
+    const savingProc = new TrainProc(
+      "_key",
+      "_id",
+      "_rev",
+      newDoc.md5,
+      newDoc.config,
+      newDoc.cluster,
+      newDoc.envVar,
+      newDoc.gpuNum,
+      newDoc.startTime,
+      newDoc.endtime,
+      newDoc.currentStep,
+      newDoc.totalStep,
+      newDoc.state,
+    );
+    return super.createOne(savingProc.saveDocument);
+  }
+
   async findOnlyOneByConfig(config: string) {
     const proc = await this.findManyByKeys({ config });
     if (proc.length == 0) {

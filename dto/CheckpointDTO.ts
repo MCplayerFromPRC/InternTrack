@@ -23,7 +23,13 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
     return this.findManyByKeys({ config: config_id });
   }
 
-  createOne(newDoc: any) {
+  async createOne(newDoc: any) {
+    const ckpt = await this.findManyByKeys({ md5: newDoc.md5 });
+    if (ckpt.length > 0) {
+      throw new Error(
+        `MD5 ${newDoc.md5} for Checkpoint already exist ${ckpt.map((c) => c._id)}.`,
+      );
+    }
     const savingCkpt = new Checkpoint(
       "_key",
       "_id",

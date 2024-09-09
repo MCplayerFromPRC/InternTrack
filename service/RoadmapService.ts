@@ -889,6 +889,7 @@ export class RoadmapService {
     ]);
     const proc = await this.procDTO.findOnlyOneByMd5(procMd5);
     const lastCkpt = await this.findLastCkptByConfig(proc.config);
+    ckptInfo.config = proc.config;
     const ckpt = await trx.step(() => this.ckptDTO.createOne(ckptInfo));
     await trx.step(() => this.ckptStepDTO.createStepByCkpts(lastCkpt, ckpt));
     await trx.commit();

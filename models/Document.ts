@@ -2,6 +2,7 @@
 /* SPDX-License-Identifier: MIT */
 
 import { Document, Edge } from "arangojs/documents";
+import { removeNullProperties } from "@/lib/utils";
 
 // for ([(Checkpoint -> TrainConfig), (Checkpoint -> EvalResult)])
 export class NodeDocument implements Document {
@@ -18,7 +19,7 @@ export class NodeDocument implements Document {
   get saveDocument(): object {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _key, _id, _rev, ...others } = this;
-    return others;
+    return removeNullProperties(others);
   }
 }
 
