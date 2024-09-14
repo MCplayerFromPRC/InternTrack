@@ -37,6 +37,9 @@ pnpm-lock.yaml
 .env*.local
 .env
 
+# nohup
+nohup.out
+
 # vercel
 .vercel
 

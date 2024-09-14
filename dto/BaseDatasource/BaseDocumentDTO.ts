@@ -128,6 +128,17 @@ export class BaseCollectionDatasource<TData extends NodeDocument>
     }
   }
 
+  async createOrUpdateOne(
+    newDoc: Partial<TData & { _id: string }>,
+    options = {},
+  ) {
+    if ("_id" in newDoc) {
+      return this.updateOne(newDoc as any, options);
+    } else {
+      return this.createOne(newDoc as any, options);
+    }
+  }
+
   async replaceOne(
     id: string,
     replaceDoc: Partial<TData>,

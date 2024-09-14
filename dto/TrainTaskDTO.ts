@@ -45,12 +45,24 @@ export class TrainTaskDatasource extends BaseCollectionDatasource<TrainTask> {
     default: "pretrain",
   };
 
-  createOne(newDoc: any) {
+  createOne(newDoc: any, options = {}) {
     const savingTask = {
       name: newDoc.name,
       type: validateEnum(newDoc.type, this.ModelTypeEnum),
       desc: newDoc.desc,
     };
-    return super.createOne(savingTask);
+    return super.createOne(savingTask, options);
+  }
+
+  async createOrUpdateOne(newDoc: Partial<TrainTask>, options = {}) {
+    const tasks = await this.findManyByKeys({ name: newDoc.name });
+    if (tasks.length == 0) {
+      return this.createOne(newDoc, options);
+    } else if (tasks.length == 1) {
+      newDoc._id = tasks[0]._id;
+      return this.updateOne(newDoc as any, options);
+    } else {
+      throw new Error(`More than one tasks with name ${newDoc.name} found`);
+    }
   }
 }

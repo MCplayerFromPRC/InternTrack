@@ -53,13 +53,13 @@ export async function createTrainTaskMutation(
     } else {
       if (loadCkpt) {
         const ckpt = await dataSources.ckpts.findOnlyOneByMd5(loadCkpt);
-        task = await dataSources.task.createOne(trainTask);
-        await dataSources.resumeCkpt.createOne({
+        task = await dataSources.task.createOrUpdateOne(trainTask);
+        await dataSources.resumeCkpt.createOrUpdateOne({
           _from: ckpt._id,
           _to: task._id,
         });
       } else {
-        task = await dataSources.task.createOne(trainTask);
+        task = await dataSources.task.createOrUpdateOne(trainTask);
       }
     }
 

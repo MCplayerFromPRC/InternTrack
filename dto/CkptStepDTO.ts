@@ -35,7 +35,7 @@ export class CkptStepDatasource extends BaseCollectionDatasource<CkptStep> {
           : undefined,
     };
     if (save) {
-      return this.createOne(step);
+      return this.createOrUpdateOne(step);
     } else {
       return step;
     }

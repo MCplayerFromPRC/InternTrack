@@ -49,7 +49,7 @@ export async function createCkptMutation(args: any, context: GQLContext) {
         dataSource.ckpts.collection,
         dataSource.ckptStep.collection,
       ]);
-      const saveCkpt = dataSource.ckpts.createOne(checkpoint);
+      const saveCkpt = dataSource.ckpts.createOrUpdateOne(checkpoint);
       ckpt = await trx.step(() => saveCkpt!);
       ckpt.tokens = checkpoint.tokens;
       const lastCkpt = await dataSource.roadmap.findLastCkptByConfig(

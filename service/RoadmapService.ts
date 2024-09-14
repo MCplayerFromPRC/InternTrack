@@ -703,7 +703,7 @@ export class RoadmapService {
       let savedTaskId;
       if ("name" in task) {
         const savedTask = await trx.step(() =>
-          this.trainTaskDTO.createOne(task),
+          this.trainTaskDTO.createOrUpdateOne(task),
         );
         taskList.push(savedTask);
         if (loadCkpt) {
@@ -748,7 +748,7 @@ export class RoadmapService {
           }
         } else {
           await trx.step(() =>
-            this.resumeCkptDTO.createOne({
+            this.resumeCkptDTO.createOrUpdateOne({
               _from: savedTaskId,
               _to: config._id,
             }),
@@ -822,7 +822,9 @@ export class RoadmapService {
     ]);
     const [task, taskLeft] = splitObject<TrainTask>(procInfo);
     if (task) {
-      const savedTask = await trx.step(() => this.trainTaskDTO.createOne(task));
+      const savedTask = await trx.step(() =>
+        this.trainTaskDTO.createOrUpdateOne(task),
+      );
       if (ckptMd5) {
         await this.saveResumeCkpt(ckptMd5, [savedTask._id], trx);
       }
@@ -832,14 +834,14 @@ export class RoadmapService {
         trx,
       );
       for await (const config of configIter) {
-        trx.step(() =>
-          this.resumeCkptDTO.createOne({
+        await trx.step(() =>
+          this.resumeCkptDTO.createOrUpdateOne({
             _from: savedTask._id,
             _to: config._id,
           }),
         );
-        trx.step(() =>
-          this.procDTO.createOne({
+        await trx.step(() =>
+          this.procDTO.createOrUpdateOne({
             md5: procMd5,
             config: config._id,
             ...config.proc,
@@ -862,13 +864,13 @@ export class RoadmapService {
         );
         for await (const config of configIter) {
           await trx.step(() =>
-            this.resumeCkptDTO.createOne({
+            this.resumeCkptDTO.createOrUpdateOne({
               _from: lastConfig!.task,
               _to: config._id,
             }),
           );
           await trx.step(() =>
-            this.procDTO.createOne({
+            this.procDTO.createOrUpdateOne({
               md5: procMd5,
               config: config._id,
               ...config.proc,
@@ -890,7 +892,7 @@ export class RoadmapService {
     const proc = await this.procDTO.findOnlyOneByMd5(procMd5);
     const lastCkpt = await this.findLastCkptByConfig(proc.config);
     ckptInfo.config = proc.config;
-    const ckpt = await trx.step(() => this.ckptDTO.createOne(ckptInfo));
+    const ckpt = await trx.step(() => this.ckptDTO.createOrUpdateOne(ckptInfo));
     await trx.step(() => this.ckptStepDTO.createStepByCkpts(lastCkpt, ckpt));
     await trx.commit();
     return ckpt;
@@ -908,9 +910,9 @@ export class RoadmapService {
         _to: outEdge,
       };
       if (trx) {
-        await trx.step(() => this.resumeCkptDTO.createOne(resume));
+        await trx.step(() => this.resumeCkptDTO.createOrUpdateOne(resume));
       } else {
-        await this.resumeCkptDTO.createOne(resume);
+        await this.resumeCkptDTO.createOrUpdateOne(resume);
       }
     }
   }
@@ -921,14 +923,16 @@ export class RoadmapService {
     trx: Transaction | null = null,
   ) {
     if (trx) {
-      const savedCkpt = await trx.step(() => this.ckptDTO.createOne(ckpt));
+      const savedCkpt = await trx.step(() =>
+        this.ckptDTO.createOrUpdateOne(ckpt),
+      );
       ckptStep._to = savedCkpt._id;
-      await trx.step(() => this.ckptStepDTO.createOne(ckptStep));
+      await trx.step(() => this.ckptStepDTO.createOrUpdateOne(ckptStep));
       return savedCkpt;
     } else {
-      const savedCkpt = await this.ckptDTO.createOne(ckpt);
+      const savedCkpt = await this.ckptDTO.createOrUpdateOne(ckpt);
       ckptStep._to = savedCkpt._id;
-      await this.ckptStepDTO.createOne(ckptStep);
+      await this.ckptStepDTO.createOrUpdateOne(ckptStep);
       return savedCkpt;
     }
   }
@@ -991,17 +995,17 @@ export class RoadmapService {
       let savedConfig;
       if (trx) {
         savedConfig = await trx.step(() =>
-          this.trainConfigDTO.createOne(config),
+          this.trainConfigDTO.createOrUpdateOne(config),
         );
       } else {
-        savedConfig = await this.trainConfigDTO.createOne(config);
+        savedConfig = await this.trainConfigDTO.createOrUpdateOne(config);
       }
       log.config = savedConfig._id;
       let savedLog;
       if (trx) {
-        savedLog = await trx.step(() => this.logDTO.createOne(log));
+        savedLog = await trx.step(() => this.logDTO.createOrUpdateOne(log));
       } else {
-        savedLog = await this.logDTO.createOne(log);
+        savedLog = await this.logDTO.createOrUpdateOne(log);
       }
       yield {
         ckpts,
@@ -1028,9 +1032,9 @@ export class RoadmapService {
           _to: taskId,
         };
         if (trx) {
-          await trx.step(() => this.resumeCkptDTO.createOne(resume));
+          await trx.step(() => this.resumeCkptDTO.createOrUpdateOne(resume));
         } else {
-          await this.resumeCkptDTO.createOne(resume);
+          await this.resumeCkptDTO.createOrUpdateOne(resume);
         }
       }
       taskMap.delete(node.md5);
@@ -1042,9 +1046,9 @@ export class RoadmapService {
           _to: configId,
         };
         if (trx) {
-          await trx.step(() => this.resumeCkptDTO.createOne(resume));
+          await trx.step(() => this.resumeCkptDTO.createOrUpdateOne(resume));
         } else {
-          await this.resumeCkptDTO.createOne(resume);
+          await this.resumeCkptDTO.createOrUpdateOne(resume);
         }
       }
       configMap.delete(node.md5);
@@ -1064,9 +1068,9 @@ export class RoadmapService {
         _to: node._id,
       };
       if (trx) {
-        await trx.step(() => this.resumeCkptDTO.createOne(resume));
+        await trx.step(() => this.resumeCkptDTO.createOrUpdateOne(resume));
       } else {
-        await this.resumeCkptDTO.createOne(resume);
+        await this.resumeCkptDTO.createOrUpdateOne(resume);
       }
     } else if (resumeMap.has(ckptMd5)) {
       const resumes = resumeMap.get(ckptMd5)!;

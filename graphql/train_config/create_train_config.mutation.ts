@@ -10,6 +10,7 @@ import { CkptInput } from "../checkpoint/create_checkpoint.mutation";
 // 还需补充创建时添加ResumeCkpt请求逻辑
 export const TrainConfigInput = builder.inputType("TrainConfigInput", {
   fields: (t) => ({
+    id: t.string({ required: false }),
     task: t.string({ required: false }),
     configContent: t.string({ required: true }),
     loadCkpt: t.string({ required: false }),

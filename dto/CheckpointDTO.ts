@@ -23,7 +23,7 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
     return this.findManyByKeys({ config: config_id });
   }
 
-  async createOne(newDoc: any) {
+  async createOne(newDoc: any, options = {}) {
     const ckpt = await this.findManyByKeys({ md5: newDoc.md5 });
     if (ckpt.length > 0) {
       throw new Error(
@@ -43,7 +43,7 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
       "isDelivery" in newDoc ? newDoc.isDelivery : false,
       "isRewardModel" in newDoc ? newDoc.isRewardModel : false,
     );
-    return super.createOne(savingCkpt.saveDocument);
+    return super.createOne(savingCkpt.saveDocument, options);
   }
 
   async findOnlyOneByMd5(md5: string) {
@@ -56,5 +56,17 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
       );
     }
     return ckpt[0];
+  }
+
+  async createOrUpdateOne(newDoc: Partial<Checkpoint>, options = {}) {
+    const ckpts = await this.findManyByKeys({ md5: newDoc.md5 });
+    if (ckpts.length == 0) {
+      return this.createOne(newDoc, options);
+    } else if (ckpts.length == 1) {
+      newDoc._id = ckpts[0]._id;
+      return this.updateOne(newDoc as any, options);
+    } else {
+      throw new Error(`More than one checkpoints with md5 ${newDoc.md5} found`);
+    }
   }
 }

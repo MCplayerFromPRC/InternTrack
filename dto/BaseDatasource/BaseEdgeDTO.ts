@@ -36,4 +36,21 @@ export class BaseEdgeCollectionDatasource<
 
     return result;
   }
+
+  async createOrUpdateOne(newDoc: Partial<TData>, options = {}) {
+    const edges = await this.findManyByKeys({
+      _from: newDoc._from,
+      _to: newDoc._to,
+    });
+    if (edges.length == 0) {
+      return this.createOne(newDoc, options);
+    } else if (edges.length == 1) {
+      newDoc._id = edges[0]._id;
+      return this.updateOne(newDoc as any, options);
+    } else {
+      throw new Error(
+        `More than one edges from ${newDoc._from} to ${newDoc._to} found`,
+      );
+    }
+  }
 }

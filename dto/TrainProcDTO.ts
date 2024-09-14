@@ -18,7 +18,7 @@ export class TrainProcDatasource extends BaseCollectionDatasource<TrainProc> {
     super(db, db.collection("TrainProc"), cache, options);
   }
 
-  async createOne(newDoc: any) {
+  async createOne(newDoc: any, options = {}) {
     const proc = await this.findManyByKeys({ md5: newDoc.md5 });
     if (proc.length > 0) {
       throw new Error(
@@ -40,7 +40,7 @@ export class TrainProcDatasource extends BaseCollectionDatasource<TrainProc> {
       newDoc.totalStep,
       newDoc.state,
     );
-    return super.createOne(savingProc.saveDocument);
+    return super.createOne(savingProc.saveDocument, options);
   }
 
   async findOnlyOneByConfig(config: string) {
@@ -65,5 +65,17 @@ export class TrainProcDatasource extends BaseCollectionDatasource<TrainProc> {
       );
     }
     return proc[0];
+  }
+
+  async createOrUpdateOne(newDoc: Partial<TrainProc>, options = {}) {
+    const procs = await this.findManyByKeys({ config: newDoc.config });
+    if (procs.length == 0) {
+      return this.createOne(newDoc, options);
+    } else if (procs.length == 1) {
+      newDoc._id = procs[0]._id;
+      return this.updateOne(newDoc as any, options);
+    } else {
+      throw new Error(`More than one procs with config ${newDoc.config} found`);
+    }
   }
 }

@@ -41,7 +41,7 @@ export class TrainConfigDatasource extends BaseCollectionDatasource<TrainConfig>
     return {} as TrainConfig;
   }
 
-  createOne(newDoc: any) {
+  createOne(newDoc: any, options = {}) {
     const savingTask = {
       task: newDoc.task,
       configContent: newDoc.configContent,
@@ -52,6 +52,6 @@ export class TrainConfigDatasource extends BaseCollectionDatasource<TrainConfig>
       optimizerConfig: newDoc.optimizerConfig,
       parallelConfig: newDoc.parallelConfig,
     };
-    return super.createOne(savingTask);
+    return super.createOne(savingTask, options);
   }
 }
