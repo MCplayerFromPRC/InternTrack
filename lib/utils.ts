@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { readFile } from "fs/promises";
 
 export const formatCurrency = (amount: number) => {
@@ -107,9 +108,21 @@ export function validateEnum<T extends string>(
 }
 
 export function splitObject<T>(
-  obj: Required<T>,
+  obj: T,
+  constructor: { new (...args: any[]): Partial<T> },
 ): [Partial<T>, Omit<T, keyof T>] {
-  const included = obj as Pick<T, keyof T>;
-  const excluded = obj as Omit<T, keyof T>;
-  return [included as T, excluded];
+  const included: Partial<T> = {};
+  const excluded: any = {};
+
+  const typeProperties = Object.getOwnPropertyNames(new constructor());
+
+  for (const key in obj) {
+    if (typeProperties.includes(key)) {
+      included[key] = obj[key];
+    } else {
+      excluded[key] = obj[key];
+    }
+  }
+
+  return [included, excluded];
 }

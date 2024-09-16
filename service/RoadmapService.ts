@@ -820,7 +820,7 @@ export class RoadmapService {
       this.procDTO.collection,
       this.logDTO.collection,
     ]);
-    const [task, taskLeft] = splitObject<TrainTask>(procInfo);
+    const [task, taskLeft] = splitObject(procInfo, TrainTask as any);
     if (task) {
       const savedTask = await trx.step(() =>
         this.trainTaskDTO.createOrUpdateOne(task),
@@ -985,12 +985,8 @@ export class RoadmapService {
     trx: Transaction | null = null,
   ) {
     for (const { ckpts, loadCkpt, ...taskLeft } of configs) {
-      const [config, configLeft] = splitObject<TrainConfig>(
-        taskLeft as Required<TrainConfig>,
-      );
-      const [log, proc] = splitObject<TrainLog>(
-        configLeft as Required<TrainLog>,
-      );
+      const [config, configLeft] = splitObject(taskLeft, TrainConfig);
+      const [log, proc] = splitObject(configLeft as TrainLog, TrainLog);
       config.task = taskId;
       let savedConfig;
       if (trx) {
