@@ -17,6 +17,22 @@ const options: CreateArangoSearchViewOptions = {
       field: "TrainConfig.configContent",
       asc: true,
     },
+    {
+      field: "Checkpoint.md5",
+      asc: true,
+    },
+    {
+      field: "TrainTask._id",
+      asc: true,
+    },
+    {
+      field: "TrainConfig._id",
+      asc: true,
+    },
+    {
+      field: "Checkpoint._id",
+      asc: true,
+    },
   ],
   storedValues: [
     ["TrainTask._id", "TrainTask.type", "TrainTask.desc"],
@@ -30,6 +46,7 @@ const options: CreateArangoSearchViewOptions = {
     ],
     [
       "Checkpoint._id",
+      "Checkpoint.md5",
       "Checkpoint.isSnapshot",
       "Checkpoint.isDelivery",
       "Checkpoint.isRewardModel",

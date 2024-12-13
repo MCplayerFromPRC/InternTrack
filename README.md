@@ -18,6 +18,11 @@
 
 `nohup pnpm dev &`
 
+#### 5. 公司网段linux转发
+
+VSCODE端口转发后再socat转发
+`sudo socat TCP-LISTEN:3000,reuseaddr,fork TCP:127.0.0.1:3001`
+
 ## Documents
 
 [InternTrack文档](https://aicarrier.feishu.cn/wiki/DNRuw3XVSizmVekml0gcnncnnzg?from=from_copylink)

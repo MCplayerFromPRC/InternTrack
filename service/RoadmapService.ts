@@ -227,7 +227,8 @@ class Graph {
     // Check TrainTask type node
     if (isTrainTask(vertex)) {
       if (outEdges.length > 1) {
-        messageTypes.add(WarningMessage.TooManySuccessors);
+        // now allow
+        // messageTypes.add(WarningMessage.TooManySuccessors);
       } else if (outEdges.length === 0) {
         messageTypes.add(WarningMessage.NoConfigChildForTask);
       } else if (outEdges.length > 0) {
