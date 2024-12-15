@@ -5,4 +5,5 @@
 
 cd /app && export ARANGO_ROOT_PASSWORD=PJlab@2024
 ARANGODB_DEFAULT_ROOT_PASSWORD="$ARANGO_ROOT_PASSWORD" nohup /usr/sbin/arangod --config /etc/arangodb3/arangod.conf --server.endpoint tcp://127.0.0.1:8529 --server.authentication true --log.file /tmp/init-log --log.foreground-tty false &
+arangosh --server.endpoint=tcp://127.0.0.1:8529 --server.authentication true --server.password=$ARANGO_ROOT_PASSWORD --javascript.execute-string "db._createDatabase(\"interntrack\");"
 nohup pnpm dev &
