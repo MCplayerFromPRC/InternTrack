@@ -66,6 +66,7 @@ const options: CreateArangoSearchViewOptions = {
     TrainTask: {
       includeAllFields: false,
       fields: {
+        _id: { analyzers: ["identity"] },
         name: { analyzers: ["tokenizer"] },
         type: { analyzers: ["identity"] },
         desc: { analyzers: ["tokenizer"] },
@@ -74,6 +75,7 @@ const options: CreateArangoSearchViewOptions = {
     TrainConfig: {
       includeAllFields: false,
       fields: {
+        _id: { analyzers: ["identity"] },
         configContent: { analyzers: ["tokenizer"] },
         startStep: { analyzers: ["identity"] },
         modelConfig: { analyzers: ["text_en"] },
@@ -85,6 +87,8 @@ const options: CreateArangoSearchViewOptions = {
     Checkpoint: {
       includeAllFields: false,
       fields: {
+        _id: { analyzers: ["identity"] },
+        md5: { analyzers: ["identity"] },
         isSnapshot: { analyzers: ["identity"] },
         isDelivery: { analyzers: ["identity"] },
         isRewardModel: { analyzers: ["identity"] },

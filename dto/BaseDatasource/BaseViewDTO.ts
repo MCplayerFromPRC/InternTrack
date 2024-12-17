@@ -20,7 +20,12 @@ export class BaseViewDatasource<
   TData extends Partial<NodeDocument>,
 > extends BaseDatasource {
   view: View;
-  fields: string[] = ["name", "configContent"];
+  fields: Map<string, string> = new Map<string, string>([
+    ["name", "tokenizer"],
+    ["configContent", "tokenizer"],
+    ["md5", "identity"],
+    ["_id", "identity"],
+  ]);
 
   constructor(db: Database, view: View, options = {}) {
     super(db, options);
@@ -32,19 +37,22 @@ export class BaseViewDatasource<
     const properties =
       (await this.view.properties()) as ArangoSearchViewProperties;
     this.fields = Object.keys(properties.links).reduce(
-      (prev: string[], key: string) => {
-        prev.concat(Object.keys(properties.links[key].fields));
+      (prev: Map<string, string>, key: string) => {
+        for (const columeName in properties.links[key].fields) {
+          const value = properties.links[key].fields[columeName];
+          prev.set(key, value.analyzers[0]);
+        }
         return prev;
       },
-      [],
+      new Map(),
     );
   }
 
   async tokenMatch(searchKey: string, matchNum: number = 1) {
-    const allFieldsMatching = this.fields
+    const allFieldsMatching = Array.from(this.fields.entries())
       .map(
-        (field) =>
-          `ANALYZER(TOKENS("${searchKey}", "tokenizer") AT LEAST (${matchNum}) == doc.${field}, "tokenizer")`,
+        ([field, analyzer]) =>
+          `ANALYZER(TOKENS("${searchKey}", "${analyzer}") AT LEAST (${matchNum}) == doc.${field}, "${analyzer}")`,
       )
       .join(" OR ");
     const query = `FOR doc IN ${this.view.name} SEARCH ${allFieldsMatching} RETURN doc`;
@@ -52,10 +60,13 @@ export class BaseViewDatasource<
   }
 
   async bm25(searchKey: string, limit: number = 10) {
-    const allFieldsMatching = this.fields
-      .map((field) => `doc.${field} IN TOKENS("${searchKey}", "tokenizer")`)
+    const allFieldsMatching = Array.from(this.fields.entries())
+      .map(
+        ([field, analyzer]) =>
+          `ANALYZER(doc.${field} IN TOKENS("${searchKey}", "${analyzer}"), "${analyzer}")`,
+      )
       .join(" OR ");
-    const query = `FOR doc IN ${this.view.name} SEARCH ANALYZER(${allFieldsMatching}, "tokenizer") SORT BM25(doc) DESC LIMIT ${limit} RETURN doc`;
+    const query = `FOR doc IN ${this.view.name} SEARCH ${allFieldsMatching} SORT BM25(doc) DESC LIMIT ${limit} RETURN doc`;
     return this.executeQuery<TData>(query);
   }
 }
