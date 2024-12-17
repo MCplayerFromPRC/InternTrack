@@ -58,6 +58,18 @@ export class CheckpointDatasource extends BaseCollectionDatasource<Checkpoint> {
     return ckpt[0];
   }
 
+  async findOnlyOneByPath(path: string) {
+    const ckpt = await this.findManyByKeys({ path });
+    if (ckpt.length == 0) {
+      throw new Error(`No Checkpoint ${path} found.`);
+    } else if (ckpt.length > 1) {
+      throw new Error(
+        `Conflict MD5 ${path} for Checkpoints ${ckpt.map((c) => c._id)}.`,
+      );
+    }
+    return ckpt[0];
+  }
+
   async createOrUpdateOne(newDoc: Partial<Checkpoint>, options = {}) {
     const ckpts = await this.findManyByKeys({ md5: newDoc.md5 });
     if (ckpts.length == 0) {

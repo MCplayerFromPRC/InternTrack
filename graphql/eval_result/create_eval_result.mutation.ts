@@ -16,7 +16,7 @@ export const ScoreInput = builder.inputType("ScoreInput", {
 
 export const ResultInput = builder.inputType("ResultInput", {
   fields: (t) => ({
-    ckpt: t.string({ required: true }),
+    ckpt: t.string({ required: false }),
     scores: t.field({
       type: [ScoreInput],
       required: true,
@@ -33,10 +33,17 @@ builder.mutationField("createEvalResult", (t) => {
     type: EvalResultType,
     args: {
       result: t.arg({ type: ResultInput, required: true }),
+      ckptMd5: t.arg.string({ required: false }),
+      ckptPath: t.arg.string({ required: false }),
     },
     nullable: false,
     resolve: (root, args, context) => {
-      return createEvalResultMutation(args.result, context);
+      return createEvalResultMutation(
+        args.result as Partial<EvalResult>,
+        args.ckptMd5,
+        args.ckptPath,
+        context,
+      );
     },
   });
 });
@@ -45,9 +52,24 @@ builder.mutationField("createEvalResult", (t) => {
 // without having to call GQL directly
 export async function createEvalResultMutation(
   result: Partial<EvalResult>,
+  ckptMd5: string | null | undefined,
+  ckptPath: string | null | undefined,
   context: GQLContext,
 ) {
-  await context.dataSources?.result.setInvalidByCkpt(result.ckpt!);
+  let ckpt = null;
+  if (typeof ckptMd5 === "string") {
+    ckpt = (await context.dataSources?.ckpts.findOnlyOneByMd5(ckptMd5))!._id;
+    result.ckpt = ckpt;
+  } else if (typeof ckptPath === "string") {
+    ckpt = (await context.dataSources?.ckpts.findOnlyOneByPath(ckptPath))!._id;
+    result.ckpt = ckpt;
+  } else {
+    ckpt = result.ckpt;
+  }
+  if (!(ckpt === "string")) {
+    throw new Error(`no ckpt found by md5 ${ckptMd5} or path ${ckptPath}`);
+  }
+  await context.dataSources?.result.setInvalidByCkpt(ckpt);
   const savedResult = await context.dataSources?.result.createOne(result);
   await context.dataSources?.ckptEval.createOne({
     _from: result.ckpt,
